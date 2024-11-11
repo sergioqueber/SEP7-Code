@@ -7,6 +7,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+//Add services to the container.
+builder.Services.Addcontrollers();
+builder.Service.AddSingleton<IRewardService, RewardService>();
+builder.Service.AddSingleton<ITeamService, TeamService>();
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
