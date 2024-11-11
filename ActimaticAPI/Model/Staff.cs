@@ -1,0 +1,22 @@
+namespace Model;
+public class Staff : User
+{
+    public string Role {get; set;}
+    public string Department {get; set;}
+    public int Points {get; set;}
+    public List<Activity> Activities {get; set;}
+    public List<Reward> Rewards {get; set;}
+
+    public Staff(string name, string surname, string email, string password, string role, string department, int points) : base(name, surname, email, password)
+    {
+        Name = name;
+        Surname = surname;
+        Email = email;
+        Password = password;
+        Role = role;
+        Department = department;
+        Points = points;
+        Activities = new List<Activity>();
+        Rewards = new List<Reward>();
+    }
+}
