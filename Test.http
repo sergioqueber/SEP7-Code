@@ -37,3 +37,17 @@ Content-Type: application/json
 ### Delete staff
 DELETE http://localhost:5205/api/Staff/1
 Accept: application/json
+
+### Post transport
+POST http://localhost:5205/api/Transport
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "transport",
+    "awardedPoints": 69,
+    "date": "2024-11-11T00:00:00",
+    "distance": 13,
+    "type": "cycling",
+    "emissionsSaved": 20
+}
