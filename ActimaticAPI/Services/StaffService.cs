@@ -1,4 +1,7 @@
+using Interfaces;
+
 namespace Services;
-public class StaffService{
+public class StaffService : IStaffService{
+    
     
 }
