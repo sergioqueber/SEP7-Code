@@ -7,12 +7,8 @@ public class Staff : User
     public List<Activity> Activities {get; set;}
     public List<Reward> Rewards {get; set;}
 
-    public Staff(string name, string surname, string email, string password, string role, string department, int points) : base(name, surname, email, password)
+    public Staff(int id, string name, string surname, string email, string password, string role, string department, int points) : base(id, name, surname, email, password)
     {
-        Name = name;
-        Surname = surname;
-        Email = email;
-        Password = password;
         Role = role;
         Department = department;
         Points = points;
