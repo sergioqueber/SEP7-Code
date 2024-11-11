@@ -6,8 +6,9 @@ public abstract class User{
     public string Email { get; set; }
     public string Password { get; set; }
     
-    public User(string name, string surname, string email, string password)
+    public User(int id, string name, string surname, string email, string password)
     {
+        Id = id;
         Name = name;
         Surname = surname;
         Email = email;
