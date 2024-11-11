@@ -4,7 +4,7 @@ public abstract class Activity
 {
     public int Id {get; set;}
     public string Name {get; set;}
-    public int AwardedPoints {get; set}
+    public int AwardedPoints {get; set;}
     public DateTime Date {get; set;}
 
 
