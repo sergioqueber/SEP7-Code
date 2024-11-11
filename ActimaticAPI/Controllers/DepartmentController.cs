@@ -3,6 +3,8 @@ using Model;
 using Services;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
+[ApiController]
+[Route("api/[controller]")]
 
 public class DepartmentController : ControllerBase
 {
@@ -14,27 +16,30 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Department>> GetAllDepartment()
+    public async Task<ActionResult<IEnumerable<Department>>> GetAllDepartment()
     {
-        return await _departmentService.GetAllDepartments();
+        var department = await _departmentService.GetAllDepartments();
+        return Ok(department);
     }
 
     [HttpGet("{id}")]
-    public async Task<Department> GetDepartmentById(int id)
+    public async Task<ActionResult<Department>> GetDepartmentById(int id)
     {
         return await _departmentService.GetDepartmentById(id);
     }
 
     [HttpPost]
-    public async Task<Department> CreateDepartment([FromBody] Department department)
+    public async Task<ActionResult<Department>> CreateDepartment([FromBody] Department department)
     {
-        return await _departmentService.Create(department);
+        var newDepartment = await _departmentService.Create(department);
+        return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.Id }, newDepartment);
     }
 
     [HttpPut]
-    public async Task<Department> UpdateDepartment([FromBody] Department department)
+    public async Task<ActionResult> UpdateDepartment([FromBody] Department department)
     {
-        return await _departmentService.Update(department);
+        await _departmentService.Update(department);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]

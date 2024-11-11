@@ -37,3 +37,20 @@ Content-Type: application/json
 ### Delete staff
 DELETE http://localhost:5205/api/Staff/1
 Accept: application/json
+
+### Create Department
+POST http://localhost:5205/api/Department
+Content-Type: application/json
+
+{
+    "name": "AAAA",
+    "id": 1
+}
+
+### Get all staff
+GET http://localhost:5205/api/Department
+Accept: application/json
+
+### Delete department
+DELETE http://localhost:5205/api/Department/1
+Accept: application/json
