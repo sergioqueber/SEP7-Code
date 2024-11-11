@@ -1,4 +1,4 @@
-namespace Controller;
+namespace Controllers;
 using Model;
 using Services;
 using Interfaces;

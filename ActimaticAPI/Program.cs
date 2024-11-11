@@ -1,6 +1,7 @@
 using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Services;
+using Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +12,17 @@ builder.Services.AddSingleton<ITransportService, TransportService>();
 builder.Services.AddSingleton<ICarPoolService, CarPoolService>();
 builder.Services.AddSingleton<ISavingFoodService, SavingFoodService>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
+builder.Services.AddSingleton<IRewardService, RewardService>();
+builder.Services.AddSingleton<ITeamService, TeamService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+//Add services to the container.
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
