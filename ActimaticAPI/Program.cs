@@ -1,6 +1,7 @@
 using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Services;
+using Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
