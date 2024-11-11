@@ -1,3 +1,4 @@
+namespace Interfaces;
 using System.Security.Principal;
 using Model;
 
