@@ -42,8 +42,9 @@ public class StaffController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<Staff> RemoveStaff(int id)
+    public async Task<ActionResult> RemoveStaff(int id)
     {
-        return await _staffService.RemoveStaff(id);
+        await _staffService.RemoveStaff(id);
+        return NoContent();
     }
 }
