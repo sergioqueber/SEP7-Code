@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IStaffService, StaffService>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
+builder.Services.AddSingleton<IRewardService, RewardService>();
+builder.Services.AddSingleton<ITeamService, TeamService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -15,9 +18,6 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 //Add services to the container.
-builder.Services.Addcontrollers();
-builder.Service.AddSingleton<IRewardService, RewardService>();
-builder.Service.AddSingleton<ITeamService, TeamService>();
 
 
 // Configure the HTTP request pipeline.
