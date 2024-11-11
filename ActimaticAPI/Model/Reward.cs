@@ -7,14 +7,15 @@ public class Reward{
 
      public int PointsRequired {get; set;}
 
-     public boolean Availability {get; set;}
-}
+     public bool Availability {get; set;}
 
-public Reward(int id, string name, string description, int pointsRequired, boolean availability) 
+
+    public Reward(int id, string name, string description, int pointsRequired, bool availability) 
     {
-        Id = id;
-        Name = name;
-        Description  = description;
-        PointsRequired = pointsRequired;
-        Availability = availability;
+            Id = id;
+            Name = name;
+            Description  = description;
+            PointsRequired = pointsRequired;
+            Availability = availability;
     }
+}
