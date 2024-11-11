@@ -1,9 +1,10 @@
-namespace Controller;
+namespace Controllers;
 using Model;
 using Services;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
-
+[ApiController]
+[Route("api/[controller]")]
 public class StaffController : ControllerBase
 {
     private readonly IStaffService _staffService;
@@ -14,9 +15,10 @@ public class StaffController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Staff>> GetAllStaff()
+    public async Task<ActionResult<IEnumerable<Staff>>> GetAllStaff()
     {
-        return await _staffService.GetAllStaff();
+        var staff = await _staffService.GetAllStaff();
+        return Ok(staff);
     }
 
     [HttpGet("{id}")]
@@ -26,15 +28,17 @@ public class StaffController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Staff> CreateStaff([FromBody] Staff staff)
+    public async Task<ActionResult<Staff>> CreateStaff(Staff staff)
     {
-        return await _staffService.CreateStaff(staff);
+        var newStaff = await _staffService.CreateStaff(staff);
+        return CreatedAtAction(nameof(GetStaffById), new { id = newStaff.Id }, newStaff);
     }
 
     [HttpPut]
-    public async Task<Staff> UpdateStaff([FromBody] Staff staff)
+    public async Task<ActionResult> UpdateStaff([FromBody] Staff staff)
     {
-        return await _staffService.UpdateStaff(staff);
+        await _staffService.UpdateStaff(staff);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
