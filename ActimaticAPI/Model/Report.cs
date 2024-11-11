@@ -11,13 +11,13 @@ public class Report{
     public int EmissionsSaved {get; set;}
     public List<Activity>? CompletedActivities {get; set;}
 
-public Report(int id, DateTime startDate, DateTime endDate, List<Staff> activeParticipants, List<Reward> awaredeRewards, int emissionsSaved, List<Activity>? completedActivities){
-    Id = id;
-    StartDate = startDate;
-    EndDate = endDate;
-    ActiveParticipants = activeParticipants;
-    AwardedRewards = awaredeRewards;
-    EmissionsSaved = emissionsSaved;
-    CompletedActivities = completedActivities;
-}
+    public Report(int id, DateTime startDate, DateTime endDate, List<Staff> activeParticipants, List<Reward> awaredeRewards, int emissionsSaved, List<Activity>? completedActivities){
+        Id = id;
+        StartDate = startDate;
+        EndDate = endDate;
+        ActiveParticipants = activeParticipants;
+        AwardedRewards = awaredeRewards;
+        EmissionsSaved = emissionsSaved;
+        CompletedActivities = completedActivities;
+    }
 }
