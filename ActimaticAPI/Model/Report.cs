@@ -11,6 +11,7 @@ public class Report{
     public int EmissionsSaved {get; set;}
     public List<Activity>? CompletedActivities {get; set;}
 
+    public Report(){}
     public Report(int id, DateOnly startDate, DateOnly endDate, List<Staff> activeParticipants, List<Reward> awaredeRewards, int emissionsSaved, List<Activity>? completedActivities){
         Id = id;
         StartDate = startDate;

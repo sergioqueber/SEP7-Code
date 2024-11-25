@@ -107,7 +107,7 @@ Content-Type: application/json
     "password": "password123",
     "toApprove": [
         {
-            "id": 1,
+            "id": 2,
             "name": "John",
             "surname": "Doe",
             "email": "john.doe@example.com",

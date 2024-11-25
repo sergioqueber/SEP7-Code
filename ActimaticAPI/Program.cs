@@ -4,7 +4,7 @@ using Services;
 using Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IStaffService, StaffService>();

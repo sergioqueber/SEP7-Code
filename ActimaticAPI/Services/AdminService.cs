@@ -5,17 +5,19 @@ namespace Services;
 public class AdminService : IAdminService
 {
 
-    private static List<Admin> adminList = new List<Admin>();
+   private static List<Admin> adminList = new List<Admin>();
 
-    static AdminService()
+   /*  static AdminService()
     {
 
-    }
+    } */
 
-    public Task<Admin> CreateAdmin(Admin admin)
+    public async Task<Admin> CreateAdmin(Admin admin)
     {
-        adminList.Add(admin);
-        return Task.FromResult(admin);
+        using ApplicationDbContext context = new();
+        await context.Admins.AddAsync(admin);
+        await context.SaveChangesAsync();
+        return admin;
     }
 
     public Task<IEnumerable<Admin>> GetAllAdmin()
