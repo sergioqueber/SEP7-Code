@@ -5,6 +5,8 @@ public abstract class User{
     public string Surname { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
+
+    public User(){}
     
     public User(int id, string name, string surname, string email, string password)
     {

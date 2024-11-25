@@ -132,7 +132,7 @@ Content-Type: application/json
     "password": "password123",
     "toApprove": [
         {
-            "id": 1,
+            "id": 2,
             "name": "John",
             "surname": "Doe",
             "email": "john.doe@example.com",
@@ -180,4 +180,40 @@ Content-Type: application/json
 
 ### Delete admin
 DELETE http://localhost:5205/api/Admin/1
+Accept: application/json
+
+### Get all stairs activities
+GET http://localhost:5205/api/Stairs
+Accept: application/json
+
+### Get stairs activity by id
+GET http://localhost:5205/api/Stairs/1
+Accept: application/json
+
+### Post stairs activity
+POST http://localhost:5205/api/Stairs
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Climbing Stairs",
+    "awardedPoints": 50,
+    "date": "2023-10-01",
+    "floors": 10
+}
+
+### Put stairs activity
+PUT http://localhost:5205/api/Stairs
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Climbing Stairs",
+    "awardedPoints": 60,
+    "date": "2023-10-01",
+    "floors": 12
+}
+
+### Delete stairs activity
+DELETE http://localhost:5205/api/Stairs/1
 Accept: application/json

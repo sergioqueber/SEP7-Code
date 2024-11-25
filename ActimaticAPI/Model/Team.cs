@@ -6,6 +6,8 @@ public class Team{
     public Department Department {get; set;}
 
     public List<Reward> TeamRewards {get; set;}
+
+    public Team(){}
     public Team(int id, string name, Department department, List<Reward> teamRewards) 
     {
         Id = id;

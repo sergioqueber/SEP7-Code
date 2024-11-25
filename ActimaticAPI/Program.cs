@@ -4,7 +4,7 @@ using Services;
 using Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IStaffService, StaffService>();
@@ -18,6 +18,7 @@ builder.Services.AddSingleton<IReportService, ReportService>();
 builder.Services.AddSingleton<IVolunteeringService, VolunteeringService>();
 
 builder.Services.AddSingleton<IAdminService, AdminService>();
+builder.Services.AddSingleton<IStairsService, StairsService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
