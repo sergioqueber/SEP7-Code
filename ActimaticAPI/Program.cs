@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IStaffService, StaffService>();
+builder.Services.AddSingleton<ITransportService, TransportService>();
+builder.Services.AddSingleton<ICarPoolService, CarPoolService>();
+builder.Services.AddSingleton<ISavingFoodService, SavingFoodService>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
 builder.Services.AddSingleton<IRewardService, RewardService>();
 builder.Services.AddSingleton<ITeamService, TeamService>();

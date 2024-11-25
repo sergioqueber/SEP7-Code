@@ -5,10 +5,10 @@ public abstract class Activity
     public int Id {get; set;}
     public string Name {get; set;}
     public int AwardedPoints {get; set;}
-    public DateTime Date {get; set;}
+    public DateOnly Date {get; set;}
 
 
-    public Activity(int id, string name, int awardedPoints, DateTime date)
+    public Activity(int id, string name, int awardedPoints, DateOnly date)
     {
         Id = id;
         Name = name;
