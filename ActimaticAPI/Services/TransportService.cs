@@ -21,7 +21,7 @@ public class TransportService : ITransportService{
         return Task.FromResult(transportList.AsEnumerable());
     }
 
-    public Task<Transport> GetTransportById(int id)
+    public Task<Transport?> GetTransportById(int id)
     {
         return Task.FromResult(transportList.FirstOrDefault(x => x.Id == id));
     }

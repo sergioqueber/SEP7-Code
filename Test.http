@@ -87,6 +87,31 @@ Content-Type: application/json
     "emptySeats": 3,
     "carType": "electric"
 }
+
+### Post saving food
+POST http://localhost:5205/api/SavingFood
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "saving food",
+    "awardedPoints": 30,
+    "date": "2024-11-11",
+    "packagesSaved": 10
+}
+
+### Post Volunteering
+POST http://localhost:5205/api/Volunteering
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "volunteering",
+    "awardedPoints": 40,
+    "date": "2024-11-11",
+    "location": "Community Center",
+    "hours": 5
+}
 ### Get all admins
 GET http://localhost:5205/api/Admin
 Accept: application/json
