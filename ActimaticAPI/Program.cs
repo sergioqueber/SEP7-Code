@@ -14,6 +14,7 @@ builder.Services.AddSingleton<ISavingFoodService, SavingFoodService>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
 builder.Services.AddSingleton<IRewardService, RewardService>();
 builder.Services.AddSingleton<ITeamService, TeamService>();
+builder.Services.AddSingleton<IReportService, ReportService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
