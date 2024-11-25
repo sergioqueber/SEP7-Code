@@ -44,3 +44,6 @@ msbuild.wrn
 
 #Ignore data.json file 
 data.json
+
+*.db-shm
+*.db-wal

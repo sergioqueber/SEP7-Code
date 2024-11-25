@@ -12,12 +12,12 @@ public class Report{
     public List<Activity>? CompletedActivities {get; set;}
 
     public Report(){}
-    public Report(int id, DateOnly startDate, DateOnly endDate, List<Staff> activeParticipants, List<Reward> awaredeRewards, int emissionsSaved, List<Activity>? completedActivities){
+    public Report(int id, DateOnly startDate, DateOnly endDate, List<Staff> activeParticipants, List<Reward> awarededRewards, int emissionsSaved, List<Activity>? completedActivities){
         Id = id;
         StartDate = startDate;
         EndDate = endDate;
         ActiveParticipants = activeParticipants;
-        AwardedRewards = awaredeRewards;
+        AwardedRewards = awarededRewards;
         EmissionsSaved = emissionsSaved;
         CompletedActivities = completedActivities;
     }

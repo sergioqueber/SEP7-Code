@@ -1,0 +1,69 @@
+### Get all reports
+GET http://localhost:5205/api/Report
+Accept: application/json
+
+### Get report by id
+GET http://localhost:5205/api/Report/1
+Accept: application/json
+
+### Post report
+POST http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startDate": "2222-11-11",
+    "endDate": "2223-11-11",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionsSaved": 12,
+    "completedActivities": []
+}
+
+### Put report
+PUT http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startDate": "2222-11-11",
+    "endDate": "2223-11-11",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionsSaved": 14,
+    "completedActivities": []
+}
+### Delete report
+DELETE http://localhost:5205/api/Report/1
+Accept: application/json
+
+### Create Department
+POST http://localhost:5205/api/Department
+Content-Type: application/json
+
+{
+    "name": "AAAA",
+    "id": 1
+}
+
+### Get all staff
+GET http://localhost:5205/api/Report
+Accept: application/json
+
+### Delete department
+DELETE http://localhost:5205/api/Report/1
+Accept: application/json
+
+### Post transport
+POST http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "transport",
+    "awardedPoints": 69,
+    "date": "2024-11-11T00:00:00",
+    "distance": 13,
+    "type": "cycling",
+    "emissionsSaved": 20
+}
