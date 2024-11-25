@@ -68,3 +68,110 @@ Content-Type: application/json
     "type": "cycling",
     "emissionsSaved": 20
 }
+
+### Get all rewards
+GET http://localhost:5205/api/Reward
+Accept: application/json
+
+### Get reward by id
+GET http://localhost:5205/api/Reward/1
+Accept: application/json
+
+### Post reward
+POST http://localhost:5205/api/Reward
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Reward Name",
+    "description": "Reward Description",
+    "pointsRequired": 100,
+    "availability": true
+}
+
+### Put reward
+PUT http://localhost:5205/api/Reward/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Updated Reward Name",
+    "description": "Updated Reward Description",
+    "pointsRequired": 150,
+    "availability": false
+}
+
+### Delete reward
+DELETE http://localhost:5205/api/Reward/1
+Accept: application/json
+
+
+
+
+
+
+
+
+### Post team
+POST http://localhost:5205/api/Team
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Team Name",
+    "description": "Team Description",
+    "department": {
+        "id": 1,
+        "name": "Department Name"
+    },
+    "teamRewards": [
+        {
+            "id": 1,
+            "rewardId": 1,
+            "teamId": 1,
+            "name": "Reward Name",
+            "description": "Reward Description"
+        }
+    ],
+    "members": [
+        {
+            "id": 1,
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "role": "Manager"
+        }
+    ]
+}
+
+### Put team
+PUT http://localhost:5205/api/Team/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Updated Team Name",
+    "description": "Updated Team Description",
+    "department": {
+        "id": 1,
+        "name": "Updated Department Name"
+    },
+    "teamRewards": [
+        {
+            "id": 1,
+            "rewardId": 1,
+            "teamId": 1,
+            "name": "Updated Reward Name",
+            "description": "Updated Reward Description"
+        }
+    ],
+    "members": [
+        {
+            "id": 1,
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "role": "Manager"
+        }
+    ]
+}
