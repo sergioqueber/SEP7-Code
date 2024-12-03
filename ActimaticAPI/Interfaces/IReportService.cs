@@ -8,6 +8,5 @@ public interface IReportService{
     Task<Report> Remove(int id);
     Task<Report> Create(Report report);
     Task<Report?> Update(Report report);
-    Task<Report?> Update(Report report);
 
 }
