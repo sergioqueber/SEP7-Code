@@ -45,5 +45,7 @@ msbuild.wrn
 #Ignore data.json file 
 data.json
 
+*.db
 *.db-shm
 *.db-wal
+Migrations/
