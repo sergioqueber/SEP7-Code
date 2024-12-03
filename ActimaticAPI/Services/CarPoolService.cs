@@ -1,48 +1,57 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using SQLitePCL;
+using Storage;
 
 namespace Services;
-public class CarPoolService : ICarPoolService{
+public class CarPoolService(ApplicationDbContext context) : ICarPoolService{
 
-    private static List<CarPool> carPoolList = new List<CarPool>();
+    private readonly ApplicationDbContext _context = context;
 
     static CarPoolService(){
-
+       
     }
 
-    public Task<CarPool> CreateCarPool(CarPool carPool)
+    public async Task<CarPool> CreateCarPool(CarPool carPool)
     {
-        carPoolList.Add(carPool);
-        return Task.FromResult(carPool);
+        _context.CarPools.Add(carPool);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(carPool);
     }
     
-    public Task<IEnumerable<CarPool>> GetAllCarPool()
+    public async Task<IEnumerable<CarPool>> GetAllCarPool()
     {
-        return Task.FromResult(carPoolList.AsEnumerable());
+        return await Task.FromResult(_context.CarPools.AsEnumerable());
     }
 
-    public Task<CarPool> GetCarPoolById(int id)
+    public async Task<CarPool?> GetCarPoolById(int id)
     {
-        return Task.FromResult(carPoolList.FirstOrDefault(x => x.Id == id));
+        return await Task.FromResult( await _context.CarPools.FirstOrDefaultAsync(x => x.Id == id));
     }
 
-    public Task<CarPool> RemoveCarPool(int id)
+    public async Task<CarPool?> RemoveCarPool(int id)
     {
-        var carPool = carPoolList.FirstOrDefault(x => x.Id == id);
-        carPoolList.Remove(carPool);
-        return Task.FromResult(carPool);
+        var carPool = await _context.CarPools.FirstOrDefaultAsync(x => x.Id == id);
+        _context.CarPools.Remove(carPool);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(carPool);
     }
 
-    public Task<CarPool> UpdateCarPool(CarPool carPool)
+    public async Task<CarPool?> UpdateCarPool(CarPool carPool)
     {
-        var carPoolToUpdate = carPoolList.FirstOrDefault(x => x.Id == carPool.Id);
-        carPoolToUpdate.Name = carPool.Name;
-        carPoolToUpdate.AwardedPoints = carPool.AwardedPoints;
-        carPoolToUpdate.Date = carPool.Date;
-        carPoolToUpdate.Distance = carPool.Distance;
-        carPoolToUpdate.EmptySeats = carPool.EmptySeats;
-        carPoolToUpdate.CarType = carPool.CarType;
-        return Task.FromResult(carPoolToUpdate);
+        var carPoolToUpdate = await _context.CarPools.FirstOrDefaultAsync(x => x.Id == carPool.Id);
+        if (carPoolToUpdate != null){
+            carPoolToUpdate.Id = carPool.Id;
+            carPoolToUpdate.Name = carPool.Name;
+            carPoolToUpdate.AwardedPoints = carPool.AwardedPoints;
+            carPoolToUpdate.Date = carPool.Date;
+            carPoolToUpdate.Distance = carPool.Distance;
+            carPoolToUpdate.EmptySeats = carPool.EmptySeats;
+            carPoolToUpdate.CarType = carPool.CarType;
+            await _context.SaveChangesAsync();
+        }
+        return await Task.FromResult(carPoolToUpdate);
     }
     
 }

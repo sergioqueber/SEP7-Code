@@ -1,5 +1,6 @@
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using Storage;
 
@@ -15,6 +16,7 @@ public class ReportService(ApplicationDbContext context) : IReportService
     }
 
     public async Task<Report> Create(Report report)
+    public async Task<Report> Create(Report report)
     {
         await _context.Reports.AddAsync(report);
         await _context.SaveChangesAsync();
@@ -24,8 +26,10 @@ public class ReportService(ApplicationDbContext context) : IReportService
     public async Task<IEnumerable<Report>> GetAllReports()
     {
         return await Task.FromResult(_context.Reports.AsEnumerable());
+        return await Task.FromResult(_context.Reports.AsEnumerable());
     }
 
+    public async Task<Report?> GetReportById(int id)
     public async Task<Report?> GetReportById(int id)
     {
         return await Task.FromResult(await _context.Reports.FirstOrDefaultAsync(x => x.Id == id));
@@ -42,6 +46,7 @@ public class ReportService(ApplicationDbContext context) : IReportService
         return await Task.FromResult(report);
     }
 
+    public async Task<Report?> Update(Report report)
     public async Task<Report?> Update(Report report)
     {
         var reportToUpdate = await _context.Reports.FirstOrDefaultAsync(x => x.Id == report.Id);

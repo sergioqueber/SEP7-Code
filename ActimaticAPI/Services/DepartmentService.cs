@@ -1,43 +1,52 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using Storage;
 
 namespace Services;
-public class DepartmentService : IDepartmentService{
+public class DepartmentService(ApplicationDbContext context) : IDepartmentService{
 
-    private static List<Department> departmentList = new List<Department>();
+    private readonly ApplicationDbContext _context = context;
 
     static DepartmentService(){
 
     }
 
-    public Task<Department> Create(Department department)
+    public async Task<Department> Create(Department department)
     {
-        departmentList.Add(department);
-        return Task.FromResult(department);
+        _context.Departments.Add(department);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(department);
     }
     
-    public Task<IEnumerable<Department>> GetAllDepartments()
+    public async Task<IEnumerable<Department>> GetAllDepartments()
     {
-        return Task.FromResult(departmentList.AsEnumerable());
+        return await Task.FromResult(_context.Departments.AsEnumerable());
     }
 
-    public Task<Department> GetDepartmentById(int id)
+    public async Task<Department?> GetDepartmentById(int id)
     {
-        return Task.FromResult(departmentList.FirstOrDefault(x => x.Id == id));
+        return await Task.FromResult(await _context.Departments.FirstOrDefaultAsync(x => x.Id == id));
     }
 
-    public Task<Department> Remove(int id)
+    public async Task<Department?> Remove(int id)
     {
-        var department = departmentList.FirstOrDefault(x => x.Id == id);
-        departmentList.Remove(department);
-        return Task.FromResult(department);
+        var department = await _context.Departments.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Departments.Remove(department);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(department);
     }
 
-    public Task<Department> Update(Department department)
+    public async Task<Department?> Update(Department department)
     {
-        var departmentToUpdate = departmentList.FirstOrDefault(x => x.Id == department.Id);
-        departmentToUpdate.Name = department.Name;
-        return Task.FromResult(departmentToUpdate);
+        var departmentToUpdate = await _context.Departments.FirstOrDefaultAsync(x => x.Id == department.Id);
+        if (departmentToUpdate != null){
+            departmentToUpdate.Id = department.Id;
+            departmentToUpdate.Name = department.Name;
+            departmentToUpdate.Teams = department.Teams;
+        }
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(departmentToUpdate);
     }
     
 }

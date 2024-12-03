@@ -35,8 +35,8 @@ public class DepartmentController : ControllerBase
         return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.Id }, newDepartment);
     }
 
-    [HttpPut]
-    public async Task<ActionResult> UpdateDepartment([FromBody] Department department)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(int id, [FromBody] Department department)
     {
         await _departmentService.Update(department);
         return NoContent();

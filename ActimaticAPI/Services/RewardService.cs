@@ -1,56 +1,57 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SQLitePCL;
+using Storage;
 
-namespace Services
-{
-    public class RewardService : IRewardService
+namespace Services;
+public class RewardService(ApplicationDbContext context) : IRewardService{
+
+    private readonly ApplicationDbContext _context = context;
+
+    static RewardService(){
+       
+    }
+
+    public async Task<Reward> CreateReward(Reward reward)
     {
-        private static List<Reward> rewardList = new List<Reward>();
+        _context.Rewards.Add(reward);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(reward);
+    }
+    
+    public async Task<IEnumerable<Reward>> GetAllRewards()
+    {
+        return await Task.FromResult(_context.Rewards.AsEnumerable());
+    }
 
-        static RewardService()
-        {
-        }
+    public async Task<Reward?> GetRewardById(int id)
+    {
+        return await Task.FromResult( await _context.Rewards.FirstOrDefaultAsync(x => x.Id == id));
+    }
 
-        public Task<Reward> CreateReward(Reward reward)
-        {
-            rewardList.Add(reward);
-            return Task.FromResult(reward);
-        }
+    public async Task<Reward?> RemoveReward(int id)
+    {
+        var reward = await _context.Rewards.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Rewards.Remove(reward);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(reward);
+    }
 
-        public Task<IEnumerable<Reward>> GetAllRewards()
-        {
-            return Task.FromResult(rewardList.AsEnumerable());
-        }
 
-        public Task<Reward> GetRewardById(int id)
+        public async Task<Reward?> UpdateReward(Reward reward)
         {
-            return Task.FromResult(rewardList.FirstOrDefault(x => x.Id == id));
-        }
-
-        public Task<Reward> RemoveReward(int id)
-        {
-            var reward = rewardList.FirstOrDefault(x => x.Id == id);
-            if (reward != null)
-            {
-                rewardList.Remove(reward);
-            }
-            return Task.FromResult(reward);
-        }
-
-        public Task<Reward> UpdateReward(Reward reward)
-        {
-            var rewardToUpdate = rewardList.FirstOrDefault(x => x.Id == reward.Id);
+            var rewardToUpdate = await _context.Rewards.FirstOrDefaultAsync(x => x.Id == reward.Id);
             if (rewardToUpdate != null)
             {
+                rewardToUpdate.Id = reward.Id;
                 rewardToUpdate.Name = reward.Name;
                 rewardToUpdate.Description = reward.Description;
                 rewardToUpdate.PointsRequired = reward.PointsRequired;
                 rewardToUpdate.Availability = reward.Availability;
+                await _context.SaveChangesAsync();
             }
-            return Task.FromResult(rewardToUpdate);
+            return await Task.FromResult(rewardToUpdate);
         }
     }
-}
+
