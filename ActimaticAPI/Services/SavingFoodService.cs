@@ -15,7 +15,7 @@ public class SavingFoodService (ApplicationDbContext context) : ISavingFoodServi
 
     public async Task<SavingFood> CreateSavingFoodAsync(SavingFood savingFood)
     {
-        await _context.AddAsync(savingFood);
+        await _context.SavingFoods.AddAsync(savingFood);
         await _context.SaveChangesAsync();
         return await Task.FromResult(savingFood);
     }

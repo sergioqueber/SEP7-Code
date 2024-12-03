@@ -11,8 +11,8 @@ using Storage;
 namespace ActimaticAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241203123621_CreationOfDatabase")]
-    partial class CreationOfDatabase
+    [Migration("20241203132427_InitialCreate69")]
+    partial class InitialCreate69
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,7 +169,7 @@ namespace ActimaticAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TeamId")
+                    b.Property<int>("TeamId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -329,7 +329,9 @@ namespace ActimaticAPI.Migrations
                 {
                     b.HasOne("Model.Team", "Team")
                         .WithMany("Staff")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Team");
                 });

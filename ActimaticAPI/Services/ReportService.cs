@@ -1,5 +1,6 @@
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using Storage;
 
@@ -23,6 +24,7 @@ public class ReportService(ApplicationDbContext context) : IReportService
 
     public async Task<IEnumerable<Report>> GetAllReports()
     {
+        return await Task.FromResult(_context.Reports.AsEnumerable());
         return await Task.FromResult(_context.Reports.AsEnumerable());
     }
 
