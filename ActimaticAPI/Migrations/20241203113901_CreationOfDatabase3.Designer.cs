@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ActimaticAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241125180247_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241203113901_CreationOfDatabase3")]
+    partial class CreationOfDatabase3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,10 +19,24 @@ namespace ActimaticAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
+            modelBuilder.Entity("ActivityUser", b =>
+                {
+                    b.Property<int>("ActivitiesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ParticipantsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ActivitiesId", "ParticipantsId");
+
+                    b.HasIndex("ParticipantsId");
+
+                    b.ToTable("ActivityUser");
+                });
+
             modelBuilder.Entity("Model.Activity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("AwardedPoints")
@@ -38,18 +52,13 @@ namespace ActimaticAPI.Migrations
                     b.Property<int?>("ReportId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("StaffId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ReportId");
 
-                    b.HasIndex("StaffId");
+                    b.ToTable((string)null);
 
-                    b.ToTable("Activities");
-
-                    b.UseTptMappingStrategy();
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("Model.Department", b =>
@@ -112,19 +121,9 @@ namespace ActimaticAPI.Migrations
                     b.Property<int?>("ReportId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("StaffId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TeamId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ReportId");
-
-                    b.HasIndex("StaffId");
-
-                    b.HasIndex("TeamId");
 
                     b.ToTable("Rewards");
                 });
@@ -138,9 +137,6 @@ namespace ActimaticAPI.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DepartmentId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -149,8 +145,6 @@ namespace ActimaticAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("DepartmentId1");
 
                     b.ToTable("Teams");
                 });
@@ -173,15 +167,70 @@ namespace ActimaticAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Points")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TeamId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("TeamId");
 
-                    b.UseTptMappingStrategy();
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ReportUser", b =>
+                {
+                    b.Property<int>("ActiveParticipantsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ReportsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ActiveParticipantsId", "ReportsId");
+
+                    b.HasIndex("ReportsId");
+
+                    b.ToTable("ReportUser");
+                });
+
+            modelBuilder.Entity("RewardTeam", b =>
+                {
+                    b.Property<int>("TeamRewardsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TeamsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TeamRewardsId", "TeamsId");
+
+                    b.HasIndex("TeamsId");
+
+                    b.ToTable("RewardTeam");
+                });
+
+            modelBuilder.Entity("RewardUser", b =>
+                {
+                    b.Property<int>("RewardsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("RewardsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RewardUser");
                 });
 
             modelBuilder.Entity("Model.CarPool", b =>
@@ -252,180 +301,111 @@ namespace ActimaticAPI.Migrations
                     b.ToTable("Volunteerings", (string)null);
                 });
 
-            modelBuilder.Entity("Model.Admin", b =>
+            modelBuilder.Entity("ActivityUser", b =>
                 {
-                    b.HasBaseType("Model.User");
+                    b.HasOne("Model.Activity", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.ToTable("Admins", (string)null);
-                });
-
-            modelBuilder.Entity("Model.Staff", b =>
-                {
-                    b.HasBaseType("Model.User");
-
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ReportId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("TeamId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasIndex("AdminId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("ReportId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Staffs", (string)null);
+                    b.HasOne("Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Model.Activity", b =>
                 {
-                    b.HasOne("Model.Report", null)
+                    b.HasOne("Model.Report", "Report")
                         .WithMany("CompletedActivities")
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ReportId");
 
-                    b.HasOne("Model.Staff", null)
-                        .WithMany("Activities")
-                        .HasForeignKey("StaffId");
+                    b.Navigation("Report");
                 });
 
             modelBuilder.Entity("Model.Reward", b =>
                 {
                     b.HasOne("Model.Report", null)
                         .WithMany("AwardedRewards")
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Model.Staff", null)
-                        .WithMany("Rewards")
-                        .HasForeignKey("StaffId");
-
-                    b.HasOne("Model.Team", null)
-                        .WithMany("TeamRewards")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("ReportId");
                 });
 
             modelBuilder.Entity("Model.Team", b =>
                 {
-                    b.HasOne("Model.Department", null)
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Model.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId1")
+                        .WithMany("Teams")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("Model.CarPool", b =>
+            modelBuilder.Entity("Model.User", b =>
                 {
-                    b.HasOne("Model.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Model.CarPool", "Id")
+                    b.HasOne("Model.Team", "Team")
+                        .WithMany("Staff")
+                        .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Model.SavingFood", b =>
-                {
-                    b.HasOne("Model.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Model.SavingFood", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Model.Stairs", b =>
-                {
-                    b.HasOne("Model.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Model.Stairs", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Model.Transport", b =>
-                {
-                    b.HasOne("Model.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Model.Transport", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Model.Volunteering", b =>
-                {
-                    b.HasOne("Model.Activity", null)
-                        .WithOne()
-                        .HasForeignKey("Model.Volunteering", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Model.Admin", b =>
+            modelBuilder.Entity("ReportUser", b =>
                 {
                     b.HasOne("Model.User", null)
-                        .WithOne()
-                        .HasForeignKey("Model.Admin", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Model.Staff", b =>
-                {
-                    b.HasOne("Model.Admin", null)
-                        .WithMany("ToApprove")
-                        .HasForeignKey("AdminId");
-
-                    b.HasOne("Model.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Model.User", null)
-                        .WithOne()
-                        .HasForeignKey("Model.Staff", "Id")
+                        .HasForeignKey("ActiveParticipantsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Model.Report", null)
-                        .WithMany("ActiveParticipants")
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("ReportsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RewardTeam", b =>
+                {
+                    b.HasOne("Model.Reward", null)
+                        .WithMany()
+                        .HasForeignKey("TeamRewardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Model.Team", null)
                         .WithMany()
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                    b.Navigation("Department");
+            modelBuilder.Entity("RewardUser", b =>
+                {
+                    b.HasOne("Model.Reward", null)
+                        .WithMany()
+                        .HasForeignKey("RewardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Model.Department", b =>
+                {
+                    b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("Model.Report", b =>
                 {
-                    b.Navigation("ActiveParticipants");
-
                     b.Navigation("AwardedRewards");
 
                     b.Navigation("CompletedActivities");
@@ -433,19 +413,7 @@ namespace ActimaticAPI.Migrations
 
             modelBuilder.Entity("Model.Team", b =>
                 {
-                    b.Navigation("TeamRewards");
-                });
-
-            modelBuilder.Entity("Model.Admin", b =>
-                {
-                    b.Navigation("ToApprove");
-                });
-
-            modelBuilder.Entity("Model.Staff", b =>
-                {
-                    b.Navigation("Activities");
-
-                    b.Navigation("Rewards");
+                    b.Navigation("Staff");
                 });
 #pragma warning restore 612, 618
         }

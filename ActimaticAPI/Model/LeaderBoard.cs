@@ -1,7 +1,9 @@
 namespace Model;
-public class LeaderBoard{
-    public List<Staff> Ranking {get; set;}
-    public LeaderBoard(List<Staff> ranking){
+public class LeaderBoard
+{
+    public List<User> Ranking { get; set; }
+    public LeaderBoard(List<User> ranking)
+    {
         Ranking = ranking;
     }
 }

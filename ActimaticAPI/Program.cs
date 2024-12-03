@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IStaffService, StaffService>();
+builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITransportService, TransportService>();
 builder.Services.AddSingleton<ICarPoolService, CarPoolService>();
 builder.Services.AddSingleton<ISavingFoodService, SavingFoodService>();
@@ -17,7 +17,6 @@ builder.Services.AddSingleton<ITeamService, TeamService>();
 builder.Services.AddSingleton<IReportService, ReportService>();
 builder.Services.AddSingleton<IVolunteeringService, VolunteeringService>();
 
-builder.Services.AddSingleton<IAdminService, AdminService>();
 builder.Services.AddSingleton<IStairsService, StairsService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -43,7 +42,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
