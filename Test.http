@@ -1,13 +1,13 @@
 ### Get all staff
-GET http://localhost:5205/api/Staff
+GET http://localhost:5205/api/User
 Accept: application/json
 
 ### Get staff by id
-GET http://localhost:5205/api/Staff/1
+GET http://localhost:5205/api/User/1
 Accept: application/json
 
 ### Post staff
-POST http://localhost:5205/api/Staff
+POST http://localhost:5205/api/User
 Content-Type: application/json
 
 {
