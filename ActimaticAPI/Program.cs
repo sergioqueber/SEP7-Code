@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Services;
 using Storage;
 using Controllers;
-
+using Storage;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
@@ -17,7 +17,6 @@ builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IVolunteeringService, VolunteeringService>();
-
 builder.Services.AddScoped<IStairsService, StairsService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

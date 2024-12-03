@@ -18,14 +18,14 @@ public class VolunteeringController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        var volunteeringActivities = _volunteeringService.GetAllVolunteering();
+        var volunteeringActivities = _volunteeringService.GetAllVolunteeringAsync();
         return Ok(volunteeringActivities);
     }
 
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        var volunteeringActivity = _volunteeringService.GetVolunteeringById(id);
+        var volunteeringActivity = _volunteeringService.GetVolunteeringByIdAsync(id);
         if (volunteeringActivity == null)
         {
             return NotFound();
@@ -36,7 +36,7 @@ public class VolunteeringController : ControllerBase
     [HttpPost]
     public IActionResult Create(Volunteering volunteering)
     {
-        _volunteeringService.CreateVolunteering(volunteering);
+        _volunteeringService.CreateVolunteeringAsync(volunteering);
         return CreatedAtAction(nameof(GetById), new { id = volunteering.Id }, volunteering);
     }
 
@@ -48,26 +48,26 @@ public class VolunteeringController : ControllerBase
             return BadRequest();
         }
 
-        var existingVolunteering = _volunteeringService.GetVolunteeringById(id);
+        var existingVolunteering = _volunteeringService.GetVolunteeringByIdAsync(id);
         if (existingVolunteering == null)
         {
             return NotFound();
         }
 
-        _volunteeringService.UpdateVolunteering(volunteering);
+        _volunteeringService.UpdateVolunteeringAsync(volunteering);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var volunteering = _volunteeringService.GetVolunteeringById(id);
+        var volunteering = _volunteeringService.GetVolunteeringByIdAsync(id);
         if (volunteering == null)
         {
             return NotFound();
         }
 
-        _volunteeringService.RemoveVolunteering(id);
+        _volunteeringService.RemoveVolunteeringAsync(id);
         return NoContent();
     }
 }

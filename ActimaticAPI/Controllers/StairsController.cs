@@ -17,33 +17,33 @@ public class StairsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Stairs>>> GetAllStairs()
     {
-        var Stairs = await _StairsService.GetAllStairs();
+        var Stairs = await _StairsService.GetAllStairsAsync();
         return Ok(Stairs);
     }
 
     [HttpGet("{id}")]
     public async Task<Stairs> GetStairsById(int id)
     {
-        return await _StairsService.GetStairsById(id);
+        return await _StairsService.GetStairsByIdAsync(id);
     }
 
     [HttpPost]
     public async Task<ActionResult<Stairs>> CreateStairs(Stairs Stairs)
     {
-        var newStairs = await _StairsService.CreateStairs(Stairs);
+        var newStairs = await _StairsService.CreateStairsAsync(Stairs);
         return CreatedAtAction(nameof(GetStairsById), new { id = newStairs.Id }, newStairs);
     }
 
     [HttpPut]
     public async Task<ActionResult> UpdateStairs([FromBody] Stairs Stairs)
     {
-        await _StairsService.UpdateStairs(Stairs);
+        await _StairsService.UpdateStairsAsync(Stairs);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<Stairs> RemoveStairs(int id)
     {
-        return await _StairsService.RemoveStairs(id);
+        return await _StairsService.RemoveStairsAsync(id);
     }
 }

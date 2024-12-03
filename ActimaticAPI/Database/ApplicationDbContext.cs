@@ -1,7 +1,7 @@
 namespace Storage;
 
 using Microsoft.EntityFrameworkCore;
-
+namespace Storage;
 using Model;
 using Microsoft.EntityFrameworkCore.Sqlite;
 
