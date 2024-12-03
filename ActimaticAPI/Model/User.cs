@@ -10,7 +10,7 @@ public class User
     public int Points { get; set; }
     public List<Activity>? Activities { get; set; } = [];
     public List<Reward>? Rewards { get; set; } = [];
-    public Team Team { get; set; }
+    public Team? Team { get; set; }
     public List<Report>? Reports { get; set; } = [];
 
     public User() { }
@@ -24,7 +24,5 @@ public class User
         Password = password;
         Role = role;
         Points = points;
-        Activities = new List<Activity>();
-        Rewards = new List<Reward>();
     }
 }
