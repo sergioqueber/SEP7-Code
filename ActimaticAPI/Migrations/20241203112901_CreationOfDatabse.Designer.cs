@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+using Storage;
+
+
 #nullable disable
 
 namespace ActimaticAPI.Migrations

@@ -2,9 +2,9 @@ namespace Interfaces;
 using Model;
 public interface IVolunteeringService
 {
-    Task<IEnumerable<Volunteering>> GetAllVolunteering();
-    Task<Volunteering> GetVolunteeringById(int id);
-    Task<Volunteering> CreateVolunteering(Volunteering volunteering);
-    Task<Volunteering> UpdateVolunteering(Volunteering volunteering);
-    Task<Volunteering> RemoveVolunteering(int id);
+    Task<IEnumerable<Volunteering>> GetAllVolunteeringAsync();
+    Task<Volunteering> GetVolunteeringByIdAsync(int id);
+    Task<Volunteering> CreateVolunteeringAsync(Volunteering volunteering);
+    Task<Volunteering> UpdateVolunteeringAsync(Volunteering volunteering);
+    Task<Volunteering> RemoveVolunteeringAsync(int id);
 }
