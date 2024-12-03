@@ -1,48 +1,65 @@
 using Interfaces;
+using Storage;
+using Microsoft.EntityFrameworkCore.Storage;
 using Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services;
-public class UserService : IUserService
+public class UserService(ApplicationDbContext context) : IUserService
 {
+    private readonly ApplicationDbContext _context = context ;
 
-    private static List<User> UserList = new List<User>();
+//private static List<User> UserList = new List<User>();
 
     static UserService()
     {
 
     }
 
-    public Task<User> CreateUser(User user)
+    public async Task<User> CreateUser(User user)
     {
-        UserList.Add(user);
-        return Task.FromResult(user);
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(user);
     }
 
-    public Task<IEnumerable<User>> GetAllUsers()
+    public async Task<IEnumerable<User>> GetAllUsers()
     {
-        return Task.FromResult(UserList.AsEnumerable());
+        return await Task.FromResult( _context.Users.AsEnumerable());
     }
 
-    public Task<User> GetUserById(int id)
+    public async Task<User?> GetUserById(int id)
     {
-        return Task.FromResult(UserList.FirstOrDefault(x => x.Id == id));
+        return await Task.FromResult(await _context.Users.FirstOrDefaultAsync(x => x.Id == id));
     }
 
-    public Task<User> RemoveUser(int id)
+    public async Task<User> RemoveUser(int id)
     {
-        var user = UserList.FirstOrDefault(x => x.Id == id);
-        UserList.Remove(user);
-        return Task.FromResult(user);
+        var user =  await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+        if (user != null)
+        {
+            _context.Remove(user);
+        }
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(user);
     }
 
-    public Task<User> UpdateUser(User user)
+    public async Task<User?> UpdateUser(User user)
     {
-        var userToUpdate = UserList.FirstOrDefault(x => x.Id == user.Id);
-        userToUpdate.Name = user.Name;
-        userToUpdate.Surname = user.Surname;
-        userToUpdate.Email = user.Email;
-        userToUpdate.Password = user.Password;
-        return Task.FromResult(userToUpdate);
+        var userToUpdate = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        if (userToUpdate != null)
+        {
+            userToUpdate.Id = user.Id;
+            userToUpdate.Points = user.Points;
+            userToUpdate.Role = user.Role;
+            userToUpdate.Team = user.Team;
+            userToUpdate.Name = user.Name;
+            userToUpdate.Surname = user.Surname;
+            userToUpdate.Email = user.Email;
+            userToUpdate.Password = user.Password;
+            await _context.SaveChangesAsync();
+        }
+        return await Task.FromResult(userToUpdate);
     }
 
 }

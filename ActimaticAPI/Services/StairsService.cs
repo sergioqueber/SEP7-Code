@@ -1,46 +1,57 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using Storage;
+
 
 namespace Services;
-public class StairsService : IStairsService{
+public class StairsService (ApplicationDbContext context) : IStairsService{
 
-    private static List<Stairs> StairsList = new List<Stairs>();
+    private readonly ApplicationDbContext _context = context;
 
     static StairsService(){
 
     }
 
-    public Task<Stairs> CreateStairs(Stairs Stairs)
+    public async Task<Stairs> CreateStairsAsync(Stairs stairs)
     {
-        StairsList.Add(Stairs);
-        return Task.FromResult(Stairs);
+        await _context.Stairs.AddAsync(stairs);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(stairs);
     }
     
-    public Task<IEnumerable<Stairs>> GetAllStairs()
+    public async Task<IEnumerable<Stairs>> GetAllStairsAsync()
     {
-        return Task.FromResult(StairsList.AsEnumerable());
+       return await Task.FromResult(_context.Stairs.AsEnumerable());
     }
 
-    public Task<Stairs> GetStairsById(int id)
+    public async Task<Stairs?> GetStairsByIdAsync(int id)
     {
-        return Task.FromResult(StairsList.FirstOrDefault(x => x.Id == id));
+        return await Task.FromResult( await _context.Stairs.FirstOrDefaultAsync(x => x.Id == id));
     }
 
-    public Task<Stairs> RemoveStairs(int id)
+    public async Task<Stairs?> RemoveStairsAsync(int id)
     {
-        var Stairs = StairsList.FirstOrDefault(x => x.Id == id);
-        StairsList.Remove(Stairs);
-        return Task.FromResult(Stairs);
+        var stairs = await _context.Stairs.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Stairs.Remove(stairs);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(stairs);
     }
 
-    public Task<Stairs> UpdateStairs(Stairs Stairs)
+    public async Task<Stairs?> UpdateStairsAsync(Stairs stairs)
     {
-        var StairsToUpdate = StairsList.FirstOrDefault(x => x.Id == Stairs.Id);
-        StairsToUpdate.Name = Stairs.Name;
-        StairsToUpdate.AwardedPoints = Stairs.AwardedPoints;
-        StairsToUpdate.Date = Stairs.Date;
-        StairsToUpdate.Floors = Stairs.Floors;
-        return Task.FromResult(StairsToUpdate);
+        
+        var stairsToUpdate = await _context.Stairs.FirstOrDefaultAsync(x => x.Id == stairs.Id);
+        if (stairsToUpdate != null){
+            stairsToUpdate.Id = stairs.Id;
+            stairsToUpdate.Name = stairs.Name;
+            stairsToUpdate.AwardedPoints = stairs.AwardedPoints;
+            stairsToUpdate.Date = stairs.Date;
+            stairsToUpdate.Floors = stairs.Floors;
+        await _context.SaveChangesAsync();
+        }
+        return await Task.FromResult(stairsToUpdate);
+        
     }
     
 }

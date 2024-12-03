@@ -17,33 +17,33 @@ public class SavingFoodController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SavingFood>>> GetAllSavingFood()
     {
-        var savingFood = await _savingFoodService.GetAllSavingFood();
+        var savingFood = await _savingFoodService.GetAllSavingFoodAsync();
         return Ok(savingFood);
     }
 
     [HttpGet("{id}")]
     public async Task<SavingFood> GetSavingFoodById(int id)
     {
-        return await _savingFoodService.GetSavingFoodById(id);
+        return await _savingFoodService.GetSavingFoodByIdAsync(id);
     }
 
     [HttpPost]
     public async Task<ActionResult<SavingFood>> CreateSavingFood(SavingFood savingFood)
     {
-        var newSavingFood = await _savingFoodService.CreateSavingFood(savingFood);
+        var newSavingFood = await _savingFoodService.CreateSavingFoodAsync(savingFood);
         return CreatedAtAction(nameof(GetSavingFoodById), new { id = newSavingFood.Id }, newSavingFood);
     }
 
     [HttpPut]
     public async Task<ActionResult> UpdateSavingFood([FromBody] SavingFood savingFood)
     {
-        await _savingFoodService.UpdateSavingFood(savingFood);
+        await _savingFoodService.UpdateSavingFoodAsync(savingFood);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<SavingFood> RemoveSavingFood(int id)
     {
-        return await _savingFoodService.RemoveSavingFood(id);
+        return await _savingFoodService.RemoveSavingFoodAsync(id);
     }
 }

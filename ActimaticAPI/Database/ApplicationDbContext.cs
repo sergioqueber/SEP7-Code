@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
+namespace Storage;
 
+using Microsoft.EntityFrameworkCore;
 using Model;
 using Microsoft.EntityFrameworkCore.Sqlite;
 
@@ -19,7 +20,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=application.db");
+        optionsBuilder.UseSqlite("Data Source=Actimatic.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

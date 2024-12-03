@@ -1,54 +1,57 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using Storage;
+
 
 namespace Services;
-public class VolunteeringService : IVolunteeringService
-{
-    private static List<Volunteering> volunteeringList = new List<Volunteering>();
+public class VolunteeringService (ApplicationDbContext context) : IVolunteeringService{
 
-    static VolunteeringService()
+    private readonly ApplicationDbContext _context = context;
+
+    static VolunteeringService(){
+
+    }
+
+    public async Task<Volunteering> CreateVolunteeringAsync(Volunteering volunteering)
+    {
+        await _context.Volunteerings.AddAsync(volunteering);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(volunteering);
+    }
+    
+    public async Task<IEnumerable<Volunteering>> GetAllVolunteeringAsync()
+    {
+       return await Task.FromResult(_context.Volunteerings.AsEnumerable());
+    }
+
+    public async Task<Volunteering?> GetVolunteeringByIdAsync(int id)
+    {
+        return await Task.FromResult( await _context.Volunteerings.FirstOrDefaultAsync(x => x.Id == id));
+    }
+
+    public async Task<Volunteering?> RemoveVolunteeringAsync(int id)
+    {
+        var volunteering = await _context.Volunteerings.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Volunteerings.Remove(volunteering);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(volunteering);
+    }
+
+    public async Task<Volunteering?> UpdateVolunteeringAsync(Volunteering volunteering)
     {
         
-    }
-
-    public Task<IEnumerable<Volunteering>> GetAllVolunteering()
-    {
-        return Task.FromResult(volunteeringList.AsEnumerable());
-    }
-
-    public Task<Volunteering> GetVolunteeringById(int id)
-    {
-        var volunteering = volunteeringList.FirstOrDefault(v => v.Id == id);
-        return Task.FromResult(volunteering);
-    }
-
-    public Task<Volunteering> CreateVolunteering(Volunteering volunteering)
-    {
-        volunteeringList.Add(volunteering);
-        return Task.FromResult(volunteering);
-    }
-
-    public Task<Volunteering> UpdateVolunteering(Volunteering volunteering)
-    {
-        var existingVolunteering = volunteeringList.FirstOrDefault(v => v.Id == volunteering.Id);
-        if (existingVolunteering != null)
-        {
-            existingVolunteering.Name = volunteering.Name;
-            existingVolunteering.AwardedPoints = volunteering.AwardedPoints;
-            existingVolunteering.Date = volunteering.Date;
-            existingVolunteering.Location = volunteering.Location;
-            existingVolunteering.Hours = volunteering.Hours;
+        var volunteeringToUpdate = await _context.Volunteerings.FirstOrDefaultAsync(x => x.Id == volunteering.Id);
+        if (volunteeringToUpdate != null){
+            volunteeringToUpdate.Id = volunteering.Id;
+            volunteeringToUpdate.Name = volunteering.Name;
+            volunteeringToUpdate.AwardedPoints = volunteering.AwardedPoints;
+            volunteeringToUpdate.Date = volunteering.Date;
+            volunteeringToUpdate.Hours = volunteering.Hours;
+        await _context.SaveChangesAsync();
         }
-        return Task.FromResult(existingVolunteering);
+        return await Task.FromResult(volunteeringToUpdate);
+        
     }
-
-    public Task<Volunteering> RemoveVolunteering(int id)
-    {
-        var volunteering = volunteeringList.FirstOrDefault(v => v.Id == id);
-        if (volunteering != null)
-        {
-            volunteeringList.Remove(volunteering);
-        }
-        return Task.FromResult(volunteering);
-    }
+    
 }
