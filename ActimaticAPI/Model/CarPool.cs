@@ -4,6 +4,7 @@ public class CarPool: Activity
     public int Distance {get; set;}
     public int EmptySeats {get; set;}
     public string CarType {get; set;}
+    
 
     public CarPool (int id, string name, int awardedPoints, DateOnly date, int distance, int emptySeats, string carType): base(id, name, awardedPoints, date)
     {
