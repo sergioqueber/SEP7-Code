@@ -2,22 +2,23 @@ using Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Services;
 using Controllers;
+using Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<ITransportService, TransportService>();
-builder.Services.AddSingleton<ICarPoolService, CarPoolService>();
-builder.Services.AddSingleton<ISavingFoodService, SavingFoodService>();
-builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
-builder.Services.AddSingleton<IRewardService, RewardService>();
-builder.Services.AddSingleton<ITeamService, TeamService>();
-builder.Services.AddSingleton<IReportService, ReportService>();
-builder.Services.AddSingleton<IVolunteeringService, VolunteeringService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITransportService, TransportService>();
+builder.Services.AddScoped<ICarPoolService, CarPoolService>();
+builder.Services.AddScoped<ISavingFoodService, SavingFoodService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IRewardService, RewardService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IVolunteeringService, VolunteeringService>();
 
-builder.Services.AddSingleton<IStairsService, StairsService>();
+builder.Services.AddScoped<IStairsService, StairsService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

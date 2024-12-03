@@ -217,3 +217,114 @@ Content-Type: application/json
 ### Delete stairs activity
 DELETE http://localhost:5205/api/Stairs/1
 Accept: application/json
+
+###
+
+POST http://localhost:5205/api/Reward
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Car",
+    "description": "Smith",
+    "pointsRequired": 5,
+    "availability": true
+}
+
+### Get stairs activity by id
+GET http://localhost:5205/api/Reward/1
+Accept: application/json
+
+### Get stairs activity by id
+GET http://localhost:5205/api/Reward
+Accept: application/json
+
+### Get stairs activity by id
+PUT http://localhost:5205/api/Reward/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Car",
+    "description": "Smiths",
+    "pointsRequired": 5,
+    "availability": true
+}
+
+### Delete stairs activity
+DELETE http://localhost:5205/api/Reward/1
+Accept: application/json
+
+###
+
+POST http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 2,
+    "startDate": "2024-11-11",
+    "endDate": "2024-11-12",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionSaved": 4,
+    "completedActivities": []
+}
+
+### Get stairs activity by id
+GET http://localhost:5205/api/Report/1
+Accept: application/json
+
+### Get stairs activity by id
+GET http://localhost:5205/api/Report
+Accept: application/json
+
+### Get stairs activity by id
+PUT http://localhost:5205/api/Report/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startDate": "2024-11-11",
+    "endDate": "2024-11-12",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionSaved": 45,
+    "completedActivities": []
+}
+
+### Delete stairs activity
+DELETE http://localhost:5205/api/Report/1
+Accept: application/json
+
+###
+
+POST http://localhost:5205/api/department
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "dddddf",
+    "teams": []
+}
+
+### Get stairs activity by id
+GET http://localhost:5205/api/department/1
+Accept: application/json
+
+### Get stairs activity by id
+GET http://localhost:5205/api/department
+Accept: application/json
+
+### Get stairs activity by id
+PUT http://localhost:5205/api/Department/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "dddddd",
+    "teams": []
+}
+
+### Delete stairs activity
+DELETE http://localhost:5205/api/department/1
+Accept: application/json

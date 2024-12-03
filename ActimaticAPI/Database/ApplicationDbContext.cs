@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-
+using Storage;
 using Model;
 using Microsoft.EntityFrameworkCore.Sqlite;
+namespace Storage;
 
 public class ApplicationDbContext : DbContext
 {

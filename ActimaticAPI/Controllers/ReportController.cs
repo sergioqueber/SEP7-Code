@@ -35,8 +35,8 @@ public class ReportController : ControllerBase
         return CreatedAtAction(nameof(GetReportById), new { id = newReport.Id }, newReport);
     }
 
-    [HttpPut]
-    public async Task<ActionResult> UpdateReport([FromBody] Report report)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateReport(int id, [FromBody] Report report)
     {
         await _reportService.Update(report);
         return NoContent();

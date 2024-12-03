@@ -1,48 +1,57 @@
 using Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Model;
+using SQLitePCL;
+using Storage;
 
 namespace Services;
-public class ReportService : IReportService{
+public class ReportService(ApplicationDbContext context) : IReportService{
 
-    private static List<Report> ReportList = new List<Report>();
+    private readonly ApplicationDbContext _context = context;
 
     static ReportService(){
-
+       
     }
 
-    public Task<Report> Create(Report report)
+    public async Task<Report> Create(Report report)
     {
-        ReportList.Add(report);
-        return Task.FromResult(report);
+        _context.Reports.Add(report);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(report);
     }
     
-    public Task<IEnumerable<Report>> GetAllReports()
+    public async Task<IEnumerable<Report>> GetAllReports()
     {
-        return Task.FromResult(ReportList.AsEnumerable());
+        return await Task.FromResult(_context.Reports.AsEnumerable());
     }
 
-    public Task<Report> GetReportById(int id)
+    public async Task<Report?> GetReportById(int id)
     {
-        return Task.FromResult(ReportList.FirstOrDefault(x => x.Id == id));
+        return await Task.FromResult( await _context.Reports.FirstOrDefaultAsync(x => x.Id == id));
     }
 
-    public Task<Report> Remove(int id)
+    public async Task<Report?> Remove(int id)
     {
-        var report = ReportList.FirstOrDefault(x => x.Id == id);
-        ReportList.Remove(report);
-        return Task.FromResult(report);
+        var report = await _context.Reports.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Reports.Remove(report);
+        await _context.SaveChangesAsync();
+        return await Task.FromResult(report);
     }
 
-    public Task<Report> Update(Report report)
+    public async Task<Report?> Update(Report report)
     {
-        var reportToUpdate = ReportList.FirstOrDefault(x => x.Id == report.Id);
-        reportToUpdate.StartDate = report.StartDate;
-        reportToUpdate.EndDate = report.EndDate;
-        reportToUpdate.ActiveParticipants = report.ActiveParticipants;
-        reportToUpdate.AwardedRewards = report.AwardedRewards;
-        reportToUpdate.CompletedActivities = report.CompletedActivities;
-        reportToUpdate.EmissionsSaved = report.EmissionsSaved;
-        return Task.FromResult(reportToUpdate);
+        var reportToUpdate = await _context.Reports.FirstOrDefaultAsync(x => x.Id == report.Id);
+        if(reportToUpdate != null){
+            reportToUpdate.Id = report.Id;
+            reportToUpdate.StartDate = report.StartDate;
+            reportToUpdate.EndDate = report.EndDate;
+            reportToUpdate.ActiveParticipants = report.ActiveParticipants;
+            reportToUpdate.AwardedRewards = report.AwardedRewards;
+            reportToUpdate.CompletedActivities = report.CompletedActivities;
+            reportToUpdate.EmissionsSaved = report.EmissionsSaved;
+            await _context.SaveChangesAsync();
+        }
+        return await Task.FromResult(reportToUpdate);
     }
     
 }
