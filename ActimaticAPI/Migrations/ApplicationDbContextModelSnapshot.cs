@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Storage;
 
 #nullable disable
 
@@ -15,21 +16,6 @@ namespace ActimaticAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
-
-            modelBuilder.Entity("ActivityUser", b =>
-                {
-                    b.Property<int>("ActivitiesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ParticipantsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ActivitiesId", "ParticipantsId");
-
-                    b.HasIndex("ParticipantsId");
-
-                    b.ToTable("ActivityUser");
-                });
 
             modelBuilder.Entity("Model.Activity", b =>
                 {
@@ -49,9 +35,14 @@ namespace ActimaticAPI.Migrations
                     b.Property<int?>("ReportId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ReportId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable((string)null);
 
@@ -298,28 +289,19 @@ namespace ActimaticAPI.Migrations
                     b.ToTable("Volunteerings", (string)null);
                 });
 
-            modelBuilder.Entity("ActivityUser", b =>
-                {
-                    b.HasOne("Model.Activity", null)
-                        .WithMany()
-                        .HasForeignKey("ActivitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Model.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Model.Activity", b =>
                 {
                     b.HasOne("Model.Report", "Report")
                         .WithMany("CompletedActivities")
                         .HasForeignKey("ReportId");
 
+                    b.HasOne("Model.User", "User")
+                        .WithMany("Activities")
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Report");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Model.Reward", b =>
@@ -411,6 +393,11 @@ namespace ActimaticAPI.Migrations
             modelBuilder.Entity("Model.Team", b =>
                 {
                     b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("Model.User", b =>
+                {
+                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }
