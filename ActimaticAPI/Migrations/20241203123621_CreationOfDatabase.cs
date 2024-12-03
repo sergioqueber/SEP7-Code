@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Storage;
 
 #nullable disable
 
 namespace ActimaticAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class CreationOfDatabse : Migration
+    public partial class CreationOfDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,25 +93,17 @@ namespace ActimaticAPI.Migrations
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable: false),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
-                    DepartmentId = table.Column<int>(type: "INTEGER", nullable: false),
                     Points = table.Column<int>(type: "INTEGER", nullable: false),
-                    TeamId = table.Column<int>(type: "INTEGER", nullable: false)
+                    TeamId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Departments_DepartmentId",
-                        column: x => x.DepartmentId,
-                        principalTable: "Departments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Users_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -145,7 +138,7 @@ namespace ActimaticAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     AwardedPoints = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: true),
                     Distance = table.Column<int>(type: "INTEGER", nullable: false),
                     EmptySeats = table.Column<int>(type: "INTEGER", nullable: false),
@@ -160,8 +153,8 @@ namespace ActimaticAPI.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CarPools_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_CarPools_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -195,11 +188,11 @@ namespace ActimaticAPI.Migrations
                 columns: table => new
                 {
                     RewardsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UsersId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RewardUser", x => new { x.RewardsId, x.StaffId });
+                    table.PrimaryKey("PK_RewardUser", x => new { x.RewardsId, x.UsersId });
                     table.ForeignKey(
                         name: "FK_RewardUser_Rewards_RewardsId",
                         column: x => x.RewardsId,
@@ -207,8 +200,8 @@ namespace ActimaticAPI.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RewardUser_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_RewardUser_Users_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -222,7 +215,7 @@ namespace ActimaticAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     AwardedPoints = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: true),
                     PackagesSaved = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -235,8 +228,8 @@ namespace ActimaticAPI.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_SavingFoods_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_SavingFoods_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -249,7 +242,7 @@ namespace ActimaticAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     AwardedPoints = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: true),
                     Floors = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -262,8 +255,8 @@ namespace ActimaticAPI.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Stairs_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_Stairs_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -276,7 +269,7 @@ namespace ActimaticAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     AwardedPoints = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: true),
                     Distance = table.Column<int>(type: "INTEGER", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
@@ -291,8 +284,8 @@ namespace ActimaticAPI.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Transports_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_Transports_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -305,7 +298,7 @@ namespace ActimaticAPI.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     AwardedPoints = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: true),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
                     Hours = table.Column<int>(type: "INTEGER", nullable: false)
@@ -319,8 +312,8 @@ namespace ActimaticAPI.Migrations
                         principalTable: "Reports",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Volunteerings_Users_StaffId",
-                        column: x => x.StaffId,
+                        name: "FK_Volunteerings_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -331,9 +324,9 @@ namespace ActimaticAPI.Migrations
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CarPools_StaffId",
+                name: "IX_CarPools_UserId",
                 table: "CarPools",
-                column: "StaffId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReportUser_ReportsId",
@@ -351,9 +344,9 @@ namespace ActimaticAPI.Migrations
                 column: "TeamsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RewardUser_StaffId",
+                name: "IX_RewardUser_UsersId",
                 table: "RewardUser",
-                column: "StaffId");
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SavingFoods_ReportId",
@@ -361,9 +354,9 @@ namespace ActimaticAPI.Migrations
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SavingFoods_StaffId",
+                name: "IX_SavingFoods_UserId",
                 table: "SavingFoods",
-                column: "StaffId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stairs_ReportId",
@@ -371,9 +364,9 @@ namespace ActimaticAPI.Migrations
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stairs_StaffId",
+                name: "IX_Stairs_UserId",
                 table: "Stairs",
-                column: "StaffId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_DepartmentId",
@@ -386,14 +379,9 @@ namespace ActimaticAPI.Migrations
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transports_StaffId",
+                name: "IX_Transports_UserId",
                 table: "Transports",
-                column: "StaffId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_DepartmentId",
-                table: "Users",
-                column: "DepartmentId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_TeamId",
@@ -406,9 +394,9 @@ namespace ActimaticAPI.Migrations
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Volunteerings_StaffId",
+                name: "IX_Volunteerings_UserId",
                 table: "Volunteerings",
-                column: "StaffId");
+                column: "UserId");
         }
 
         /// <inheritdoc />
