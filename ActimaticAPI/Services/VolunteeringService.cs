@@ -15,7 +15,7 @@ public class VolunteeringService (ApplicationDbContext context) : IVolunteeringS
 
     public async Task<Volunteering> CreateVolunteeringAsync(Volunteering volunteering)
     {
-        await _context.AddAsync(volunteering);
+        await _context.Volunteerings.AddAsync(volunteering);
         await _context.SaveChangesAsync();
         return await Task.FromResult(volunteering);
     }

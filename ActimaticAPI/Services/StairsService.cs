@@ -15,7 +15,7 @@ public class StairsService (ApplicationDbContext context) : IStairsService{
 
     public async Task<Stairs> CreateStairsAsync(Stairs stairs)
     {
-        await _context.AddAsync(stairs);
+        await _context.Stairs.AddAsync(stairs);
         await _context.SaveChangesAsync();
         return await Task.FromResult(stairs);
     }
