@@ -217,3 +217,42 @@ Content-Type: application/json
 ### Delete stairs activity
 DELETE http://localhost:5205/api/Stairs/1
 Accept: application/json
+### Get all reports
+GET http://localhost:5205/api/Report
+Accept: application/json
+
+### Get report by id
+GET http://localhost:5205/api/Report/1
+Accept: application/json
+
+### Create new report
+POST http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionsSaved": 500,
+    "completedActivities": []
+}
+
+### Update report
+PUT http://localhost:5205/api/Report
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "activeParticipants": [],
+    "awardedRewards": [],
+    "emissionsSaved": 750,
+    "completedActivities": []
+}
+
+### Delete report
+DELETE http://localhost:5205/api/Report/1
+Accept: application/json
