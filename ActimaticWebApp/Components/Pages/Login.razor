@@ -1,7 +1,7 @@
 @page "/login"
-@using Dtos;
+@using Dto;
 @using AppInterfaces
-@inject IAuthServiceWEB AuthService
+@inject IAuthService AuthService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
@@ -41,11 +41,11 @@
             <form>
                 <div class="mb-3">
                     <label for="id" class="form-label">Id</label>
-                    <input type="id" class="form-control" id="id" placeholder="Enter your id">
+                    <input type="id" class="form-control" id="id" placeholder="Enter your id" @bind="loginModel.Id">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password">
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="loginModel.Password">
                 </div>
                 <button type="submit" class="btn btn-primary">Log In</button>
                 <div class="text-center mt-2">
@@ -57,14 +57,14 @@
     </div>
 
 @code {
-    private UserLoginDto loginModel = new UserLoginDto();
+    private UserLogInDTO loginModel = new UserLogInDTO();
     private string? errorMessage;
 
     private async Task HandleLogin()
     {
         try
         {
-            await AuthService.LoginAsync(loginModel.ProfileName, loginModel.Password);
+            await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
             Navigation.NavigateTo("/");
         }
         catch (Exception ex)
