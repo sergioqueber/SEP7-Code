@@ -24,6 +24,7 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IVolunteeringService, VolunteeringService>();
 builder.Services.AddScoped<IStairsService, StairsService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -50,7 +51,7 @@ AuthorizationPolicies.AddPolicies(builder.Services);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", builder =>
-        builder.WithOrigins("http://localhost:5044") // Blazor app URL
+        builder.WithOrigins("http://localhost:5048") // Blazor app URL
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
