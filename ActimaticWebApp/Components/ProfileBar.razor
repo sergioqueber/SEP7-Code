@@ -48,7 +48,7 @@
     private string? role;
 
     [CascadingParameter]
-    public Task<AuthenticationState> AuthState { get; set; } = null!;
+    public Task<AuthenticationState> AuthState { get; set; }
 
     private int id;
     private IEnumerable<Claim>? userClaims;
