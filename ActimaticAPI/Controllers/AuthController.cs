@@ -5,6 +5,7 @@ using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Model;
+using Dto;
 
 [ApiController]
 [Route("[controller]")]
@@ -12,7 +13,7 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
 {
 
     [HttpPost("login")]
-    public async Task<ActionResult> Login([FromBody] User user)
+    public async Task<ActionResult> Login([FromBody] UserLogInDTO user)
     {
         try
         {
