@@ -367,3 +367,21 @@ Content-Type: application/json
 ### Delete report
 DELETE http://localhost:5205/api/Report/1
 Accept: application/json
+
+### Get transport
+GET http://localhost:5205/api/Transport
+Accept: application/json
+
+### Post transport
+POST http://localhost:5205/api/Transport
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "transport",
+    "awardedPoints": 69,
+    "date": "2024-11-11",
+    "distance": 13,
+    "type": "cycling",
+    "emissionsSaved": 20
+}
