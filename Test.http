@@ -441,3 +441,90 @@ Content-Type: application/json
 ### Delete team
 DELETE http://localhost:5205/api/Team/1
 Accept: application/json
+
+### Get all teams
+GET http://localhost:5205/api/Team
+Accept: application/json
+
+### Get team by id
+GET http://localhost:5205/api/Team/1
+Accept: application/json
+
+### Create new team
+POST http://localhost:5205/api/Team
+### Get transport
+GET http://localhost:5205/api/Transport
+Accept: application/json
+
+### Post transport
+POST http://localhost:5205/api/Transport
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Team Name",
+    "department": {
+        "id": 1,
+        "name": "Department Name"
+    },
+    "teamRewards": [
+        {
+            "id": 1,
+            "name": "Reward Name",
+            "description": "Reward Description",
+            "pointsRequired": 100,
+            "availability": true
+        }
+    ],
+    "staff": [
+        {
+            "id": 1,
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "role": "Manager"
+        }
+    ]
+}
+
+### Update team
+PUT http://localhost:5205/api/Team
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "Updated Team Name",
+    "department": {
+        "id": 1,
+        "name": "Updated Department Name"
+    },
+    "teamRewards": [
+        {
+            "id": 1,
+            "name": "Updated Reward Name",
+            "description": "Updated Reward Description",
+            "pointsRequired": 150,
+            "availability": false
+        }
+    ],
+    "staff": [
+        {
+            "id": 1,
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "role": "Manager"
+        }
+    ]
+}
+
+### Delete team
+DELETE http://localhost:5205/api/Team/1
+Accept: application/json
+    "name": "transport",
+    "awardedPoints": 69,
+    "date": "2024-11-11",
+    "distance": 13,
+    "type": "cycling",
+    "emissionsSaved": 20
+}
