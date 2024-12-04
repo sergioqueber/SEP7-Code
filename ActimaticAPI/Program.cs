@@ -4,6 +4,12 @@ using Services;
 using Storage;
 using Controllers;
 using Storage;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
@@ -22,6 +28,33 @@ builder.Services.AddScoped<IStairsService, StairsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication().AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.MapInboundClaims = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "")),
+        ClockSkew = TimeSpan.Zero,
+    };
+});
+
+
+AuthorizationPolicies.AddPolicies(builder.Services);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorClient", builder =>
+        builder.WithOrigins("http://localhost:5044") // Blazor app URL
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 //Add services to the container.
@@ -34,31 +67,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
 app.UseHttpsRedirection();
+app.UseCors("AllowBlazorClient"); // Apply CORS policy
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+
