@@ -1,0 +1,129 @@
+@page "/myteam"
+@using Interfaces;
+@using Model;
+@inject ITeamService TeamService
+@inject IUserService UserService
+@inject IRewardService RewardService
+@attribute [Authorize]
+
+
+<h3>My Team</h3>
+
+@if (team == null)
+{
+    <p>Loading team data...</p>
+}
+else
+{
+    <div>
+        <h4>Your team currently has @team.Staff.Sum(u => u.Points) points</h4>
+        <div style="display: flex; justify-content: space-between;">
+            <div style="flex: 1; margin-right: 20px;">
+                <h5>Team Members</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in members)
+                        {
+                            <tr>
+                                <td>@member.Name @member.Surname</td>
+                                <td>@member.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="flex: 1;">
+                <h5>Rewards</h5>
+                <div class="reward-container">
+                    @if (rewards != null && rewards.Any())
+                    {
+                        @foreach (var reward in rewards)
+                        {
+                            <div class="reward-item">
+                                <h6>@reward.Name</h6>
+                                <p>@reward.Description</p>
+                                <p>Points required: @reward.PointsRequired</p>
+                                <button @onclick="() => RedeemReward(reward)">Redeem</button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No rewards available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Team? team;
+    private List<User>? members = new();
+    private List<Reward>? rewards = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the logged-in user
+        var currentUser = await UserService.GetUserById(1); // Replace '1' with logic for fetching the logged-in user's ID
+
+        if (currentUser?.Team != null)
+        {
+            // Fetch the team associated with the logged-in user
+            team = await TeamService.GetTeamById(currentUser.Team.Id);
+
+            if (team != null)
+            {
+                // Fetch team members
+                members = team.Staff ?? new List<User>();
+
+                // Fetch rewards associated with the team
+                rewards = (await RewardService.GetAllRewards()).ToList();
+            }
+        }
+        else
+        {
+            Console.WriteLine("User is not part of any team.");
+        }
+    }
+
+    private async Task RedeemReward(Reward reward)
+    {
+        if (team != null && team.Staff != null && team.Staff.Any())
+        {
+            var totalPoints = team.Staff.Sum(u => u.Points);
+
+            if (totalPoints >= reward.PointsRequired)
+            {
+                foreach (var user in team.Staff)
+                {
+                    if (user.Points > 0)
+                    {
+                        var pointsToDeduct = Math.Min(reward.PointsRequired, user.Points);
+                        user.Points -= pointsToDeduct;
+                        reward.PointsRequired -= pointsToDeduct;
+
+                        if (reward.PointsRequired == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                await RewardService.UpdateReward(reward);
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Not enough points to redeem this reward.");
+            }
+        }
+    }
+}

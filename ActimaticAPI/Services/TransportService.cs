@@ -27,7 +27,7 @@ namespace Services;
             return await _context.Transports.ToListAsync();
         }
 
-   public async Task<Transport> GetTransportById(int id)
+   public async Task<Transport?> GetTransportById(int id)
         {
             return await _context.Transports.FindAsync(id);
         }
@@ -41,7 +41,7 @@ namespace Services;
             }
         
 
-    public async Task<Transport> UpdateTransport(Transport transport)
+    public async Task<Transport?> UpdateTransport(Transport transport)
         {
             var transportToUpdate = await _context.Transports.FindAsync(transport.Id);
             if (transportToUpdate != null)
