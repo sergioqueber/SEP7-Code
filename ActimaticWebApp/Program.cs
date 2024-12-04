@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components.Authorization;
 using AppInterfaces;
 using AppServices;
-
+using Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5205/") });
-builder.Services.AddScoped<IAuthService, JwtAuthService>();
+builder.Services.AddScoped<AppInterfaces.IAuthService, JwtAuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
