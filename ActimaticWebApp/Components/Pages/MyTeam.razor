@@ -4,6 +4,8 @@
 @inject ITeamService TeamService
 @inject IUserService UserService
 @inject IRewardService RewardService
+@inject AppInterfaces.IAuthService AuthService
+@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
 
@@ -70,29 +72,39 @@ else
     private List<Reward>? rewards = new();
 
     protected override async Task OnInitializedAsync()
+{
+    // Fetch the logged-in user's claims from the JwtAuthService
+    var principal = await AuthService.GetAuthAsync();
+    var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "Id");
+
+    if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
     {
-        // Fetch the logged-in user
-        var currentUser = await UserService.GetUserById(1); // Replace '1' with logic for fetching the logged-in user's ID
+        Console.WriteLine("User is not logged in.");
+        return;
+    }
 
-        if (currentUser?.Team != null)
+    // Fetch the user by ID
+    var currentUser = await UserService.GetUserById(userId);
+
+    if (currentUser?.Team != null)
+    {
+        // Fetch the team associated with the logged-in user
+        team = await TeamService.GetTeamById(currentUser.Team.Id);
+
+        if (team != null)
         {
-            // Fetch the team associated with the logged-in user
-            team = await TeamService.GetTeamById(currentUser.Team.Id);
+            // Fetch team members
+            members = team.Staff ?? new List<User>();
 
-            if (team != null)
-            {
-                // Fetch team members
-                members = team.Staff ?? new List<User>();
-
-                // Fetch rewards associated with the team
-                rewards = (await RewardService.GetAllRewards()).ToList();
-            }
-        }
-        else
-        {
-            Console.WriteLine("User is not part of any team.");
+            // Fetch rewards associated with the team
+            rewards = (await RewardService.GetAllRewards()).ToList();
         }
     }
+    else
+    {
+        Console.WriteLine("User is not part of any team.");
+    }
+}
 
     private async Task RedeemReward(Reward reward)
     {
