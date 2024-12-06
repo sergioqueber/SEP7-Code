@@ -1,0 +1,117 @@
+@page "/register"
+@using AppInterfaces
+@inject AppInterfaces.IAuthService authService
+@inject NavigationManager navMgr
+@using Interfaces
+@inject IUserService UserService
+@using Model
+@rendermode InteractiveServer
+
+<h3>Register</h3>
+<h5>Please introduce the requiered information</h5>
+
+<EditForm Model="newUser" OnValidSubmit="RegisterUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="name">First Name</label>
+        <InputText id="name" @bind-Value="newUser.Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="surname">Last Name</label>
+        <InputText id="surname" @bind-Value="newUser.Surname" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="newUser.Email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="newUser.Password" class="form-control" type="password" />
+    </div>
+
+    <div class="form-group">
+        <label for="role">Role</label>
+        <InputSelect id="role" @bind-Value="newUser.Role" class="form-control" required>
+            <option value="Employee">Select a Role</option>
+            <option value="Employee">EMployee</option>
+            <option value="Hr">Hr</option>
+            <option value="Admin">Admin</option>
+        </InputSelect>
+    </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="button" class="btn btn-secondary" @onclick="GoToLogin">Already have an account?</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+@if (showModal)
+{
+    <div class="modal"
+        style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
+        <div class="modal-dialog"
+            style="background:white; margin:15% auto; padding:20px; max-width:400px; text-align:center; border-radius:10px;">
+            <h4>Registration Successful!</h4>
+            <p>Your user ID is <strong>@generatedId</strong>.</p>
+            <p>Going top log in page in <strong>@countdown</strong> seconds...</p>
+
+
+        </div>
+    </div>
+}
+@code {
+    private User newUser = new User();
+    private string? errorMessage;
+    private int generatedId;
+    private bool showModal = false;
+    private int countdown = 5; // Seconds before redirect
+
+    private async Task RegisterUser()
+    {
+        try
+        {
+
+            var resgisteredUser = await authService.RegisterUserAsync(newUser);
+            generatedId = resgisteredUser.Id;
+            // Show the success modal
+            Console.WriteLine(generatedId);
+            showModal = true;
+            StartCountdown();
+            // Clear the form
+            newUser = new User();
+            //navMgr.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            // Display the error message
+            errorMessage = ex.Message;
+        }
+    }
+    private async Task StartCountdown()
+    {
+        while (countdown > 0)
+        {
+            await Task.Delay(1000); // Wait for 1 second
+            countdown--;
+            StateHasChanged(); // Trigger UI update
+        }
+
+        GoToLogin();
+    }
+
+    private void GoToLogin()
+    {
+        showModal = false; // Hide the modal
+        navMgr.NavigateTo("/login");
+    }
+    private void RedirectToProfile()
+    {
+        navMgr.NavigateTo("/profile");
+    }
+}
