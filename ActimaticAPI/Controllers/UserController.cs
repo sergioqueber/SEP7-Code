@@ -35,11 +35,11 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
     }
 
-    [HttpPut]
-    public async Task<ActionResult> UpdateUser([FromBody] User user)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateUser(int id, [FromBody] User user)
     {
         await _userService.UpdateUser(user);
-        return NoContent();
+        return Ok(user);
     }
 
     [HttpDelete("{id}")]
