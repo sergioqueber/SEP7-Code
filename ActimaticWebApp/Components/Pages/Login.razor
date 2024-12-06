@@ -7,9 +7,9 @@
 
 <h3>Login</h3>
 
-@if (!string.IsNullOrEmpty(errorLabel))
+@if (!string.IsNullOrEmpty(errorMessage))
 {
-    <div class="alert alert-danger">@errorLabel</div>
+    <div class="alert alert-danger">@errorMessage</div>
 }
 
 @* <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
@@ -29,6 +29,8 @@
 
     <button type="submit" class="btn btn-primary">Login</button>
 </EditForm> *@
+
+
 <div class="login-container">
     <!-- Branding Section -->
     <div class="branding text-center text-md-start">
@@ -50,11 +52,11 @@
                         <label for="password" class="form-label">Password:</label>
                         <input type="password" id="password" @bind="loginModel.Password" class="form-control" />
                     </div>
-                    @if (!string.IsNullOrEmpty(errorLabel))
+                    @if (!string.IsNullOrEmpty(errorMessage))
                     {
                         <div class="mb-3">
                             <label class="text-danger">
-                                @errorLabel
+                                @errorMessage
                             </label>
                         </div>
                     }
@@ -73,11 +75,12 @@
             </button>
         </Authorized>
     </AuthorizeView>
+
 </div>
 
 @code {
     private UserLogInDTO loginModel = new UserLogInDTO();
-    private string? errorLabel;
+    private string? errorMessage;
 
     private async Task HandleLogin()
     {
@@ -89,15 +92,14 @@
         }
         catch (Exception ex)
         {
-            errorLabel = ex.Message;
+            errorMessage = ex.Message;
         }
     }
     private async Task Register()
     {
         Navigation.NavigateTo($"/register");
     }
-
-    private async Task Logout()
+      private async Task Logout()
     {
         await AuthService.LogoutAsync();
         Navigation.NavigateTo("/login");
