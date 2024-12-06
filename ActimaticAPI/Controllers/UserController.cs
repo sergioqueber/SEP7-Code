@@ -32,20 +32,20 @@ public class UserController : ControllerBase
     public async Task<ActionResult<User>> CreateUser(User user)
     {
         var newUser = await _userService.CreateUser(user);
-        return CreatedAtAction(nameof(GetUserById), new { Id = newUser.Id }, newUser);
+        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateUser(int id, [FromBody] User user)
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser([FromBody] User user)
     {
         await _userService.UpdateUser(user);
-        return Ok(user);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveUser(int id)
+    public async Task<ActionResult<User>> RemoveUser(int id)
     {
-        await _userService.RemoveUser(id);
-        return NoContent();
+        return await _userService.RemoveUser(id);
+    
     }
 }

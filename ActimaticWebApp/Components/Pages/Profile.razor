@@ -6,7 +6,9 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using Model
+@inject AppInterfaces.IAuthService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -166,6 +168,8 @@
     {
         await ProfileService.RemoveUser(id);
         user = null;
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login");
     }
 }
 
