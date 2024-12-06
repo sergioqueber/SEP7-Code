@@ -83,11 +83,7 @@
 
     private void GoToProfile()
     {
-        isDropdownOpen = false;
-        if (role == "Student")
-            NavigationManager.NavigateTo("/user-profile");
-        else if (role == "Moderator")
-            NavigationManager.NavigateTo("/moderator-profile");
+        NavigationManager.NavigateTo("/profile");
     }
 
     private void GoToSettings()
