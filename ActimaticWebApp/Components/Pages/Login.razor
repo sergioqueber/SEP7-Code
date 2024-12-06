@@ -1,15 +1,15 @@
 @page "/login"
 @using Dto;
 @using AppInterfaces
-@inject IAuthService AuthService
+@inject AppInterfaces.IAuthService AuthService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
 <h3>Login</h3>
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (!string.IsNullOrEmpty(errorLabel))
 {
-    <div class="alert alert-danger">@errorMessage</div>
+    <div class="alert alert-danger">@errorLabel</div>
 }
 
 @* <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
@@ -30,49 +30,76 @@
     <button type="submit" class="btn btn-primary">Login</button>
 </EditForm> *@
 <div class="login-container">
-        <!-- Branding Section -->
-        <div class="branding text-center text-md-start">
-            <h1 class="fw-bold text-primary">Actimatic</h1>
-            <p class="text-muted">Get rewards by making the world a better place</p>
-        </div>
-
-        <!-- Login Form -->
-        <div class="login-card">
-            <form>
-                <div class="mb-3">
-                    <label for="id" class="form-label">Id</label>
-                    <input type="id" class="form-control" id="id" placeholder="Enter your id" @bind="loginModel.Id">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="loginModel.Password">
-                </div>
-                <button @onclick="HandleLogin" type="submit" class="btn btn-primary">Log In</button>
-                <div class="text-center mt-2">
-                    <a href="#" class="btn btn-link">Forgot password?</a>
-                </div>
-                <button type="button" class="btn btn-success">Create new account</button>
-            </form>
-        </div>
+    <!-- Branding Section -->
+    <div class="branding text-center text-md-start">
+        <h1 class="fw-bold text-primary">Actimatic</h1>
+        <p class="text-muted">Get rewards by making the world a better place</p>
     </div>
+
+    <!-- Login Form -->
+    <AuthorizeView>
+        <NotAuthorized>
+            <div class="container d-flex justify-content-center align-items-center vh-100">
+                <div class="card p-4 shadow-sm" style="max-width: 400px; width: 100%;">
+                    <h3 class="text-center mb-4">Please login</h3>
+                    <div class="mb-3">
+                        <label for="id" class="form-label">Id:</label>
+                        <input type="number" id="id" @bind="loginModel.Id" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" id="password" @bind="loginModel.Password" class="form-control" />
+                    </div>
+                    @if (!string.IsNullOrEmpty(errorLabel))
+                    {
+                        <div class="mb-3">
+                            <label class="text-danger">
+                                @errorLabel
+                            </label>
+                        </div>
+                    }
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" @onclick="HandleLogin">Log in</button>
+                        <button class="btn btn-secondary" @onclick="Register"> Register</button>
+                    </div>
+                </div>
+            </div>
+
+        </NotAuthorized>
+        <Authorized>
+            <p>You are already logged in</p>
+            <button @onclick="Logout" class="loginbtn">
+                Log out
+            </button>
+        </Authorized>
+    </AuthorizeView>
+</div>
 
 @code {
     private UserLogInDTO loginModel = new UserLogInDTO();
-    private string? errorMessage;
+    private string? errorLabel;
 
     private async Task HandleLogin()
     {
         try
         {
             await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
+            Console.WriteLine("Logged in");
             Navigation.NavigateTo("/");
         }
         catch (Exception ex)
         {
-            errorMessage = ex.Message;
+            errorLabel = ex.Message;
         }
     }
-    private async Task Register(){
+    private async Task Register()
+    {
         Navigation.NavigateTo($"/register");
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login");
     }
 }

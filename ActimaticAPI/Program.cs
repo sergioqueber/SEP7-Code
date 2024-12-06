@@ -11,9 +11,9 @@ using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITransportService, TransportService>();
 builder.Services.AddScoped<ICarPoolService, CarPoolService>();
@@ -51,7 +51,7 @@ AuthorizationPolicies.AddPolicies(builder.Services);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", builder =>
-        builder.WithOrigins("http://localhost:5048") // Blazor app URL
+        builder.WithOrigins("http://localhost:5205") // Blazor app URL
                .AllowAnyMethod()
                .AllowAnyHeader());
 });

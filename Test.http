@@ -1,5 +1,5 @@
 ### Get all staff
-GET http://localhost:5205/api/User
+GET http://localhost:5205/api/user
 Accept: application/json
 
 ### Get staff by id
