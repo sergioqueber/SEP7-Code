@@ -1,0 +1,140 @@
+@page "/profile"
+@using Interfaces
+@using AppServices
+@inject IUserService ProfileService
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Model
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<h3>User Profile</h3>
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="user" OnValidSubmit="SaveChanges" FormName="UserProfileForm">
+        <DataAnnotationsValidator />
+
+        <!-- Read-only and Editable Fields -->
+        <div>
+            <label>First Name:</label>
+            @if (isEditing)
+            {
+                <InputText @bind-Value="user.Name" class="form-control" />
+            }
+            else
+            {
+                <span>@user.Name</span>
+            }
+        </div>
+
+        <div>
+            <label>Surname:</label>
+            @if (isEditing)
+            {
+                <InputText @bind-Value="user.Surname" class="form-control" />
+            }
+            else
+            {
+                <span>@user.Surname</span>
+            }
+        </div>
+
+        <div>
+            <label>Email:</label>
+            @if (isEditing)
+            {
+                <InputText @bind-Value="user.Email" class="form-control" />
+            }
+            else
+            {
+                <span>@user.Email</span>
+            }
+        </div>
+
+        <div>
+            <label>Passwword:</label>
+            @if (isEditing)
+            {
+                <InputText @bind-Value="user.Password" class="form-control" />
+            }
+            else
+            {
+                <span>@user.Password</span>
+            }
+        </div>
+        <!-- Buttons -->
+        @if (isEditing)
+        {
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" @onclick="CancelEdit" class="btn btn-secondary">Cancel</button>
+        }
+        else
+        {
+            <button type="button" @onclick="EnableEditMode" class="btn btn-warning">Edit</button>
+            <button type="button" @onclick="DeleteProfile" class="btn btn-danger">Delete Profile</button>
+        }
+    </EditForm>
+}
+
+@code {
+    private User? user = null;
+
+    private bool isEditing = false;
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    private int id;
+    private IEnumerable<Claim>? userClaims;
+    private bool isLoggedIn;
+
+    @* protected override async Task OnInitializedAsync()
+    {
+        user = await ProfileService.GetUserProfile(1);
+    } *@
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await AuthState;
+        ClaimsPrincipal userToLog = authState.User;
+        isLoggedIn = userToLog.Identity != null;
+
+        var role = userToLog.Claims.FirstOrDefault(c => c.Type == "Role")?.Value;
+        Console.WriteLine($"User is authenticated with role: {role}");
+
+        if (!isLoggedIn) return;
+        userClaims = userToLog.Claims;
+        id = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
+        Console.WriteLine("Id is : " + id);
+
+        user = await ProfileService.GetUserById(id);
+
+
+    }
+
+    private void EnableEditMode()
+    {
+        isEditing = true;
+    }
+
+    private async Task SaveChanges()
+    {
+        await ProfileService.UpdateUser(user);
+        user = await ProfileService.GetUserById(id); // Reload the updated data
+        isEditing = false;
+    }
+    private void CancelEdit()
+    {
+        isEditing = false; // Exit edit mode without saving
+    }
+    private async Task DeleteProfile()
+    {
+        await ProfileService.RemoveUser(id);
+        user = null;
+    }
+}

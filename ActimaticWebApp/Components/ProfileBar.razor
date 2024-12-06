@@ -68,7 +68,7 @@
 
         if (!isLoggedIn) return;
         userClaims = user.Claims;
-        id = int.Parse(user.Claims.First(claim => claim.Type.Equals("id")).Value);
+        id = int.Parse(user.Claims.First(claim => claim.Type.Equals("Id")).Value);
         Console.WriteLine("Id is : " + id);
         role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
         user1 = await UserService.GetUserById(id);
