@@ -3,7 +3,6 @@
 @inject AppInterfaces.IAuthService authService
 @inject NavigationManager navMgr
 @using Interfaces
-@inject IUserService UserService
 @using Model
 @rendermode InteractiveServer
 
@@ -69,6 +68,7 @@
     private User newUser = new User();
     private string? errorMessage;
     private int generatedId;
+    
     private bool showModal = false;
     private int countdown = 5; // Seconds before redirect
 

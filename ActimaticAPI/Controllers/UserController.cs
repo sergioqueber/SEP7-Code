@@ -32,7 +32,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<User>> CreateUser(User user)
     {
         var newUser = await _userService.CreateUser(user);
-        return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+        return CreatedAtAction(nameof(GetUserById), new { Id = newUser.Id }, newUser);
     }
 
     [HttpPut("{id}")]

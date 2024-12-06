@@ -20,7 +20,7 @@ public class UserService(ApplicationDbContext context) : IUserService
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        return await Task.FromResult(user);
+        return user;
     }
 
     public async Task<IEnumerable<User>> GetAllUsers()
