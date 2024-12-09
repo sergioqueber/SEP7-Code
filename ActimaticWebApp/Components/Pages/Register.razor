@@ -1,0 +1,170 @@
+@page "/register"
+@using AppInterfaces
+@inject AppInterfaces.IAuthService authService
+@inject NavigationManager navMgr
+@using Interfaces
+@using Model
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">Register</h3>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="newUser" OnValidSubmit="RegisterUser">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><b>First Name</b></label>
+                            <InputText id="name" @bind-Value="newUser.Name" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><b>Last Name</b></label>
+                            <InputText id="surname" @bind-Value="newUser.Surname" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><b>Email</b></label>
+                            <InputText id="email" @bind-Value="newUser.Email" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><b>Password</b></label>
+                            <InputText id="password" @bind-Value="newUser.Password" type="password" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><b>Role</b></label>
+                            <InputSelect id="role" @bind-Value="newUser.Role" class="form-control">
+                                <option value="Employee">Select a Role</option>
+                                <option value="Employee">Employee</option>
+                                <option value="Hr">Hr</option>
+                                <option value="Admin">Admin</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary me-md-2">Register</button>
+                            <button type="button" class="btn btn-secondary" @onclick="GoToLogin">Already have an account?</button>
+                        </div>
+                    </EditForm>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger mt-3">@errorMessage</div>
+                    }
+
+                    @if (showModal)
+                    {
+                        <div class="modal" style="display:block; background-color:rgba(0,0,0,0.5);">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Registration Successful!</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Your user ID is <strong>@generatedId</strong></p>
+                                        <p>Redirecting to login in <strong>@countdown</strong> seconds...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+@if (showModal)
+{
+    <div class="modal"
+        style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
+        <div class="modal-dialog"
+            style="background:white; margin:15% auto; padding:20px; max-width:400px; text-align:center; border-radius:10px;">
+            <h4>Registration Successful!</h4>
+            <p>Your user ID is <strong>@generatedId</strong>.</p>
+            <p>Going top log in page in <strong>@countdown</strong> seconds...</p>
+
+
+        </div>
+    </div>
+}
+@code {
+    private User newUser = new User();
+    private string? errorMessage;
+    private int generatedId;
+    
+    private bool showModal = false;
+    private int countdown = 5; // Seconds before redirect
+
+    private async Task RegisterUser()
+    {
+        try
+        {
+
+            var resgisteredUser = await authService.RegisterUserAsync(newUser);
+            generatedId = resgisteredUser.Id;
+            // Show the success modal
+            Console.WriteLine(generatedId);
+            showModal = true;
+            StartCountdown();
+            // Clear the form
+            newUser = new User();
+            //navMgr.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            // Display the error message
+            errorMessage = ex.Message;
+        }
+    }
+    private async Task StartCountdown()
+    {
+        while (countdown > 0)
+        {
+            await Task.Delay(1000); // Wait for 1 second
+            countdown--;
+            StateHasChanged(); // Trigger UI update
+        }
+
+        GoToLogin();
+    }
+
+    private void GoToLogin()
+    {
+        showModal = false; // Hide the modal
+        navMgr.NavigateTo("/login");
+    }
+    private void RedirectToProfile()
+    {
+        navMgr.NavigateTo("/profile");
+    }
+}
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>

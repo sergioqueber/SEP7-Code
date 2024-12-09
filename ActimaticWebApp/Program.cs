@@ -1,10 +1,28 @@
 using ActimaticWebApp.Components;
+using Storage;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Authorization;
+using AppInterfaces;
+using AppServices;
+using Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5205/") });
+builder.Services.AddScoped<AppInterfaces.IAuthService, JwtAuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
+AuthorizationPolicies.AddPolicies(builder.Services);
+
+builder.Services.AddAuthentication().AddCookie(options =>
+{
+    options.LoginPath = "/login";
+});
 
 var app = builder.Build();
 
@@ -20,6 +38,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

@@ -1,0 +1,173 @@
+@using Interfaces
+@using AppInterfaces
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject AppInterfaces.IAuthService authService
+@rendermode InteractiveServer
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@using Model
+
+
+<div class="user-icon-dropdown">
+    <button class="user-icon" @onclick="ToggleDropdown">
+        <img src="images/profilepic.jpg" alt="" class="user-avatar">
+    </button>
+
+    @if (user1 != null && !string.IsNullOrEmpty(user1.Name))
+    {
+        <span>Hello, @user1.Name</span>
+    }
+    else
+    {
+        <span>Hello, User</span>
+    }
+
+    <div class="dropdown-menu @(isDropdownOpen ? "show" : "")">
+        <AuthorizeView>
+            <NotAuthorized>
+                <a class="dropdown-item" @onclick="GoToLogin">Login</a>
+                <a class="dropdown-item" @onclick="GoToRegister">Register</a>
+            </NotAuthorized>
+            <Authorized>
+                <a class="dropdown-item" @onclick="GoToProfile">Profile</a>
+                <a class="dropdown-item" @onclick="GoToSettings">Settings</a>
+                <a class="dropdown-item" @onclick="Logout">Log Out</a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+
+
+</div>
+
+@code {
+    private User user1 { get; set; }
+    private bool isDropdownOpen = false;
+
+    private string? role;
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private int id;
+    private IEnumerable<Claim>? userClaims;
+    private bool isLoggedIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        await LoadUserInfo();
+
+    }
+    private async Task LoadUserInfo()
+    {
+        AuthenticationState authState = await AuthState;
+        ClaimsPrincipal user = authState.User;
+        isLoggedIn = user.Identity != null;
+
+        if (!isLoggedIn) return;
+        userClaims = user.Claims;
+        id = int.Parse(user.Claims.First(claim => claim.Type.Equals("Id")).Value);
+        Console.WriteLine("Id is : " + id);
+        role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+        user1 = await UserService.GetUserById(id);
+        StateHasChanged(); // Trigger UI update
+
+    }
+
+    private void ToggleDropdown()
+    {
+        isDropdownOpen = !isDropdownOpen;
+    }
+
+    private void GoToProfile()
+    {
+        NavigationManager.NavigateTo("/profile");
+    }
+
+    private void GoToSettings()
+    {
+        isDropdownOpen = false;
+        NavigationManager.NavigateTo("/settings"); // Example settings page
+    }
+
+    private async Task Logout()
+    {
+        isDropdownOpen = false;
+        user1 = null;
+        isLoggedIn = false;
+        role = null;
+        await authService.LogoutAsync();
+        StateHasChanged(); // Trigger UI update
+
+        NavigationManager.NavigateTo("/login");
+    }
+    private void GoToLogin()
+    {
+        isDropdownOpen = false;
+        NavigationManager.NavigateTo("/login");
+    }
+    private void GoToRegister()
+    {
+        isDropdownOpen = false;
+        NavigationManager.NavigateTo("/register");
+    }
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> authStateTask)
+    {
+        await LoadUserInfo();
+        StateHasChanged(); // Notify Blazor to re-render the component
+    }
+
+}
+
+<style>
+    .user-icon-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .user-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: rgb(86, 78, 78);
+        box-shadow: 0 8px 16px rgba(51, 49, 49, 0.2);
+        z-index: 1;
+        min-width: 160px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+        /* Show when the dropdown is open */
+    }
+
+    .dropdown-item {
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        color: black;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .user-avatar {
+        width: 40px;
+        /* Adjust size as needed */
+        height: 40px;
+        border-radius: 50%;
+        /* Makes the image circular */
+        object-fit: cover;
+        /* Ensures the image scales nicely */
+        margin-right: 0.5rem;
+    }
+</style>
