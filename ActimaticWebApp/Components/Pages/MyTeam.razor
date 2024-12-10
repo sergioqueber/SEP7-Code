@@ -1,0 +1,155 @@
+@page "/myteam"
+@using Interfaces;
+@using Model;
+@inject ITeamService TeamService
+@inject IUserService UserService
+@inject IRewardService RewardService
+@inject AppInterfaces.IAuthService AuthService
+@using Microsoft.AspNetCore.Authorization
+
+<h3>My Team</h3>
+
+@if (currentUser == null)
+{
+    <p>Loading user data...</p>
+}
+else if (currentUser.TeamId == null)
+{
+    <p>User is not part of any team.</p>
+}
+else if (team == null)
+{
+    <p>Loading team data...</p>
+}
+else
+{
+    <div>
+        <h4>Your team currently has @team.Staff.Sum(u => u.Points) points</h4>
+        <div style="display: flex; justify-content: space-between;">
+            <div style="flex: 1; margin-right: 20px;">
+                <h5>Team Members</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in members)
+                        {
+                            <tr>
+                                <td>@member.Name @member.Surname</td>
+                                <td>@member.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="flex: 1;">
+                <h5>Rewards</h5>
+                <div class="reward-container">
+                    @if (rewards != null && rewards.Any())
+                    {
+                        @foreach (var reward in rewards)
+                        {
+                            <div class="reward-item">
+                                <h6>@reward.Name</h6>
+                                <p>@reward.Description</p>
+                                <p>Points required: @reward.PointsRequired</p>
+                                <button @onclick="() => RedeemReward(reward)">Redeem</button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No rewards available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Team? team;
+    private User? currentUser;
+    private List<User>? members = new();
+    private List<Reward>? rewards = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Fetch the logged-in user's claims from the JwtAuthService
+            var principal = await AuthService.GetAuthAsync();
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "Id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                Console.WriteLine("User is not logged in.");
+                return;
+            }
+
+            // Fetch the user by ID
+            currentUser = await UserService.GetUserById(userId);
+
+            if (currentUser?.TeamId != null)
+            {
+                // Fetch the team associated with the logged-in user
+                team = await TeamService.GetTeamById(currentUser.TeamId ?? 0);
+
+                if (team != null)
+                {
+                    // Fetch team members
+                    members = team.Staff ?? new List<User>();
+
+                    // Fetch rewards associated with the team
+                    rewards = (await RewardService.GetAllRewards()).ToList();
+                }
+            }
+            else
+            {
+                Console.WriteLine("User is not part of any team.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task RedeemReward(Reward reward)
+    {
+        if (team != null && team.Staff != null && team.Staff.Any())
+        {
+            var totalPoints = team.Staff.Sum(u => u.Points);
+
+            if (totalPoints >= reward.PointsRequired)
+            {
+                foreach (var user in team.Staff)
+                {
+                    if (user.Points > 0)
+                    {
+                        var pointsToDeduct = Math.Min(reward.PointsRequired, user.Points);
+                        user.Points -= pointsToDeduct;
+                        reward.PointsRequired -= pointsToDeduct;
+
+                        if (reward.PointsRequired == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                await RewardService.UpdateReward(reward);
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Not enough points to redeem this reward.");
+            }
+        }
+    }
+}

@@ -29,7 +29,7 @@ namespace Services;
             return await Task.FromResult( _context.Teams.AsEnumerable());
         }
 
-        public async Task<Team> GetTeamById(int id)
+        public async Task<Team?> GetTeamById(int id)
         {
             return await Task.FromResult(await _context.Teams.FirstOrDefaultAsync(x => x.Id == id));
         }
@@ -41,7 +41,7 @@ namespace Services;
             return await Task.FromResult(team);
         }
 
-        public async Task<Team> UpdateTeam(Team team)
+        public async Task<Team?> UpdateTeam(Team team)
         {
             var teamToUpdate = await _context.Teams.FirstOrDefaultAsync(x => x.Id == team.Id);
             if (teamToUpdate != null)

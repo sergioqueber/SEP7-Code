@@ -9,7 +9,6 @@ namespace AppServices;
 
 public class TeamService : ITeamService
 {
-
     private readonly HttpClient _httpClient;
 
     public TeamService(HttpClient httpClient)

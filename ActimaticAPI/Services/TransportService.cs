@@ -49,6 +49,7 @@ public class TransportService(ApplicationDbContext context) : ITransportService
         return await _context.Transports.ToListAsync();
     }
 
+<<<<<<< HEAD
     public async Task<Transport> GetTransportById(int id)
     {
         return await _context.Transports.FindAsync(id);
@@ -57,6 +58,12 @@ public class TransportService(ApplicationDbContext context) : ITransportService
     {
         return await _context.Transports.FindAsync(id);
     }
+=======
+   public async Task<Transport?> GetTransportById(int id)
+        {
+            return await _context.Transports.FindAsync(id);
+        }
+>>>>>>> Ada
 
     public async Task<Transport> RemoveTransport(int id)
     {
@@ -74,10 +81,14 @@ public class TransportService(ApplicationDbContext context) : ITransportService
     }
 
 
+<<<<<<< HEAD
     public async Task<Transport> UpdateTransport(Transport transport)
     {
         var transportToUpdate = await _context.Transports.FindAsync(transport.Id);
         if (transportToUpdate != null)
+=======
+    public async Task<Transport?> UpdateTransport(Transport transport)
+>>>>>>> Ada
         {
             transportToUpdate.Name = transport.Name;
             transportToUpdate.AwardedPoints = transport.AwardedPoints;
