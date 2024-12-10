@@ -8,6 +8,7 @@ using Microsoft.JSInterop;
 using Model;
 
 
+
 public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthService
 {
     // this private variable for simple caching
@@ -22,7 +23,7 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
 
         HttpResponseMessage response = await client.PostAsync("/auth/login", content);
         string responseContent = await response.Content.ReadAsStringAsync();
-
+        Console.WriteLine(response.IsSuccessStatusCode);
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception(responseContent);
@@ -30,8 +31,10 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
 
         string token = responseContent;
         Jwt = token;
-
+        Console.WriteLine("Token Received");
         await CacheTokenAsync();
+        Console.WriteLine("Token Cached");
+
 
         ClaimsPrincipal principal = await CreateClaimsPrincipal();
 
@@ -55,7 +58,7 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Jwt);
 
         IEnumerable<Claim> claims = ParseClaimsFromJwt(Jwt);
-
+        
         ClaimsIdentity identity = new(claims, "jwt");
         ClaimsPrincipal principal = new(identity);
         return principal;
@@ -74,7 +77,7 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
 
         string userAsJson = JsonSerializer.Serialize(user);
         StringContent content = new(userAsJson, Encoding.UTF8, "application/json");
-        HttpResponseMessage response = await client.PostAsync("api/user", content);
+        HttpResponseMessage response = await client.PostAsync("api/User", content);
         string responseContent = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)

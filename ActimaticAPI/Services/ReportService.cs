@@ -1,14 +1,11 @@
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Model;
 using Storage;
 
 namespace Services;
 public class ReportService(ApplicationDbContext context) : IReportService
 {
-
-    //private static List<Report> ReportList = new List<Report>();
     private readonly ApplicationDbContext _context = context;
     static ReportService()
     {
@@ -24,7 +21,6 @@ public class ReportService(ApplicationDbContext context) : IReportService
 
     public async Task<IEnumerable<Report>> GetAllReports()
     {
-        return await Task.FromResult(_context.Reports.AsEnumerable());
         return await Task.FromResult(_context.Reports.AsEnumerable());
     }
 

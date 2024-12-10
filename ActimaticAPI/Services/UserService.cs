@@ -18,9 +18,10 @@ public class UserService(ApplicationDbContext context) : IUserService
 
     public async Task<User> CreateUser(User user)
     {
+        using ApplicationDbContext _context = new();
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        return await Task.FromResult(user);
+        return user;
     }
 
     public async Task<IEnumerable<User>> GetAllUsers()

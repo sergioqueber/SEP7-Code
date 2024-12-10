@@ -27,7 +27,6 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
             return BadRequest(e.Message);
         }
     }
-
     private string GenerateJwt(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -35,7 +34,7 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
 
         Console.WriteLine(user is User ? "User" : "Moderator");
         List<Claim> claims = GenerateClaims(user);
-
+    Console.WriteLine("Claims Generated");
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -57,9 +56,9 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim("Id", user.Id.ToString()),
-            new Claim("Name", user.Name),                                // First name
-            new Claim("Surname", user.Surname),                          // Last name
-            new Claim("Email", user.Email),        // Email
+            new Claim("Name", user.Name),                                
+            new Claim("Surname", user.Surname),                         
+            new Claim("Email", user.Email),       
             new Claim("Role", user.Role)
         };
         return [.. claims];
