@@ -14,6 +14,7 @@
 @inject ISavingFoodService SavingFoodService
 @inject IVolunteeringService VolunteeringService
 @inject IStairsService StairsService
+@inject ICarPoolService CarPoolService
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -120,9 +121,14 @@
     private bool isLoggedIn;
     private Report report = new Report();
     private int kind;
-    public IEnumerable<Team> Teams { get; set; }
+    public IEnumerable<Team>? Teams { get; set; }
     private int selectedTeamId;
     private int selectedUserId;
+    private IEnumerable<CarPool>? carPools = null; 
+    private IEnumerable<Transport>? transports = null;
+    private IEnumerable<SavingFood>? savingFoods = null;
+    private IEnumerable<Stairs>? stairs = null;
+    private IEnumerable<Volunteering>? volunteerings = null;
 
 
     @* protected override async Task OnInitializedAsync()
@@ -164,6 +170,11 @@
     {
         Console.WriteLine(report.StartDate);
         Console.WriteLine(report.EndDate);
+        carPools = await CarPoolService.GetCarPoolByDatesAsync(report.StartDate, report.EndDate);
+        transports = await TransportService.GetTransportByDatesAsync(report.StartDate, report.EndDate);
+        savingFoods = await SavingFoodService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
+        stairs = await StairsService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
+        volunteerings = await VolunteeringService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
     }
     private async Task HandleSelect()
     {
