@@ -24,8 +24,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Stairs</h5>
                     <p class="card-text">Record your stair climbing activities</p>
-                    <button class="btn btn-primary">
-                        Record Stairs
+                    <button class="btn btn-primary" @onclick="() => ShowModal(ActivityType.Stairs)">
+                        Record
                     </button>
                 </div>
             </div>
@@ -35,8 +35,30 @@
                 <div class="card-body">
                     <h5 class="card-title">Food Saving</h5>
                     <p class="card-text">Record your food saving activities</p>
-                    <button class="btn btn-primary">
-                        Record Food Saving
+                    <button class="btn btn-primary" @onclick="() => ShowModal(ActivityType.FoodSaving)">
+                        Record
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Volunteering</h5>
+                    <p class="card-text">Record Volunteering activities</p>
+                    <button class="btn btn-primary" @onclick="() => ShowModal(ActivityType.Volunteering)">
+                        Record
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Carpool </h5>
+                    <p class="card-text">Record when your caarpool</p>
+                    <button class="btn btn-primary" @onclick="() => ShowModal(ActivityType.CarPool)">
+                        Record
                     </button>
                 </div>
             </div>
@@ -63,17 +85,90 @@
                                     </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Distance</label>
-                                        <InputNumber @bind-Value="@transportActivity.Distance" class="form-control" />
+                                        <InputNumber @bind-Value="@transportActivity.Distance" class="form-control" required />
                                     </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Transport Type</label>
-                                        <InputText @bind-Value="@transportActivity.Type" class="form-control" />
-                                        @* <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
-                                            <option value="Car">Car</option>
-                                            <option value="Bus">Bus</option>
+                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
+                                            <option value="Train">Train</option>
+                                            <option value="Bus"> Bus</option>
                                             <option value="Bike">Bike</option>
                                             <option value="Walk">Walk</option>
-                                        </InputSelect> *@
+                                        </InputSelect>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </EditForm>
+                                break;
+                            case ActivityType.Stairs:
+                                <EditForm Model="@stairsActivity" OnValidSubmit="RecordActivities">
+                                    <DataAnnotationsValidator />
+                                    <div class="mb-3">
+                                        <label class="form-label" activities>Custom Name</label>
+                                        <InputText @bind-Value="@stairsActivity.Name" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Floors</label>
+                                        <InputNumber @bind-Value="stairsActivity.Floors" class="form-control" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </EditForm>
+                                break;
+
+                            case ActivityType.FoodSaving:
+                                <EditForm Model="@foodSavingActivity" OnValidSubmit="RecordActivities">
+                                    <DataAnnotationsValidator />
+                                    <div class="mb-3">
+                                        <label class="form-label" activities>Custom Name</label>
+                                        <InputText @bind-Value="@foodSavingActivity.Name" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Packages collected </label>
+                                        <InputNumber @bind-Value="foodSavingActivity.PackagesSaved" class="form-control" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </EditForm>
+                                break;
+                            case ActivityType.Volunteering:
+                                <EditForm Model="@volunteeringActivity" OnValidSubmit="RecordActivities">
+                                    <DataAnnotationsValidator />
+                                    <div class="mb-3">
+                                        <label class="form-label" activities>Custom Name</label>
+                                        <InputText @bind-Value="@volunteeringActivity.Name" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Hours</label>
+                                        <InputNumber @bind-Value="volunteeringActivity.Hours" class="form-control" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Location</label>
+                                        <InputText @bind-Value="volunteeringActivity.Location" class="form-control" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </EditForm>
+                                break;
+                            case ActivityType.CarPool:
+                                <EditForm Model="@carPoolActivity" OnValidSubmit="RecordActivities">
+                                    <DataAnnotationsValidator />
+                                    <div class="mb-3">
+                                        <label class="form-label">Custom Name</label>
+                                        <InputText @bind-Value="@carPoolActivity.Name" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Distance</label>
+                                        <InputNumber @bind-Value="carPoolActivity.Distance" class="form-control" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Passengers</label>
+                                        <InputNumber @bind-Value="carPoolActivity.EmptySeats" class="form-control"required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Car Type</label>
+                                        <InputSelect @bind-Value="carPoolActivity.CarType" class="form-control">
+                                            <option value="Electric">Electric</option>
+                                            <option value="Hybrid">Hybrid</option>
+                                            <option value="Petrol">Petrol</option>
+                                            <option value="Diesel">Diesel</option>
+                                        </InputSelect>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save</button>
                                 </EditForm>
@@ -96,12 +191,15 @@
     private Stairs? stairsActivity = new Stairs();
     private SavingFood? foodSavingActivity = new SavingFood();
     private Volunteering? volunteeringActivity = new Volunteering();
+    private CarPool? carPoolActivity = new CarPool();
+    private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
     private enum ActivityType
     {
         Transport,
         Stairs,
         FoodSaving,
-        Volunteering
+        Volunteering,
+        CarPool
     }
     protected override async Task OnInitializedAsync()
     {
@@ -123,16 +221,28 @@
         {
             case ActivityType.Transport:
                 transportActivity.UserId = 2; //Use claims to state the user ID here
+                transportActivity.Date = currentDate;
                 await activitiesService.CreateTransport(transportActivity);
                 break;
             case ActivityType.Stairs:
+                stairsActivity.UserId = 2; //Use claims to state the user ID here
+                stairsActivity.Date = currentDate;
                 await activitiesService.CreateStairsAsync(stairsActivity);
                 break;
             case ActivityType.FoodSaving:
+                foodSavingActivity.UserId = 2; //Use claims to state the user ID here
+                foodSavingActivity.Date = currentDate;
                 await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
                 break;
             case ActivityType.Volunteering:
+                volunteeringActivity.UserId = 2; //Use claims to state the user ID here
+                volunteeringActivity.Date = currentDate;
                 await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                break;
+            case ActivityType.CarPool:
+                carPoolActivity.UserId = 2; //Use claims to state the user ID here
+                carPoolActivity.Date = currentDate;
+                await activitiesService.CreateCarPool(carPoolActivity);
                 break;
         }
         showModal = false;
