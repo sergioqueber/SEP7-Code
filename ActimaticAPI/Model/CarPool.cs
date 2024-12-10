@@ -3,10 +3,11 @@ public class CarPool: Activity
 {
     public int Distance {get; set;}
     public int EmptySeats {get; set;}
+    public int FilledSeats {get; set;}
     public string CarType {get; set;}
     
     public CarPool() { }
-    public CarPool (int id, string name, int awardedPoints, DateOnly date, int distance, int emptySeats, string carType): base(id, name, awardedPoints, date)
+    public CarPool (int id, string name, int awardedPoints, DateOnly date, int distance, int emptySeats, int filledSeats, string carType): base(id, name, awardedPoints, date)
     {
         Id = id;
         Name = name;
@@ -14,6 +15,7 @@ public class CarPool: Activity
         Date = date;
         Distance = distance;
         EmptySeats = emptySeats;
+        FilledSeats = filledSeats;
         CarType = carType;
     }
 }

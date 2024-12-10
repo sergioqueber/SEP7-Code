@@ -46,10 +46,4 @@ public class TransportController : ControllerBase
     {
         return await _transportService.RemoveTransport(id);
     }
-
-    [HttpGet("dates/{startDate}/{endDate}")]
-    public async Task<ActionResult<IEnumerable<Transport>>> GetStairsByDates(DateOnly startDate, DateOnly endDate){
-        var transports = await _transportService.GetTransportByDatesAsync(startDate, endDate);
-        return Ok(transports);
-    }
 }

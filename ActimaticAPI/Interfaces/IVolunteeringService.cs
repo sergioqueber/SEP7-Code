@@ -7,5 +7,4 @@ public interface IVolunteeringService
     Task<Volunteering> CreateVolunteeringAsync(Volunteering volunteering);
     Task<Volunteering> UpdateVolunteeringAsync(Volunteering volunteering);
     Task<Volunteering> RemoveVolunteeringAsync(int id);
-    Task<IEnumerable<Volunteering>> GetVolunteeringByDatesAsync(DateOnly startDate, DateOnly endDate);
 }

@@ -33,7 +33,7 @@
         </EditForm>
         <h2 class="mb-4">ESG Report</h2>
         <label for="kind">Select kind of report:</label>
-        <InputSelect id="kind" @bind-Value="kind" @onclick="HandleSelect">
+        <InputSelect id="kind" @bind-Value="kind" @onselect="HandleSelect">
             <option value="0">-- Select kind --</option>
             <option value="1">Team</option>
             <option value="2">Specific worker</option>
