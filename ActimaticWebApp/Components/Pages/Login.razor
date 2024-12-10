@@ -21,12 +21,13 @@
                         <h3 class="card-title text-center mb-4">Log In</h3>
                         <div class="mb-3">
                             <label for="id" class="form-label">Id:</label>
-                            <input type="text" id="id" @bind="loginModel.Id" class="form-control"
+                            <input type="text" id="id" @bind="idInput" class="form-control"
                                 placeholder="Enter your ID" />
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password:</label>
-                            <input type="password" id="password" @bind="loginModel.Password" class="form-control" />
+                            <input type="password" id="password" @bind="loginModel.Password" class="form-control"
+                                placeholder="Enter your password" />
                         </div>
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
@@ -53,13 +54,24 @@
     private UserLogInDTO loginModel = new UserLogInDTO();
     private string? errorMessage;
 
+    private string idInput = "";
+
     private async Task HandleLogin()
     {
         try
         {
-            await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
-            Console.WriteLine("Logged in");
-            Navigation.NavigateTo("/");
+            if (int.TryParse(idInput, out int id))
+            {
+                loginModel.Id = id;
+                await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
+                Console.WriteLine("Logged in");
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid ID";
+            }
+
         }
         catch (Exception ex)
         {
