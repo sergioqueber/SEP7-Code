@@ -8,6 +8,7 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
+@inject IUserService userService
 
 <div class="container mb-4">
     <h3 class="mb-4">Record an activity</h3>
@@ -94,7 +95,8 @@
                                     </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Transport Type</label>
-                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
+                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control" required>
+                                            <option value="" selected>Select transport type...</option>
                                             <option value="Train">Train</option>
                                             <option value="Bus"> Bus</option>
                                             <option value="Bike">Bike</option>
@@ -207,6 +209,7 @@
     private bool showModal = false;
     private bool showNotification = false;
     private int earnedPoints = 0;
+    private User currentUser = new User();
     private ActivityType currentActivityType;
     private Transport? transportActivity = new Transport();
     private Stairs? stairsActivity = new Stairs();
@@ -230,12 +233,14 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        currentUser = await userService.GetUserById(currentUserId);
     }
     private async Task ShowPointsNotification(int points)
     {
         earnedPoints = points;
         showNotification = true;
-        await Task.Delay(3000); // Hide after 3 seconds
+        StateHasChanged();
+        await Task.Delay(7000); // Hide after 3 seconds
         showNotification = false;
         StateHasChanged();
     }
@@ -262,31 +267,51 @@
                 transportActivity.UserId = currentUserId; //Use claims to state the user ID here
                 transportActivity.Date = currentDate;
                 var recordedTrassport = await activitiesService.CreateTransport(transportActivity);
+                currentUser.Points += recordedTrassport.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                showModal = false;
                 await ShowPointsNotification(recordedTrassport.AwardedPoints);
+                transportActivity = new Transport();
                 break;
             case ActivityType.Stairs:
                 stairsActivity.UserId = currentUserId; //Use claims to state the user ID here
                 stairsActivity.Date = currentDate;
                 var recordedStairs = await activitiesService.CreateStairsAsync(stairsActivity);
+                currentUser.Points += recordedStairs.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                showModal = false;
                 await ShowPointsNotification(recordedStairs.AwardedPoints);
+                stairsActivity = new Stairs();
                 break;
             case ActivityType.FoodSaving:
                 foodSavingActivity.UserId = currentUserId; //Use claims to state the user ID here
                 foodSavingActivity.Date = currentDate;
                 var recordedFoodActivity = await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                currentUser.Points += recordedFoodActivity.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                showModal = false;
                 await ShowPointsNotification(recordedFoodActivity.AwardedPoints);
+                foodSavingActivity = new SavingFood();
                 break;
             case ActivityType.Volunteering:
                 volunteeringActivity.UserId = currentUserId; //Use claims to state the user ID here
                 volunteeringActivity.Date = currentDate;
                 var recordedVolunteering = await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                currentUser.Points += recordedVolunteering.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                showModal = false;
                 await ShowPointsNotification(recordedVolunteering.AwardedPoints);
+                volunteeringActivity = new Volunteering();
                 break;
             case ActivityType.CarPool:
                 carPoolActivity.UserId = currentUserId; //Use claims to state the user ID here
                 carPoolActivity.Date = currentDate;
                 var recodedCarPool = await activitiesService.CreateCarPool(carPoolActivity);
+                currentUser.Points += recodedCarPool.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                showModal = false;
                 await ShowPointsNotification(recodedCarPool.AwardedPoints);
+                carPoolActivity = new CarPool();
                 break;
         }
         showModal = false;
@@ -296,6 +321,7 @@
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.5);
     }
+
     .toast {
         transition: opacity 0.3s ease-in-out;
     }
