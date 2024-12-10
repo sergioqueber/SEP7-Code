@@ -85,7 +85,8 @@
                                 </InputRadioGroup>
                             }
                         }
-                        @if(kind == 3){
+                        @if (kind == 3)
+                        {
                             <h5 class="card-title">Report for the whole company</h5>
                         }
                     </div>
@@ -93,8 +94,71 @@
             </div>
             <div class="col-md-6">
                 <div class="chart-container mb-4">
-                    @* <canvas id="lineChart"></canvas>
-                        <canvas id="barChart"></canvas> *@
+                    @if (carPools != null)
+                    {
+                        <h3>Car pooling activities</h3>
+                        <ul>
+                            @foreach (var carPool in carPools)
+                            {
+                                <li>@carPool.Name: @carPool.AwardedPoints</li>
+                                <li>Date: @carPool.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No car pooling activities in selected period of time</p>
+                    }
+                    @if (transports != null)
+                    {
+                        <h3>Transport activities</h3>
+                        <ul>
+                            @foreach (var transport in transports)
+                            {
+                                <li>@transport.Name: @transport.AwardedPoints</li>
+                                <li>Date: @transport.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No transport activities in selected period of time</p>
+                    }
+                    @if (volunteerings != null)
+                    {
+                        <h3>Volunteering activities</h3>
+                        <ul>
+                            @foreach (var volunteering in volunteerings)
+                            {
+                                <li>@volunteering.Name: @volunteering.AwardedPoints</li>
+                                <li>Date: @volunteering.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No volunteering activities in selected period of time</p>
+                    }
+                    @if (savingFoods != null)
+                    {
+                        <h3>Saving foods activities</h3>
+                        <ul>
+                            @foreach (var savingFood in savingFoods)
+                            {
+                                <li>@savingFood.Name: @savingFood.AwardedPoints</li>
+                                <li>Date: @savingFood.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No saving food activities in selected period of time</p>
+                    }
+                    @if (stairs != null)
+                    {
+                        <h3>Saving foods activities</h3>
+                        <ul>
+                            @foreach (var stair in stairs)
+                            {
+                                <li>@stair.Name: @stair.AwardedPoints</li>
+                                <li>Date: @stair.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No stairs activities in selected period of time</p>
+                    }
                 </div>
             </div>
             <div class="col-md-3">
@@ -124,7 +188,7 @@
     public IEnumerable<Team>? Teams { get; set; }
     private int selectedTeamId;
     private int selectedUserId;
-    private IEnumerable<CarPool>? carPools = null; 
+    private IEnumerable<CarPool>? carPools = null;
     private IEnumerable<Transport>? transports = null;
     private IEnumerable<SavingFood>? savingFoods = null;
     private IEnumerable<Stairs>? stairs = null;
