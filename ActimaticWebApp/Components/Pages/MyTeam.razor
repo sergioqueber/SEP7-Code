@@ -6,12 +6,18 @@
 @inject IRewardService RewardService
 @inject AppInterfaces.IAuthService AuthService
 @using Microsoft.AspNetCore.Authorization
-@* @attribute [Authorize] *@
-
 
 <h3>My Team</h3>
 
-@if (team == null)
+@if (currentUser == null)
+{
+    <p>Loading user data...</p>
+}
+else if (currentUser.TeamId == null)
+{
+    <p>User is not part of any team.</p>
+}
+else if (team == null)
 {
     <p>Loading team data...</p>
 }
@@ -68,71 +74,51 @@ else
 
 @code {
     private Team? team;
+    private User? currentUser;
     private List<User>? members = new();
     private List<Reward>? rewards = new();
 
-        protected override async Task OnInitializedAsync()
-{
-    // Temporarily use a hardcoded user ID
-    int hardcodedUserId = 1;
-
-    // Fetch the user by the hardcoded ID
-    var currentUser = await UserService.GetUserById(hardcodedUserId);
-
-    if (currentUser?.Team != null)
+    protected override async Task OnInitializedAsync()
     {
-        // Fetch the team associated with the user
-        team = await TeamService.GetTeamById(currentUser.Team.Id);
-
-        if (team != null)
+        try
         {
-            // Fetch team members
-            members = team.Staff ?? new List<User>();
+            // Fetch the logged-in user's claims from the JwtAuthService
+            var principal = await AuthService.GetAuthAsync();
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "Id");
 
-            // Fetch rewards associated with the team
-            rewards = (await RewardService.GetAllRewards()).ToList();
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                Console.WriteLine("User is not logged in.");
+                return;
+            }
+
+            // Fetch the user by ID
+            currentUser = await UserService.GetUserById(userId);
+
+            if (currentUser?.TeamId != null)
+            {
+                // Fetch the team associated with the logged-in user
+                team = await TeamService.GetTeamById(currentUser.TeamId ?? 0);
+
+                if (team != null)
+                {
+                    // Fetch team members
+                    members = team.Staff ?? new List<User>();
+
+                    // Fetch rewards associated with the team
+                    rewards = (await RewardService.GetAllRewards()).ToList();
+                }
+            }
+            else
+            {
+                Console.WriteLine("User is not part of any team.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
         }
     }
-    else
-    {
-        Console.WriteLine("User is not part of any team.");
-    }
-}
-
-    @* protected override async Task OnInitializedAsync()
-{
-    // Fetch the logged-in user's claims from the JwtAuthService
-    var principal = await AuthService.GetAuthAsync();
-    var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "Id");
-
-    if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-    {
-        Console.WriteLine("User is not logged in.");
-        return;
-    }
-
-    // Fetch the user by ID
-    var currentUser = await UserService.GetUserById(userId);
-
-    if (currentUser?.Team != null)
-    {
-        // Fetch the team associated with the logged-in user
-        team = await TeamService.GetTeamById(currentUser.Team.Id);
-
-        if (team != null)
-        {
-            // Fetch team members
-            members = team.Staff ?? new List<User>();
-
-            // Fetch rewards associated with the team
-            rewards = (await RewardService.GetAllRewards()).ToList();
-        }
-    }
-    else
-    {
-        Console.WriteLine("User is not part of any team.");
-    }
-} *@
 
     private async Task RedeemReward(Reward reward)
     {
