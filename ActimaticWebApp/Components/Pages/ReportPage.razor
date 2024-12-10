@@ -1,0 +1,220 @@
+@page "/report"
+@using Interfaces
+@using AppServices
+@inject IReportService ReportService
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Model
+@inject AppInterfaces.IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IUserService ProfileService
+@inject ITeamService TeamService
+@inject ITransportService TransportService
+@inject ISavingFoodService SavingFoodService
+@inject IVolunteeringService VolunteeringService
+@inject IStairsService StairsService
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<div class="container my-4">
+    <main>
+        <EditForm Model="report" OnValidSubmit="NewReport">
+            <div class="mb-3 col-md-3">
+                <label for="startDate" class="form-label">Start Date</label>
+                <InputDate @bind-Value="@report.StartDate" class="form-control" />
+            </div>
+            <div class="mb-3 col-md-3">
+                <label for="endDate" class="form-label">End Date</label>
+                <InputDate @bind-Value="@report.EndDate" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+        <h2 class="mb-4">ESG Report</h2>
+        <label for="kind">Select kind of report:</label>
+        <InputSelect id="kind" @bind-Value="kind" @onselect="HandleSelect">
+            <option value="0">-- Select kind --</option>
+            <option value="1">Team</option>
+            <option value="2">Specific worker</option>
+            <option value="3">Everyone</option>
+        </InputSelect>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        @if (kind == 1)
+                        {
+                            if (Teams == null)
+                            {
+                                <p>Loading teams...</p>
+                            }
+                            else
+                            {
+                                <h5 class="card-title">Teams</h5>
+                                <InputRadioGroup @bind-Value="selectedTeamId" class="list-unstyled">
+                                    @foreach (var team in Teams)
+                                    {
+                                        <li>
+                                            <label>
+                                                <InputRadio Value="@team.Id" /> @team.Name
+                                            </label>
+                                        </li>
+                                    }
+                                </InputRadioGroup>
+                            }
+                        }
+                        @if (kind == 2)
+                        {
+                            if (users == null)
+                            {
+                                <p>Loading employees...</p>
+                            }
+                            else
+                            {
+                                <h5 class="card-title">Employees</h5>
+                                <InputRadioGroup @bind-Value="selectedUserId" class="list-unstyled">
+                                    @foreach (var user in users)
+                                    {
+                                        <li>
+                                            <label>
+                                                <InputRadio Value="@user.Id" /> @user.Name @user.Surname
+                                            </label>
+                                        </li>
+                                    }
+                                </InputRadioGroup>
+                            }
+                        }
+                        @if(kind == 3){
+                            <h5 class="card-title">Report for the whole company</h5>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container mb-4">
+                    @* <canvas id="lineChart"></canvas>
+                        <canvas id="barChart"></canvas> *@
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Stats</h5>
+                        <p>Emissions saved:</p>
+                        <p>Food saved:</p>
+                        <p>Emissions saved:</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+@code {
+    private User? user = null;
+    private IEnumerable<User>? users;
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    private int id;
+    private IEnumerable<Claim>? userClaims;
+    private bool isLoggedIn;
+    private Report report = new Report();
+    private int kind;
+    public IEnumerable<Team> Teams { get; set; }
+    private int selectedTeamId;
+    private int selectedUserId;
+
+
+    @* protected override async Task OnInitializedAsync()
+    {
+        user = await ProfileService.GetUserProfile(1);
+    } *@
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            AuthenticationState authState = await AuthState;
+            if (authState == null)
+            {
+                Console.WriteLine("authState not found.");
+            }
+            ClaimsPrincipal userToLog = authState.User;
+            isLoggedIn = userToLog.Identity != null;
+
+            var role = userToLog.Claims.FirstOrDefault(c => c.Type == "Role")?.Value;
+            Console.WriteLine($"User is authenticated with role: {role}");
+
+            if (!isLoggedIn) return;
+            userClaims = userToLog.Claims;
+            id = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
+            Console.WriteLine("Id is : " + id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+        }
+
+        user = await ProfileService.GetUserById(id);
+        report.StartDate = DateOnly.FromDateTime(DateTime.Now);
+        report.EndDate = DateOnly.FromDateTime(DateTime.Now);
+
+
+    }
+    private async Task NewReport()
+    {
+        Console.WriteLine(report.StartDate);
+        Console.WriteLine(report.EndDate);
+    }
+    private async Task HandleSelect()
+    {
+        Teams = await TeamService.GetAllTeams();
+        users = await ProfileService.GetAllUsers();
+    }
+}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .user-info {
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .chart-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+        color: #007bff;
+    }
+
+    .nav-link:hover {
+        text-decoration: underline;
+    }
+</style>

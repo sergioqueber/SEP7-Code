@@ -18,10 +18,9 @@ public class UserService : IUserService
     }
     public async Task<IEnumerable<User>> GetAllUsers()
     {
-        return await _httpClient.GetFromJsonAsync<List<User>>("api/profile")
+        return await _httpClient.GetFromJsonAsync<List<User>>("http://localhost:5205/api/user")
                    ?? new List<User>();
     }
-
     public async Task<User?> GetUserById(int id)
     {
         return await _httpClient.GetFromJsonAsync<User>($"api/user/{id}");
