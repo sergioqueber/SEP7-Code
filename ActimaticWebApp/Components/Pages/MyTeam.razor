@@ -6,7 +6,7 @@
 @inject IRewardService RewardService
 @inject AppInterfaces.IAuthService AuthService
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
+@* @attribute [Authorize] *@
 
 
 <h3>My Team</h3>
@@ -71,7 +71,35 @@ else
     private List<User>? members = new();
     private List<Reward>? rewards = new();
 
-    protected override async Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
+{
+    // Temporarily use a hardcoded user ID
+    int hardcodedUserId = 1;
+
+    // Fetch the user by the hardcoded ID
+    var currentUser = await UserService.GetUserById(hardcodedUserId);
+
+    if (currentUser?.Team != null)
+    {
+        // Fetch the team associated with the user
+        team = await TeamService.GetTeamById(currentUser.Team.Id);
+
+        if (team != null)
+        {
+            // Fetch team members
+            members = team.Staff ?? new List<User>();
+
+            // Fetch rewards associated with the team
+            rewards = (await RewardService.GetAllRewards()).ToList();
+        }
+    }
+    else
+    {
+        Console.WriteLine("User is not part of any team.");
+    }
+}
+
+    @* protected override async Task OnInitializedAsync()
 {
     // Fetch the logged-in user's claims from the JwtAuthService
     var principal = await AuthService.GetAuthAsync();
@@ -104,7 +132,7 @@ else
     {
         Console.WriteLine("User is not part of any team.");
     }
-}
+} *@
 
     private async Task RedeemReward(Reward reward)
     {

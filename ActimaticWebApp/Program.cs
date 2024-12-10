@@ -6,6 +6,7 @@ using AppInterfaces;
 using AppServices;
 using Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +18,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
+builder.Services.AddScoped<IRewardService, RewardService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+
+
 AuthorizationPolicies.AddPolicies(builder.Services);
 
 builder.Services.AddAuthentication().AddCookie(options =>

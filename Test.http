@@ -381,29 +381,14 @@ POST http://localhost:5205/api/Team
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "Team Name",
-    "department": {
-        "id": 1,
-        "name": "Department Name"
-    },
+    "id": 3,
+    "name": "Team lala",
+
     "teamRewards": [
-        {
-            "id": 1,
-            "name": "Reward Name",
-            "description": "Reward Description",
-            "pointsRequired": 100,
-            "availability": true
-        }
+       
     ],
     "staff": [
-        {
-            "id": 1,
-            "name": "John",
-            "surname": "Doe",
-            "email": "john.doe@example.com",
-            "role": "Manager"
-        }
+       
     ]
 }
 
