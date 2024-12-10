@@ -2,7 +2,7 @@ using Model;
 using Interfaces;
 namespace AppServices;
 
-public class ActivitiesService: ITransportService, IStairsService,IVolunteeringService,ISavingFoodService{
+public class ActivitiesService: ITransportService, IStairsService,IVolunteeringService,ISavingFoodService,ICarPoolService{
     private readonly HttpClient _httpClient;
 
     public ActivitiesService(HttpClient httpClient)
@@ -126,5 +126,34 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
         return await response.Content.ReadFromJsonAsync<SavingFood>();
     }
 
+    public async Task<CarPool> CreateCarPool(CarPool carPool)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/carpool", carPool);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<CarPool>();
+    }
 
+    public async Task<IEnumerable<CarPool>> GetAllCarPool()
+    {
+        return await _httpClient.GetFromJsonAsync<List<CarPool>>("api/carpool")
+                   ?? new List<CarPool>();
+    }
+
+    public async Task<CarPool?> GetCarPoolById(int id){
+        return await _httpClient.GetFromJsonAsync<CarPool>($"api/carpool/{id}");
+    }
+
+    public async Task<CarPool> RemoveCarPool(int id)
+    {
+        var response = await _httpClient.DeleteAsync($"api/carpool/{id}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<CarPool>();
+    }
+
+    public async Task<CarPool?> UpdateCarPool(CarPool carPool)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"api/carpool", carPool);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<CarPool>();
+    }
 }
