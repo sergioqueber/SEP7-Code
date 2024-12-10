@@ -8,13 +8,18 @@ namespace Services;
 public class VolunteeringService (ApplicationDbContext context) : IVolunteeringService{
 
     private readonly ApplicationDbContext _context = context;
+    private const int basePointsPerHour = 40;
 
     static VolunteeringService(){
 
     }
-
+    public int CalculatePointsAsync(Volunteering volunteering)
+    {
+        return volunteering.Hours * basePointsPerHour;
+    }
     public async Task<Volunteering> CreateVolunteeringAsync(Volunteering volunteering)
     {
+        volunteering.AwardedPoints = CalculatePointsAsync(volunteering);
         await _context.Volunteerings.AddAsync(volunteering);
         await _context.SaveChangesAsync();
         return await Task.FromResult(volunteering);
