@@ -4,15 +4,22 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
+@using Interfaces
+@inject IUserService userService
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
 <div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h1 class="text-center">Your total points are @totalPoints</h1>
+        </div>
+    </div>
     <div class="row">
         <!-- Left side - Activities -->
         <div class="col-md-6 p-4">
-            <RecordActivity currentUserId ="@currentUserId"></RecordActivity>
+            <RecordActivity currentUserId="@currentUserId" OnPointsUpdated="UpdatePoints"></RecordActivity>
         </div>
 
         <!-- Right side - Future content -->
@@ -28,6 +35,7 @@
     private int currentUserId;
     private IEnumerable<Claim>? userClaims;
     private bool isLoggedIn = false;
+    private int totalPoints;
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await AuthState;
@@ -38,5 +46,15 @@
         userClaims = userToLog.Claims;
         currentUserId = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
         Console.WriteLine("Id is : " + currentUserId);
+
+        var currentUser = await userService.GetUserById(currentUserId);
+        totalPoints = currentUser.Points;
+    }
+
+     private async Task UpdatePoints(int points)
+    {
+        var currentUser = await userService.GetUserById(currentUserId);
+        totalPoints = currentUser.Points;
+        StateHasChanged();
     }
 }

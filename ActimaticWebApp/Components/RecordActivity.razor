@@ -218,6 +218,8 @@
     private CarPool? carPoolActivity = new CarPool();
     private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
     private bool isLoggedIn;
+    [Parameter]
+    public EventCallback<int> OnPointsUpdated { get; set; }
 
     [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
@@ -269,9 +271,11 @@
                 var recordedTrassport = await activitiesService.CreateTransport(transportActivity);
                 currentUser.Points += recordedTrassport.AwardedPoints;
                 await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
                 showModal = false;
                 await ShowPointsNotification(recordedTrassport.AwardedPoints);
                 transportActivity = new Transport();
+                StateHasChanged();
                 break;
             case ActivityType.Stairs:
                 stairsActivity.UserId = currentUserId; //Use claims to state the user ID here
@@ -279,9 +283,11 @@
                 var recordedStairs = await activitiesService.CreateStairsAsync(stairsActivity);
                 currentUser.Points += recordedStairs.AwardedPoints;
                 await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
                 showModal = false;
                 await ShowPointsNotification(recordedStairs.AwardedPoints);
                 stairsActivity = new Stairs();
+                StateHasChanged();
                 break;
             case ActivityType.FoodSaving:
                 foodSavingActivity.UserId = currentUserId; //Use claims to state the user ID here
@@ -289,9 +295,11 @@
                 var recordedFoodActivity = await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
                 currentUser.Points += recordedFoodActivity.AwardedPoints;
                 await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
                 showModal = false;
                 await ShowPointsNotification(recordedFoodActivity.AwardedPoints);
                 foodSavingActivity = new SavingFood();
+                StateHasChanged();
                 break;
             case ActivityType.Volunteering:
                 volunteeringActivity.UserId = currentUserId; //Use claims to state the user ID here
@@ -299,9 +307,11 @@
                 var recordedVolunteering = await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
                 currentUser.Points += recordedVolunteering.AwardedPoints;
                 await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
                 showModal = false;
                 await ShowPointsNotification(recordedVolunteering.AwardedPoints);
                 volunteeringActivity = new Volunteering();
+                StateHasChanged();
                 break;
             case ActivityType.CarPool:
                 carPoolActivity.UserId = currentUserId; //Use claims to state the user ID here
@@ -309,9 +319,11 @@
                 var recodedCarPool = await activitiesService.CreateCarPool(carPoolActivity);
                 currentUser.Points += recodedCarPool.AwardedPoints;
                 await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
                 showModal = false;
                 await ShowPointsNotification(recodedCarPool.AwardedPoints);
                 carPoolActivity = new CarPool();
+                StateHasChanged();
                 break;
         }
         showModal = false;
