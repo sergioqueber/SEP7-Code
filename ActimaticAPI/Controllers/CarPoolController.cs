@@ -46,4 +46,11 @@ public class CarPoolController : ControllerBase
     {
         return await _carPoolService.RemoveCarPool(id);
     }
+
+    [HttpGet("dates/{startDate}/{endDate}")]
+    public async Task<ActionResult<IEnumerable<CarPool>>> GetAllCarPoolByDate(DateOnly startDate, DateOnly endDate)
+    {
+        var carPools = await _carPoolService.GetCarPoolByDatesAsync(startDate, endDate);
+        return Ok(carPools);
+    }
 }

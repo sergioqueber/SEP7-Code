@@ -46,4 +46,11 @@ public class SavingFoodController : ControllerBase
     {
         return await _savingFoodService.RemoveSavingFoodAsync(id);
     }
+
+    [HttpGet("dates/{startDate}/{endDate}")]
+    public async Task<ActionResult<IEnumerable<SavingFood>>> GetAllSavingFoodByDate(DateOnly startDate, DateOnly endDate)
+    {
+        var savings = await _savingFoodService.GetSavingFoodByDatesAsync(startDate, endDate);
+        return Ok(savings);
+    }
 }

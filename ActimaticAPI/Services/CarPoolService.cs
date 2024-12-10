@@ -76,5 +76,9 @@ public class CarPoolService(ApplicationDbContext context) : ICarPoolService{
         }
         return await Task.FromResult(carPoolToUpdate);
     }
+    public async Task<IEnumerable<CarPool>> GetCarPoolByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await Task.FromResult(_context.CarPools.Where(cp => cp.Date >= startDate && cp.Date <= endDate).AsEnumerable());
+    }
     
 }

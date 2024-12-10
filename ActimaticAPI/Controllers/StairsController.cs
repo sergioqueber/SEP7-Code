@@ -46,4 +46,10 @@ public class StairsController : ControllerBase
     {
         return await _StairsService.RemoveStairsAsync(id);
     }
+    [HttpGet("dates/{startDate}/{endDate}")]
+    public async Task<ActionResult<IEnumerable<Stairs>>> GetAllStairsByDate(DateOnly startDate, DateOnly endDate)
+    {
+        var stairs = await _StairsService.GetStairsByDatesAsync(startDate, endDate);
+        return Ok(stairs);
+    }
 }

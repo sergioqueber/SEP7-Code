@@ -57,5 +57,9 @@ public class StairsService (ApplicationDbContext context) : IStairsService{
         return await Task.FromResult(stairsToUpdate);
         
     }
+    public async Task<IEnumerable<Stairs>> GetStairsByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await Task.FromResult(_context.Stairs.Where(s => s.Date >= startDate && s.Date <= endDate).AsEnumerable());
+    }
     
 }
