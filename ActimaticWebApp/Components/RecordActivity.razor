@@ -1,18 +1,139 @@
 @page "/record-activity"
 @using Interfaces
+@using Model
+@using AppServices
+@inject ActivitiesService activitiesService
 
-<div>
-    <h3>Record an activity</h3>
-    <div class="card shadow">
-        <div class="card-body">
-            Record transport activity
+<div class="container mb-4">
+    <h3 class="mb-4">Record an activity</h3>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Transport</h5>
+                    <p class="card-text">Record your transport activity</p>
+                    <button class="btn btn-primary" @onclick="() => ShowModal(ActivityType.Transport)">
+                        Record
+                    </button>
+                </div>
+            </div>
 
         </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Stairs</h5>
+                    <p class="card-text">Record your stair climbing activities</p>
+                    <button class="btn btn-primary">
+                        Record Stairs
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Food Saving</h5>
+                    <p class="card-text">Record your food saving activities</p>
+                    <button class="btn btn-primary">
+                        Record Food Saving
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+    @if (showModal)
+    {
+        <div class="modal shadow d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class=" modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"> Record @currentActivityType</h5>
+                        <button type="button" class="btn-close" @onclick="closeModal"></button>
+                    </div>
+                    <div class=" modal-body">
+                        @switch (currentActivityType)
+                        {
+                            case ActivityType.Transport:
+                                <EditForm Model="@transportActivity" OnValidSubmit="@RecordActivities">
+                                    <DataAnnotationsValidator />
+                                    <div class=" mb-3">
+                                        <label class="form-label">Distance</label>
+                                        <InputNumber @bind-Value="@transportActivity.Distance" class="form-control" />
+                                    </div>
+                                    <div class=" mb-3">
+                                        <label class="form-label">Transport Type</label>
+                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
+                                            <option value="Car">Car</option>
+                                            <option value="Bus">Bus</option>
+                                            <option value="Bike">Bike</option>
+                                            <option value="Walk">Walk</option>
+                                        </InputSelect>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </EditForm>
+                                break;
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop show"></div>
+
+    }
 </div>
 
 @code {
+    private bool showModal = false;
+    private ActivityType currentActivityType;
+    private Transport? transportActivity;
+    private Stairs? stairsActivity;
+    private SavingFood? foodSavingActivity;
+    private Volunteering? volunteeringActivity;
+    private enum ActivityType
+    {
+        Transport,
+        Stairs,
+        FoodSaving,
+        Volunteering
+    }
     protected override async Task OnInitializedAsync()
     {
     }
+
+    private void ShowModal(ActivityType activityType)
+    {
+        currentActivityType = activityType;
+        showModal = true;
+    }
+    private void closeModal()
+    {
+        showModal = false;
+    }
+
+    private async Task RecordActivities()
+    {
+        switch (currentActivityType)
+        {
+            case ActivityType.Transport:
+                await activitiesService.CreateTransport(transportActivity);
+                break;
+            case ActivityType.Stairs:
+                await activitiesService.CreateStairsAsync(stairsActivity);
+                break;
+            case ActivityType.FoodSaving:
+                await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                break;
+            case ActivityType.Volunteering:
+                await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                break;
+        }
+        showModal = false;
+    }
 }
+<style>
+    .modal-backdrop {
+        background-color: rgba(0,0,0,0.5);
+    }
+</style>

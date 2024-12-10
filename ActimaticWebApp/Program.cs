@@ -14,6 +14,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5205/") });
 builder.Services.AddScoped<AppInterfaces.IAuthService, JwtAuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ActivitiesService>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();

@@ -26,7 +26,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password:</label>
-                            <input type="password" id="password" @bind="loginModel.Password" class="form-control" placeholder="Enter your password" />
+                            <input type="password" id="password" @bind="loginModel.Password" class="form-control"
+                                placeholder="Enter your password" />
                         </div>
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
@@ -59,10 +60,18 @@
     {
         try
         {
-            loginModel.Id = int.Parse(idInput);
-            await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
-            Console.WriteLine("Logged in");
-            Navigation.NavigateTo("/");
+            if (int.TryParse(idInput, out int id))
+            {
+                loginModel.Id = id;
+                await AuthService.LoginAsync(loginModel.Id, loginModel.Password);
+                Console.WriteLine("Logged in");
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid ID";
+            }
+
         }
         catch (Exception ex)
         {
