@@ -164,7 +164,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Passengers</label>
-                                        <InputNumber @bind-Value="carPoolActivity.EmptySeats" class="form-control"required />
+                                        <InputNumber @bind-Value="carPoolActivity.EmptySeats" class="form-control" required />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Car Type</label>
@@ -187,10 +187,26 @@
         <div class="modal-backdrop show"></div>
 
     }
+    @if (showNotification)
+    {
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto">Activity Recorded!</strong>
+                    <button type="button" class="btn-close btn-close-white" @onclick="HideNotification"></button>
+                </div>
+                <div class="toast-body">
+                    Congratulations! You earned @earnedPoints points! 🎉
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private bool showModal = false;
+    private bool showNotification = false;
+    private int earnedPoints = 0;
     private ActivityType currentActivityType;
     private Transport? transportActivity = new Transport();
     private Stairs? stairsActivity = new Stairs();
@@ -200,7 +216,7 @@
     private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
     private bool isLoggedIn;
 
-     [CascadingParameter]
+    [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
     [Parameter] public int currentUserId { get; set; }
     private IEnumerable<Claim>? userClaims;
@@ -215,7 +231,19 @@
     protected override async Task OnInitializedAsync()
     {
     }
+    private async Task ShowPointsNotification(int points)
+    {
+        earnedPoints = points;
+        showNotification = true;
+        await Task.Delay(3000); // Hide after 3 seconds
+        showNotification = false;
+        StateHasChanged();
+    }
 
+    private void HideNotification()
+    {
+        showNotification = false;
+    }
     private void ShowModal(ActivityType activityType)
     {
         currentActivityType = activityType;
@@ -233,27 +261,32 @@
             case ActivityType.Transport:
                 transportActivity.UserId = currentUserId; //Use claims to state the user ID here
                 transportActivity.Date = currentDate;
-                await activitiesService.CreateTransport(transportActivity);
+                var recordedTrassport = await activitiesService.CreateTransport(transportActivity);
+                await ShowPointsNotification(recordedTrassport.AwardedPoints);
                 break;
             case ActivityType.Stairs:
                 stairsActivity.UserId = currentUserId; //Use claims to state the user ID here
                 stairsActivity.Date = currentDate;
-                await activitiesService.CreateStairsAsync(stairsActivity);
+                var recordedStairs = await activitiesService.CreateStairsAsync(stairsActivity);
+                await ShowPointsNotification(recordedStairs.AwardedPoints);
                 break;
             case ActivityType.FoodSaving:
                 foodSavingActivity.UserId = currentUserId; //Use claims to state the user ID here
                 foodSavingActivity.Date = currentDate;
-                await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                var recordedFoodActivity = await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                await ShowPointsNotification(recordedFoodActivity.AwardedPoints);
                 break;
             case ActivityType.Volunteering:
                 volunteeringActivity.UserId = currentUserId; //Use claims to state the user ID here
                 volunteeringActivity.Date = currentDate;
-                await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                var recordedVolunteering = await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                await ShowPointsNotification(recordedVolunteering.AwardedPoints);
                 break;
             case ActivityType.CarPool:
                 carPoolActivity.UserId = currentUserId; //Use claims to state the user ID here
                 carPoolActivity.Date = currentDate;
-                await activitiesService.CreateCarPool(carPoolActivity);
+                var recodedCarPool = await activitiesService.CreateCarPool(carPoolActivity);
+                await ShowPointsNotification(recodedCarPool.AwardedPoints);
                 break;
         }
         showModal = false;
@@ -262,5 +295,8 @@
 <style>
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.5);
+    }
+    .toast {
+        transition: opacity 0.3s ease-in-out;
     }
 </style>
