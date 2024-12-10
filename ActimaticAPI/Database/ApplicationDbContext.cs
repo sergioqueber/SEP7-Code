@@ -28,7 +28,15 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+    {
+        if (entityType.ClrType.GetProperty("Id") != null)
+        {
+            modelBuilder.Entity(entityType.ClrType)
+                .Property("Id")
+                .ValueGeneratedOnAdd();
+        }
+    }
         // TPC Inheritance Configuration for Activities
         modelBuilder.Entity<Activity>().UseTpcMappingStrategy();
         modelBuilder.Entity<CarPool>()

@@ -2,9 +2,10 @@ namespace Model;
 
 public abstract class Activity
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
     public string Name { get; set; }
     public int AwardedPoints { get; set; }
+    public int? UserId { get; set; }
     public DateOnly Date { get; set; }
     public User? User { get; set; }
     public Report? Report { get; set; }
