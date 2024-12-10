@@ -53,5 +53,9 @@ public class VolunteeringService (ApplicationDbContext context) : IVolunteeringS
         return await Task.FromResult(volunteeringToUpdate);
         
     }
+    public async Task<IEnumerable<Volunteering>> GetVolunteeringByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await Task.FromResult(_context.Volunteerings.Where(v => v.Date >= startDate && v.Date <= endDate).AsEnumerable());
+    }
     
 }
