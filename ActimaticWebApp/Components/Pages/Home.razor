@@ -1,9 +1,42 @@
 ﻿@page "/"
+@inject AppInterfaces.IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left side - Activities -->
+        <div class="col-md-6 p-4">
+            <RecordActivity currentUserId ="@currentUserId"></RecordActivity>
+        </div>
 
-Welcome to your new app.
+        <!-- Right side - Future content -->
+        <div class="col-md-6 p-4">
+            <!-- Content for right side -->
+        </div>
+    </div>
+</div>
 
-<RecordActivity></RecordActivity>
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+    private int currentUserId;
+    private IEnumerable<Claim>? userClaims;
+    private bool isLoggedIn = false;
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await AuthState;
+        ClaimsPrincipal userToLog = authState.User;
+        isLoggedIn = userToLog.Identity != null;
+
+        if (!isLoggedIn) return;
+        userClaims = userToLog.Claims;
+        currentUserId = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
+        Console.WriteLine("Id is : " + currentUserId);
+    }
+}

@@ -3,6 +3,11 @@
 @using Model
 @using AppServices
 @inject ActivitiesService activitiesService
+@inject AppInterfaces.IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
 
 <div class="container mb-4">
     <h3 class="mb-4">Record an activity</h3>
@@ -193,6 +198,12 @@
     private Volunteering? volunteeringActivity = new Volunteering();
     private CarPool? carPoolActivity = new CarPool();
     private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
+    private bool isLoggedIn;
+
+     [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+    [Parameter] public int currentUserId { get; set; }
+    private IEnumerable<Claim>? userClaims;
     private enum ActivityType
     {
         Transport,
@@ -220,27 +231,27 @@
         switch (currentActivityType)
         {
             case ActivityType.Transport:
-                transportActivity.UserId = 2; //Use claims to state the user ID here
+                transportActivity.UserId = currentUserId; //Use claims to state the user ID here
                 transportActivity.Date = currentDate;
                 await activitiesService.CreateTransport(transportActivity);
                 break;
             case ActivityType.Stairs:
-                stairsActivity.UserId = 2; //Use claims to state the user ID here
+                stairsActivity.UserId = currentUserId; //Use claims to state the user ID here
                 stairsActivity.Date = currentDate;
                 await activitiesService.CreateStairsAsync(stairsActivity);
                 break;
             case ActivityType.FoodSaving:
-                foodSavingActivity.UserId = 2; //Use claims to state the user ID here
+                foodSavingActivity.UserId = currentUserId; //Use claims to state the user ID here
                 foodSavingActivity.Date = currentDate;
                 await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
                 break;
             case ActivityType.Volunteering:
-                volunteeringActivity.UserId = 2; //Use claims to state the user ID here
+                volunteeringActivity.UserId = currentUserId; //Use claims to state the user ID here
                 volunteeringActivity.Date = currentDate;
                 await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
                 break;
             case ActivityType.CarPool:
-                carPoolActivity.UserId = 2; //Use claims to state the user ID here
+                carPoolActivity.UserId = currentUserId; //Use claims to state the user ID here
                 carPoolActivity.Date = currentDate;
                 await activitiesService.CreateCarPool(carPoolActivity);
                 break;
