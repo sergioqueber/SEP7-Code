@@ -59,13 +59,9 @@ POST http://localhost:5205/api/Transport
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "transport",
-    "awardedPoints": 69,
-    "date": "2024-11-11",
+    "name": "transport2",
     "distance": 13,
-    "type": "cycling",
-    "emissionsSaved": 20
+    "type": "cycling"
 }
 
 

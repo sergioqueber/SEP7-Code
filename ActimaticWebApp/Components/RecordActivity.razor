@@ -57,18 +57,23 @@
                             case ActivityType.Transport:
                                 <EditForm Model="@transportActivity" OnValidSubmit="@RecordActivities">
                                     <DataAnnotationsValidator />
+                                    <div class="mb-3">
+                                        <label class="form-label" activities>Custom Name</label>
+                                        <InputText @bind-Value="@transportActivity.Name" class="form-control" />
+                                    </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Distance</label>
                                         <InputNumber @bind-Value="@transportActivity.Distance" class="form-control" />
                                     </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Transport Type</label>
-                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
+                                        <InputText @bind-Value="@transportActivity.Type" class="form-control" />
+                                        @* <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
                                             <option value="Car">Car</option>
                                             <option value="Bus">Bus</option>
                                             <option value="Bike">Bike</option>
                                             <option value="Walk">Walk</option>
-                                        </InputSelect>
+                                        </InputSelect> *@
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save</button>
                                 </EditForm>
@@ -87,10 +92,10 @@
 @code {
     private bool showModal = false;
     private ActivityType currentActivityType;
-    private Transport? transportActivity;
-    private Stairs? stairsActivity;
-    private SavingFood? foodSavingActivity;
-    private Volunteering? volunteeringActivity;
+    private Transport? transportActivity = new Transport();
+    private Stairs? stairsActivity = new Stairs();
+    private SavingFood? foodSavingActivity = new SavingFood();
+    private Volunteering? volunteeringActivity = new Volunteering();
     private enum ActivityType
     {
         Transport,
@@ -117,6 +122,7 @@
         switch (currentActivityType)
         {
             case ActivityType.Transport:
+                transportActivity.UserId = 2; //Use claims to state the user ID here
                 await activitiesService.CreateTransport(transportActivity);
                 break;
             case ActivityType.Stairs:
@@ -134,6 +140,6 @@
 }
 <style>
     .modal-backdrop {
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
