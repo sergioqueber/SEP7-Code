@@ -70,4 +70,9 @@ public class VolunteeringController : ControllerBase
         _volunteeringService.RemoveVolunteeringAsync(id);
         return NoContent();
     }
+    [HttpGet("dates/{startDate}/{endDate}")]
+    public async Task<ActionResult<IEnumerable<Volunteering>>> GetVolunteeringByDates(DateOnly startDate, DateOnly endDate){
+        var volunteerings = await _volunteeringService.GetVolunteeringByDatesAsync(startDate, endDate);
+        return Ok(volunteerings);
+    }
 }

@@ -37,6 +37,12 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<Transport>();
     }
+
+    public async Task<IEnumerable<Transport>> GetTransportByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await _httpClient.GetFromJsonAsync<List<Transport>>($"api/transport/dates/{startDate}/{endDate}")
+                   ?? new List<Transport>();
+    } 
     public async Task<IEnumerable<Stairs>> GetAllStairsAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<Stairs>>("api/stairs")
@@ -124,6 +130,24 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
         var response = await _httpClient.PutAsJsonAsync($"api/savingfood/{savingFood.Id}", savingFood);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<SavingFood>();
+    }
+
+    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await _httpClient.GetFromJsonAsync<List<SavingFood>>($"api/savingFood/dates/{startDate}/{endDate}")
+                   ?? new List<SavingFood>();
+    } 
+
+    public async Task<IEnumerable<Stairs>> GetStairsByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await _httpClient.GetFromJsonAsync<List<Stairs>>($"api/stairs/dates/{startDate}/{endDate}")
+                   ?? new List<Stairs>();
+    } 
+
+    public async Task<IEnumerable<Volunteering>> GetVolunteeringByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await _httpClient.GetFromJsonAsync<List<Volunteering>>($"api/volunteering/dates/{startDate}/{endDate}")
+                   ?? new List<Volunteering>();
     }
 
 

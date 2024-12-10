@@ -53,5 +53,9 @@ public class SavingFoodService (ApplicationDbContext context) : ISavingFoodServi
         return await Task.FromResult(savingFoodToUpdate);
         
     }
+
+    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate){
+        return await Task.FromResult(_context.SavingFoods.Where(sf => sf.Date >= startDate && sf.Date <= endDate).AsEnumerable());
+    }
     
 }

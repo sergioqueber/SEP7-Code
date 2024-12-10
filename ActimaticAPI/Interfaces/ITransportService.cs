@@ -7,6 +7,7 @@ public interface ITransportService
     Task<Transport> CreateTransport(Transport transport);
     Task<Transport> UpdateTransport(Transport transport);
     Task<Transport> RemoveTransport(int id);    
+    Task<IEnumerable<Transport>> GetTransportByDatesAsync(DateOnly startDate, DateOnly endDate);  
 
     
 }
