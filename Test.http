@@ -11,12 +11,12 @@ POST http://localhost:5205/api/User
 Content-Type: application/json
 
 {
-    "name": "Natalia",
-    "surname": "Doe",
-    "email": "natalia.doe@yo.com",
+    "name": "Jan",
+    "surname": "Bosy",
+    "email": "jan@baby.com",
     "password": "password123",
     "role": "Employee",
-    "points": 6969
+    "points": 12345
 }
 
 ### Put staff
@@ -418,7 +418,7 @@ Content-Type: application/json
 }
 
 ### Delete team
-DELETE http://localhost:5205/api/Team/1
+DELETE http://localhost:5205/api/Team/3
 Accept: application/json
 
 ### Get all teams
