@@ -20,40 +20,43 @@
 @attribute [Authorize]
 
 <div class="container my-4">
-    <main>
-        <EditForm Model="report" OnValidSubmit="NewReport">
-            <div class="mb-3 col-md-3">
-                <label for="startDate" class="form-label">Start Date</label>
-                <InputDate @bind-Value="@report.StartDate" class="form-control" />
-            </div>
-            <div class="mb-3 col-md-3">
-                <label for="endDate" class="form-label">End Date</label>
-                <InputDate @bind-Value="@report.EndDate" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </EditForm>
-        <h2 class="mb-4">ESG Report</h2>
-        <label for="kind">Select kind of report:</label>
-        <InputSelect id="kind" @bind-Value="tempKind">
-            <option value="0">-- Select kind --</option>
-            <option value="1">Team</option>
-            <option value="2">Specific worker</option>
-            <option value="3">Everyone</option>
-        </InputSelect>
-        <button @onclick="ConfirmSelection" class="btn btn-primary">Confirm</button>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        @if (kind == 1)
-                        {
-                            if (Teams == null)
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">ESG Report</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Selection Panel -->
+                <div class="col-md-3">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Select</h5>
+                        </div>
+                        <div class="card-body">
+                            <EditForm Model="report" OnValidSubmit="NewReport">
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <InputDate @bind-Value="@report.StartDate" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <InputDate @bind-Value="@report.EndDate" class="form-control" />
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3">Submit Dates</button>
+                            </EditForm>
+
+                            <label for="kind" class="form-label">Kind of Report:</label>
+                            <InputSelect id="kind" @bind-Value="tempKind" class="form-select mb-3">
+                                <option value="0">-- Select --</option>
+                                <option value="1">Team</option>
+                                <option value="2">Specific Worker</option>
+                                <option value="3">Everyone</option>
+                            </InputSelect>
+                            <button @onclick="ConfirmSelection" class="btn btn-primary w-100">Confirm</button>
+
+                            @if (kind == 1)
                             {
-                                <p>Loading teams...</p>
-                            }
-                            else
-                            {
-                                <h5 class="card-title">Teams</h5>
+                                <h5 class="mt-4">Teams</h5>
                                 <InputRadioGroup @bind-Value="selectedTeamId" class="list-unstyled">
                                     @foreach (var team in Teams)
                                     {
@@ -65,127 +68,133 @@
                                     }
                                 </InputRadioGroup>
                             }
-                        }
-                        @if (kind == 2)
-                        {
-                            if (users == null)
+                            @if (kind == 2)
                             {
-                                <p>Loading employees...</p>
-                            }
-                            else
-                            {
-                                <h5 class="card-title">Employees</h5>
+                                <h5 class="mt-4">Employees</h5>
                                 <InputRadioGroup @bind-Value="selectedUserId" class="list-unstyled">
                                     @foreach (var user in users)
                                     {
-                                        <label>
-                                            <InputRadio Value="@user.Id" /> @user.Name @user.Surname
-                                        </label>
+                                        <li>
+                                            <label>
+                                                <InputRadio Value="@user.Id" /> @user.Name @user.Surname
+                                            </label>
+                                        </li>
                                     }
                                 </InputRadioGroup>
                             }
-                        }
-                        @if (kind == 3)
-                        {
-                            <h5 class="card-title">Report for the whole company</h5>
-                        }
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="chart-container mb-4">
-                    @if (carPools != null)
-                    {
-                        <h3>Car pooling activities</h3>
-                        <ul>
-                            @foreach (var carPool in carPools)
+
+                <!-- Activities Panel -->
+                <div class="col-md-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Activities</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Car Pooling -->
+                            @if (tempcarPools != null)
                             {
-                                <li>@carPool.Name: @carPool.AwardedPoints</li>
-                                <li>Date: @carPool.Date</li>
+                                <h5>Car Pooling</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var carPool in tempcarPools)
+                                    {
+                                        <li>@carPool.Name: @carPool.AwardedPoints points on @carPool.Date</li>
+                                    }
+                                </ul>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No car pooling activities in selected period of time</p>
-                    }
-                    @if (transports != null)
-                    {
-                        <h3>Transport activities</h3>
-                        <ul>
-                            @foreach (var transport in transports)
+                            else
                             {
-                                <li>@transport.Name: @transport.AwardedPoints</li>
-                                <li>Date: @transport.Date</li>
+                                <p>No car pooling activities in the selected period of time.</p>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No transport activities in selected period of time</p>
-                    }
-                    @if (volunteerings != null)
-                    {
-                        <h3>Volunteering activities</h3>
-                        <ul>
-                            @foreach (var volunteering in volunteerings)
+
+                            <!-- Transport -->
+                            @if (temptransports != null)
                             {
-                                <li>@volunteering.Name: @volunteering.AwardedPoints</li>
-                                <li>Date: @volunteering.Date</li>
+                                <h5>Transport</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var transport in temptransports)
+                                    {
+                                        <li>@transport.Name: @transport.AwardedPoints points on @transport.Date</li>
+                                    }
+                                </ul>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No volunteering activities in selected period of time</p>
-                    }
-                    @if (savingFoods != null)
-                    {
-                        <h3>Saving foods activities</h3>
-                        <ul>
-                            @foreach (var savingFood in savingFoods)
+                            else
                             {
-                                <li>@savingFood.Name: @savingFood.AwardedPoints</li>
-                                <li>Date: @savingFood.Date</li>
+                                <p>No transport activities in the selected period of time.</p>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No saving food activities in selected period of time</p>
-                    }
-                    @if (stairs != null)
-                    {
-                        <h3>Saving foods activities</h3>
-                        <ul>
-                            @foreach (var stair in stairs)
+
+                            <!-- Saving Food -->
+                            @if (tempsavingFoods != null)
                             {
-                                <li>@stair.Name: @stair.AwardedPoints</li>
-                                <li>Date: @stair.Date</li>
+                                <h5>Saving Food</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var savingFood in tempsavingFoods)
+                                    {
+                                        <li>@savingFood.Name: @savingFood.AwardedPoints points on @savingFood.Date</li>
+                                    }
+                                </ul>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No stairs activities in selected period of time</p>
-                    }
+                            else
+                            {
+                                <p>No food-saving activities in the selected period of time.</p>
+                            }
+
+                            <!-- Volunteering -->
+                            @if (tempvolunteerings != null)
+                            {
+                                <h5>Volunteering</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var volunteering in tempvolunteerings)
+                                    {
+                                        <li>@volunteering.Name: @volunteering.AwardedPoints points on @volunteering.Date</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>No volunteering activities in the selected period of time.</p>
+                            }
+
+                            <!-- Stairs -->
+                            @if (tempstairs != null)
+                            {
+                                <h5>Stairs</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var stair in tempstairs)
+                                    {
+                                        <li>@stair.Name: @stair.AwardedPoints points on @stair.Date</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>No stairs activities in the selected period of time.</p>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Stats</h5>
-                        <p>Emissions saved: @EmissionsSaved</p>
-                        <p>Food saved: @SavedFood kg</p>
-                        <p>Hours volunteered: @HoursVolunteered</p>
-                        <p>Floors covered: @FloorsCovered</p>
-                        <button @onclick="SaveReport">Save Report</button>
+
+                <!-- Stats Panel -->
+                <div class="col-md-3">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Emissions Saved:</strong> @EmissionsSaved</p>
+                            <p><strong>Food Saved:</strong> @SavedFood kg</p>
+                            <p><strong>Hours Volunteered:</strong> @HoursVolunteered</p>
+                            <p><strong>Floors Covered:</strong> @FloorsCovered</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </div>
+
 @code {
     private User? user = null;
     private IEnumerable<User>? users;
@@ -207,6 +216,11 @@
     private IEnumerable<SavingFood>? savingFoods = Enumerable.Empty<SavingFood>();
     private IEnumerable<Stairs>? stairs = Enumerable.Empty<Stairs>();
     private IEnumerable<Volunteering>? volunteerings = Enumerable.Empty<Volunteering>();
+    private IEnumerable<CarPool>? tempcarPools = Enumerable.Empty<CarPool>();
+    private IEnumerable<Transport>? temptransports = Enumerable.Empty<Transport>();
+    private IEnumerable<SavingFood>? tempsavingFoods = Enumerable.Empty<SavingFood>();
+    private IEnumerable<Stairs>? tempstairs = Enumerable.Empty<Stairs>();
+    private IEnumerable<Volunteering>? tempvolunteerings = Enumerable.Empty<Volunteering>();
     private int EmissionsSaved;
     private int SavedFood;
     private int HoursVolunteered;
@@ -253,6 +267,11 @@
         savingFoods = await ActivitiesService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
         stairs = await ActivitiesService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
         volunteerings = await ActivitiesService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
+        tempcarPools = carPools;
+        tempsavingFoods = savingFoods;
+        tempstairs = stairs;
+        temptransports = transports;
+        tempvolunteerings = volunteerings;
     }
     private int CalcEmissions(IEnumerable<Transport> transports)
     {
@@ -333,6 +352,11 @@
                 SavedFood = CalcFood(savingFoodByTeam);
                 HoursVolunteered = CalcHours(volunteeringsByTeam);
                 FloorsCovered = CalcFloors(stairsByTeam);
+                tempcarPools = carPoolsByTeam;
+                tempsavingFoods = savingFoodByTeam;
+                temptransports = transportsByTeam;
+                tempstairs = stairsByTeam;
+                tempvolunteerings = volunteeringsByTeam;
             }
         }
         else if (value == 2)
@@ -347,9 +371,19 @@
             SavedFood = CalcFood(savingFoodsByUser);
             HoursVolunteered = CalcHours(volunteeringsByUser);
             FloorsCovered = CalcFloors(stairsByUser);
+            tempcarPools = carPoolsByUser;
+            tempvolunteerings = volunteeringsByUser;
+            tempsavingFoods = savingFoodsByUser;
+            tempstairs = stairsByUser;
+            temptransports = transportsByUser;
         }
         else if (value == 3)
         {
+            tempcarPools = carPools;
+            tempsavingFoods = savingFoods;
+            tempstairs = stairs;
+            temptransports = transports;
+            tempvolunteerings = volunteerings;
             users = await ProfileService.GetAllUsers();
             EmissionsSaved = CalcEmissions(transports);
             SavedFood = CalcFood(savingFoods);
