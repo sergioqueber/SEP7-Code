@@ -51,8 +51,12 @@
                 <InputNumber @bind-Value="newReward.PointsRequired" class="form-control" required />
             </div>
             <div class="mb-3">
+                <label class="form-label">Is Team Reward</label>
+                <InputCheckbox @bind-Value="newReward.IsTeamReward" class="form-check-input"required />
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Availability</label>
-                <InputCheckbox @bind-Value="newReward.Availability" class="form-check-input" />
+                <InputCheckbox @bind-Value="newReward.Availability" class="form-check-input" required />
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </EditForm>
@@ -71,7 +75,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var reward in rewards)
             {
-                @if ((reward.Availability && !reward.IsTeamReward) || (currentUser.Role == "Hr" && !reward.IsTeamReward))
+                @if (currentUser.Role == "Hr" || (reward.Availability && !reward.IsTeamReward))
                 {
 
                     <div class="col">
@@ -94,6 +98,11 @@
                                                 <input type="checkbox" class="form-check-input" checked="@reward.Availability"
                                                     @onchange="async (e) => await UpdateAvailability(reward, e.Value)" />
                                                 <label class="form-check-label">Available</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" checked="@reward.IsTeamReward"
+                                                    @onchange="async (e) => await UpdateIsTeam(reward, e.Value)" />
+                                                <label class="form-check-label">Team</label>
                                             </div>
                                         </Authorized>
                                     </AuthorizeView>
@@ -132,7 +141,15 @@
             await rewardService.UpdateReward(reward);
         }
     }
-
+    private async Task UpdateIsTeam(Reward reward, object? value)
+    {
+        if (value is bool isTeam)
+        {
+            Console.WriteLine(isTeam);
+            reward.IsTeamReward = isTeam;
+            await rewardService.UpdateReward(reward);
+        }
+    }
     private async Task ShowNotification(int points)
     {
         currentPoints = points;
@@ -175,7 +192,6 @@
 
     private async Task addReward()
     {
-        newReward.IsTeamReward = false;
         await rewardService.CreateReward(newReward);
         newReward = new Reward();
         showModal = false;
