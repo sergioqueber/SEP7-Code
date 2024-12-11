@@ -6,7 +6,7 @@ public static class AuthorizationPolicies{
         services.AddAuthorizationCore(options =>
         {
             options.AddPolicy("MustBeModerator",a => a.RequireAuthenticatedUser().RequireClaim("Role", "Moderator"));
-            options.AddPolicy("MustBeStudent", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Student"));
+            options.AddPolicy("MustBeAdmin", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Admin"));
             options.AddPolicy("MustBeHr", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Hr"));
         });
     }

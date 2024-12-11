@@ -8,6 +8,7 @@ public class User
     public string Password { get; set; }
     public string Role { get; set; }
     public int Points { get; set; }
+    public bool IsApproved { get; set; } = false;
     public List<Activity>? Activities { get; set; } = [];
     public List<RedeemedReward>? Rewards { get; set; } = [];
     public Team? Team { get; set; }
@@ -15,7 +16,7 @@ public class User
 
     public User() { }
 
-    public User(int id, string name, string surname, string email, string password, string role, int points)
+    public User(int id, string name, string surname, string email, string password, string role, int points, bool IsApproved)
     {
         Id = id;
         Name = name;
@@ -24,5 +25,6 @@ public class User
         Password = password;
         Role = role;
         Points = points;
+        this.IsApproved = IsApproved;
     }
 }
