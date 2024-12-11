@@ -7,6 +7,7 @@ public interface IUserService
     Task<User> CreateUser(User user);
     Task<User?> UpdateUser(User user);
     Task<User> RemoveUser(int id);
+    Task<IEnumerable<User>> GetAllUsersByTeamId(int id);
 
 
 }

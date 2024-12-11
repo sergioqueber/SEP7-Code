@@ -24,11 +24,11 @@
         <EditForm Model="report" OnValidSubmit="NewReport">
             <div class="mb-3 col-md-3">
                 <label for="startDate" class="form-label">Start Date</label>
-                <InputDate @bind-Value="@StartDateTime" class="form-control" />
+                <InputDate @bind-Value="@report.StartDate" class="form-control" />
             </div>
             <div class="mb-3 col-md-3">
                 <label for="endDate" class="form-label">End Date</label>
-                <InputDate @bind-Value="@EndDateTime" class="form-control" />
+                <InputDate @bind-Value="@report.EndDate" class="form-control" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
@@ -40,7 +40,7 @@
             <option value="2">Specific worker</option>
             <option value="3">Everyone</option>
         </InputSelect>
-        <button @onclick="ConfirmSelection" class="btn btn-primary">iuhbihbhijk</button>
+        <button @onclick="ConfirmSelection" class="btn btn-primary">Confirm</button>
         <div class="row">
             <div class="col-md-3">
                 <div class="card mb-4">
@@ -179,6 +179,7 @@
                         <p>Food saved: @SavedFood kg</p>
                         <p>Hours volunteered: @HoursVolunteered</p>
                         <p>Floors covered: @FloorsCovered</p>
+                        <button @onclick="SaveReport">Save Report</button>
                     </div>
                 </div>
             </div>
@@ -197,9 +198,9 @@
     private Report report = new Report();
     private int kind;
     private int tempKind;
-    public IEnumerable<Team>? Teams { get; set; }
+    public IEnumerable<Team>? Teams = Enumerable.Empty<Team>();
     private IEnumerable<User> TeamUsers = Enumerable.Empty<User>();
-    private int selectedTeamId;
+    private int selectedTeamId = 0;
     private int selectedUserId;
     private IEnumerable<CarPool>? carPools = Enumerable.Empty<CarPool>();
     private IEnumerable<Transport>? transports = Enumerable.Empty<Transport>();
@@ -211,35 +212,6 @@
     private int HoursVolunteered;
     private int FloorsCovered;
     private Team? team = null;
-    private string StartDateTime
-    {
-        get => report.StartDate.ToString("yyyy-MM-dd"); // Convert DateOnly to formatted string
-        set
-        {
-            if (DateOnly.TryParse(value, out var parsedDate))
-            {
-                report.StartDate = parsedDate; // Parse string back to DateOnly
-            }
-        }
-    }
-
-    private string EndDateTime
-    {
-        get => report.EndDate.ToString("yyyy-MM-dd"); // Convert DateOnly to formatted string
-        set
-        {
-            if (DateOnly.TryParse(value, out var parsedDate))
-            {
-                report.EndDate = parsedDate; // Parse string back to DateOnly
-            }
-        }
-    }
-
-
-    @* protected override async Task OnInitializedAsync()
-    {
-        user = await ProfileService.GetUserProfile(1);
-    } *@
     protected override async Task OnInitializedAsync()
     {
         try
@@ -259,6 +231,7 @@
             userClaims = userToLog.Claims;
             id = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
             Console.WriteLine("Id is : " + id);
+            Teams = await TeamService.GetAllTeams();
         }
         catch (Exception ex)
         {
@@ -275,10 +248,7 @@
 
     private async Task NewReport()
     {
-        Console.WriteLine(report.StartDate);
-        Console.WriteLine(report.EndDate);
-        
-        carPools = await ActivitiesService.GetCarPoolByDatesAsync("2024-12-11", report.EndDate);
+        carPools = await ActivitiesService.GetCarPoolByDatesAsync(report.StartDate, report.EndDate);
         transports = await ActivitiesService.GetTransportByDatesAsync(report.StartDate, report.EndDate);
         savingFoods = await ActivitiesService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
         stairs = await ActivitiesService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
@@ -339,28 +309,31 @@
         if (value == 1)
         {
             Teams = await TeamService.GetAllTeams();
-            team = await TeamService.GetTeamById(selectedTeamId);
-            IEnumerable<CarPool> carPoolsByTeam = Enumerable.Empty<CarPool>();
-            IEnumerable<SavingFood> savingFoodByTeam = Enumerable.Empty<SavingFood>();
-            IEnumerable<Transport> transportsByTeam = Enumerable.Empty<Transport>();
-            IEnumerable<Stairs> stairsByTeam = Enumerable.Empty<Stairs>();
-            IEnumerable<Volunteering> volunteeringsByTeam = Enumerable.Empty<Volunteering>();
-
-            if (team != null)
+            if (selectedTeamId != 0)
             {
-                foreach (var user in team.Staff)
+                TeamUsers = await ProfileService.GetAllUsersByTeamId(selectedTeamId);
+                IEnumerable<CarPool> carPoolsByTeam = Enumerable.Empty<CarPool>();
+                IEnumerable<SavingFood> savingFoodByTeam = Enumerable.Empty<SavingFood>();
+                IEnumerable<Transport> transportsByTeam = Enumerable.Empty<Transport>();
+                IEnumerable<Stairs> stairsByTeam = Enumerable.Empty<Stairs>();
+                IEnumerable<Volunteering> volunteeringsByTeam = Enumerable.Empty<Volunteering>();
+
+                if (TeamUsers != null)
                 {
-                    carPoolsByTeam = carPoolsByTeam.Concat(carPools.Where(x => x.UserId == user.Id));
-                    savingFoodByTeam = savingFoodByTeam.Concat(savingFoods.Where(x => x.UserId == user.Id));
-                    transportsByTeam = transportsByTeam.Concat(transports.Where(x => x.UserId == user.Id));
-                    stairsByTeam = stairsByTeam.Concat(stairs.Where(x => x.UserId == user.Id));
-                    volunteeringsByTeam = volunteeringsByTeam.Concat(volunteerings.Where(x => x.UserId == user.Id));
+                    foreach (var user in TeamUsers)
+                    {
+                        carPoolsByTeam = carPoolsByTeam.Concat(carPools.Where(x => x.UserId == user.Id));
+                        savingFoodByTeam = savingFoodByTeam.Concat(savingFoods.Where(x => x.UserId == user.Id));
+                        transportsByTeam = transportsByTeam.Concat(transports.Where(x => x.UserId == user.Id));
+                        stairsByTeam = stairsByTeam.Concat(stairs.Where(x => x.UserId == user.Id));
+                        volunteeringsByTeam = volunteeringsByTeam.Concat(volunteerings.Where(x => x.UserId == user.Id));
+                    }
                 }
+                EmissionsSaved = CalcEmissions(transportsByTeam);
+                SavedFood = CalcFood(savingFoodByTeam);
+                HoursVolunteered = CalcHours(volunteeringsByTeam);
+                FloorsCovered = CalcFloors(stairsByTeam);
             }
-            EmissionsSaved = CalcEmissions(transportsByTeam);
-            SavedFood = CalcFood(savingFoodByTeam);
-            HoursVolunteered = CalcHours(volunteeringsByTeam);
-            FloorsCovered = CalcFloors(stairsByTeam);
         }
         else if (value == 2)
         {
@@ -374,12 +347,10 @@
             SavedFood = CalcFood(savingFoodsByUser);
             HoursVolunteered = CalcHours(volunteeringsByUser);
             FloorsCovered = CalcFloors(stairsByUser);
-            Console.WriteLine("Loading users"
-            );
         }
         else if (value == 3)
         {
-            //users = await ProfileService.GetAllUsers();
+            users = await ProfileService.GetAllUsers();
             EmissionsSaved = CalcEmissions(transports);
             SavedFood = CalcFood(savingFoods);
             HoursVolunteered = CalcHours(volunteerings);
@@ -391,6 +362,12 @@
         kind = tempKind;
         await HandleSelect(kind);
         StateHasChanged();
+    }
+    private async Task SaveReport(){
+        report.EmissionsSaved = EmissionsSaved;
+        report.HoursVolunteered = HoursVolunteered;
+        report.FoodSaved = SavedFood;
+        report.Floors = FloorsCovered;
     }
 }
 <style>

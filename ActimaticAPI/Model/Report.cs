@@ -10,10 +10,13 @@ public class Report
     public List<User>? ActiveParticipants { get; set; }
     public List<Reward>? AwardedRewards { get; set; }
     public int EmissionsSaved { get; set; }
+    public int HoursVolunteered {get; set; }
+    public int Floors {get; set;}
+    public int FoodSaved {get; set;}
     public List<Activity>? CompletedActivities { get; set; }
 
     public Report() { }
-    public Report(int id, DateOnly startDate, DateOnly endDate, List<User> activeParticipants, List<Reward> awarededRewards, int emissionsSaved, List<Activity>? completedActivities)
+    public Report(int id, DateOnly startDate, DateOnly endDate, List<User> activeParticipants, List<Reward> awarededRewards, int emissionsSaved, List<Activity>? completedActivities, int hoursVolunteered, int floors, int foodSaved)
     {
         Id = id;
         StartDate = startDate;
@@ -21,6 +24,9 @@ public class Report
         ActiveParticipants = activeParticipants;
         AwardedRewards = awarededRewards;
         EmissionsSaved = emissionsSaved;
+        HoursVolunteered = hoursVolunteered;
+        Floors = floors;
+        FoodSaved = foodSaved;
         CompletedActivities = completedActivities;
     }
 }
