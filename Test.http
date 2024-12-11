@@ -42,7 +42,7 @@ POST http://localhost:5205/api/Department
 Content-Type: application/json
 
 {
-    "name": "IT"
+    "name": "Marketing"
 }
 
 ### Get all staff
@@ -375,8 +375,8 @@ POST http://localhost:5205/api/Team
 Content-Type: application/json
 
 {
-    "id": 3,
-    "name": "Team lala",
+    
+    "name": "super",
 
     "teamRewards": [
        
