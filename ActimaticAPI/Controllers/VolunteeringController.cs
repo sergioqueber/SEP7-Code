@@ -16,59 +16,41 @@ public class VolunteeringController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<ActionResult<IEnumerable<Volunteering>>> GetAll()
     {
-        var volunteeringActivities = _volunteeringService.GetAllVolunteeringAsync();
+        var volunteeringActivities = await _volunteeringService.GetAllVolunteeringAsync();
         return Ok(volunteeringActivities);
     }
 
+
+    
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public async Task<Volunteering> GetById(int id)
     {
-        var volunteeringActivity = _volunteeringService.GetVolunteeringByIdAsync(id);
-        if (volunteeringActivity == null)
-        {
-            return NotFound();
-        }
-        return Ok(volunteeringActivity);
+        return await _volunteeringService.GetVolunteeringByIdAsync(id);
     }
 
+   
     [HttpPost]
-    public IActionResult Create(Volunteering volunteering)
+    public async Task<ActionResult<Volunteering>> Create(Volunteering volunteering)
     {
-        _volunteeringService.CreateVolunteeringAsync(volunteering);
-        return CreatedAtAction(nameof(GetById), new { id = volunteering.Id }, volunteering);
+        var newVolunteering = await _volunteeringService.CreateVolunteeringAsync(volunteering);
+        return CreatedAtAction(nameof(GetById), new { id = newVolunteering.Id }, newVolunteering);
     }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, Volunteering volunteering)
+   
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] Volunteering volunteering)
     {
-        if (id != volunteering.Id)
-        {
-            return BadRequest();
-        }
-
-        var existingVolunteering = _volunteeringService.GetVolunteeringByIdAsync(id);
-        if (existingVolunteering == null)
-        {
-            return NotFound();
-        }
-
-        _volunteeringService.UpdateVolunteeringAsync(volunteering);
+        await _volunteeringService.UpdateVolunteeringAsync(volunteering);
         return NoContent();
     }
+    
 
+   
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        var volunteering = _volunteeringService.GetVolunteeringByIdAsync(id);
-        if (volunteering == null)
-        {
-            return NotFound();
-        }
-
-        _volunteeringService.RemoveVolunteeringAsync(id);
-        return NoContent();
+    public async Task<Volunteering> Delete(int id){
+        return await _volunteeringService.RemoveVolunteeringAsync(id);
     }
 
     [HttpGet("dates/{startDate}/{endDate}")]

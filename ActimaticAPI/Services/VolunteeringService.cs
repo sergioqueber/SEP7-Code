@@ -53,6 +53,8 @@ public class VolunteeringService (ApplicationDbContext context) : IVolunteeringS
             volunteeringToUpdate.AwardedPoints = volunteering.AwardedPoints;
             volunteeringToUpdate.Date = volunteering.Date;
             volunteeringToUpdate.Hours = volunteering.Hours;
+            volunteeringToUpdate.Location = volunteering.Location;
+        _context.Volunteerings.Update(volunteeringToUpdate);
         await _context.SaveChangesAsync();
         }
         return await Task.FromResult(volunteeringToUpdate);

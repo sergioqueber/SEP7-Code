@@ -68,6 +68,7 @@ public class TransportService(ApplicationDbContext context) : ITransportService
             transportToUpdate.Distance = transport.Distance;
             transportToUpdate.Type = transport.Type;
             transportToUpdate.EmissionsSaved = transport.EmissionsSaved;
+            _context.Transports.Update(transportToUpdate);
         }
         await _context.SaveChangesAsync();
 
