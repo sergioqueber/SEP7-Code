@@ -8,6 +8,7 @@ public static class AuthorizationPolicies{
             options.AddPolicy("MustBeModerator",a => a.RequireAuthenticatedUser().RequireClaim("Role", "Moderator"));
             options.AddPolicy("MustBeAdmin", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Admin"));
             options.AddPolicy("MustBeHr", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Hr"));
+            options.AddPolicy("IsApproved", a => a.RequireAuthenticatedUser().RequireClaim("IsApproved", "True"));
         });
     }
 }
