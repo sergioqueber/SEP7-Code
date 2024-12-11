@@ -4,9 +4,49 @@
 @inject ITeamService TeamService
 @inject IUserService UserService
 @inject IRewardService RewardService
+@inject IDepartmentService DepartmentService
 @inject AppInterfaces.IAuthService AuthService
 @using Microsoft.AspNetCore.Authorization
+<AuthorizeView Policy="MustBeManager">
+    <Authorized>
+         <button @onclick="ToggleCreateTeamForm" class="btn btn-primary">Create Team</button>
 
+        @if (showCreateTeamForm)
+        {
+            <div>
+                <h4>Create a New Team</h4>
+                <div>
+                    <label for="teamName">Team Name:</label>
+                    <input id="teamName" @bind="newTeamName" placeholder="Enter team name" class="form-control" />
+                </div>
+                <div>
+                    <label for="department">Select Department:</label>
+                    <select id="department" @bind="selectedDepartmentId" class="form-control">
+                        <option value="0">-- Select a Department --</option>
+                        @foreach (var department in availableDepartments)
+                        {
+                            <option value="@department.Id">@department.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <h5>Select Users to Add:</h5>
+                    @foreach (var user in availableUsers)
+                    {
+                        <div>
+                            <input type="checkbox" id="user_@user.Id" value="@user.Id" @onchange="e => ToggleUserSelection(e, user.Id)" />
+                            <label for="user_@user.Id">@user.Name @user.Surname</label>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <button @onclick="CreateTeam" class="btn btn-success">Submit</button>
+                    <button @onclick="ToggleCreateTeamForm" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
 <h3>My Team</h3>
 
 @if (currentUser == null)
@@ -78,6 +118,30 @@ else
     private List<User>? members = new();
     private List<Reward>? rewards = new();
 
+        private string newTeamName = string.Empty; // Added newTeamName
+    private int selectedDepartmentId = 0; // Added selectedDepartmentId
+    private List<int> selectedUserIds = new(); // List to hold selected user IDs
+    private List<User> availableUsers = new(); // List of users to select from
+    private List<Department> availableDepartments = new(); // List of departments to select from
+    private bool showCreateTeamForm = false;
+
+    private void ToggleCreateTeamForm()
+    {
+        showCreateTeamForm = !showCreateTeamForm;
+    }
+
+    private void ToggleUserSelection(ChangeEventArgs e, int userId)
+    {
+        var isChecked = (bool)e.Value;
+        if (isChecked)
+        {
+            selectedUserIds.Add(userId);
+        }
+        else
+        {
+            selectedUserIds.Remove(userId);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -113,12 +177,106 @@ else
             {
                 Console.WriteLine("User is not part of any team.");
             }
+             availableDepartments = (await DepartmentService.GetAllDepartments()).ToList();
+        
+ // Check if any departments were fetched
+        if (!availableDepartments.Any())
+        {
+            Console.WriteLine("No departments available to display in the dropdown.");
         }
+        else
+        {
+            Console.WriteLine($"Fetched {availableDepartments.Count} departments from the API.");
+            foreach (var department in availableDepartments)
+            {
+                Console.WriteLine($"Department ID: {department.Id}, Name: {department.Name}");
+            }
+        }
+
+}
+
+        
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
     }
+
+private async Task CreateTeam()
+{
+    try
+    {
+        // Ensure the team name is not empty
+        if (string.IsNullOrEmpty(newTeamName))
+        {
+            Console.WriteLine("Team name cannot be empty.");
+            return;
+        }
+
+        // Ensure a department is selected
+        if (selectedDepartmentId == 0)
+        {
+            Console.WriteLine("Please select a valid department.");
+            return;
+        }
+
+        // Ensure at least one member is selected for the team
+        if (selectedUserIds == null || !selectedUserIds.Any())
+        {
+            Console.WriteLine("Please select at least one user to add to the team.");
+            return;
+        }
+
+        // Retrieve the selected users from the database
+        var selectedUsers = new List<User>();
+        foreach (var userId in selectedUserIds)
+        {
+            var user = await UserService.GetUserById(userId);
+            if (user != null)
+            {
+                selectedUsers.Add(user);
+            }
+        }
+
+        // Create a new Team object
+        var newTeam = new Team
+        {
+            Name = newTeamName,
+            DepartmentId = selectedDepartmentId,
+            Staff = selectedUsers,
+            TeamRewards = new List<Reward>() // Empty list for now
+        };
+
+        // Call TeamService to create the team
+        var createdTeam = await TeamService.CreateTeam(newTeam);
+
+        if (createdTeam != null)
+        {
+            Console.WriteLine($"Team '{createdTeam.Name}' created successfully!");
+
+            // Update the TeamId for all selected users
+            foreach (var user in selectedUsers)
+            {
+                user.TeamId = createdTeam.Id;
+                await UserService.UpdateUser(user);
+            }
+
+            // Refresh the team details
+            team = createdTeam;
+            members = team.Staff ?? new List<User>();
+            showCreateTeamForm = false;
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Failed to create the team. Please try again.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error creating team: {ex.Message}");
+    }
+}
 
     private async Task RedeemReward(Reward reward)
     {

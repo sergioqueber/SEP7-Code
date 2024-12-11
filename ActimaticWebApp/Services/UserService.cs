@@ -39,7 +39,7 @@ public class UserService : IUserService
     }
     public async Task<User?> UpdateUser(User user)
     {
-        var response = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
+        var response = await _httpClient.PutAsJsonAsync("api/user", user);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<User>();
     }

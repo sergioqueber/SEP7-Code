@@ -9,7 +9,7 @@ public class User
     public string Role { get; set; }
     public int Points { get; set; }
     public List<Activity>? Activities { get; set; } = [];
-    public List<Reward>? Rewards { get; set; } = [];
+    public List<RedeemedReward>? Rewards { get; set; } = [];
     public Team? Team { get; set; }
     public int? TeamId { get; set; }
     public List<Report>? Reports { get; set; } = [];
