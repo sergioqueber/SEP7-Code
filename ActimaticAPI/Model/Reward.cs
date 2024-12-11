@@ -9,7 +9,7 @@ public class Reward
     public int PointsRequired { get; set; }
 
     public bool Availability { get; set; }
-    public List<User> Users { get; set; } = [];
+    public List<RedeemedReward> RedeemedRewards { get; set; } = [];
     public List<Team> Teams { get; set; } = [];
 
     public Reward() { }
