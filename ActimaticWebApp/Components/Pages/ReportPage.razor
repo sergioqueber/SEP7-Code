@@ -8,6 +8,7 @@
 @using Model
 @inject AppInterfaces.IAuthService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject ActivitiesService ActivitiesService
 @inject IUserService ProfileService
 @inject ITeamService TeamService
 @inject ITransportService TransportService
@@ -23,11 +24,11 @@
         <EditForm Model="report" OnValidSubmit="NewReport">
             <div class="mb-3 col-md-3">
                 <label for="startDate" class="form-label">Start Date</label>
-                <InputDate @bind-Value="@report.StartDate" class="form-control" />
+                <InputDate @bind-Value="@StartDateTime" class="form-control" />
             </div>
             <div class="mb-3 col-md-3">
                 <label for="endDate" class="form-label">End Date</label>
-                <InputDate @bind-Value="@report.EndDate" class="form-control" />
+                <InputDate @bind-Value="@EndDateTime" class="form-control" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
@@ -77,9 +78,9 @@
                                 <InputRadioGroup @bind-Value="selectedUserId" class="list-unstyled">
                                     @foreach (var user in users)
                                     {
-                                            <label>
-                                                <InputRadio Value="@user.Id" /> @user.Name @user.Surname
-                                            </label>
+                                        <label>
+                                            <InputRadio Value="@user.Id" /> @user.Name @user.Surname
+                                        </label>
                                     }
                                 </InputRadioGroup>
                             }
@@ -210,6 +211,29 @@
     private int HoursVolunteered;
     private int FloorsCovered;
     private Team? team = null;
+    private string StartDateTime
+    {
+        get => report.StartDate.ToString("yyyy-MM-dd"); // Convert DateOnly to formatted string
+        set
+        {
+            if (DateOnly.TryParse(value, out var parsedDate))
+            {
+                report.StartDate = parsedDate; // Parse string back to DateOnly
+            }
+        }
+    }
+
+    private string EndDateTime
+    {
+        get => report.EndDate.ToString("yyyy-MM-dd"); // Convert DateOnly to formatted string
+        set
+        {
+            if (DateOnly.TryParse(value, out var parsedDate))
+            {
+                report.EndDate = parsedDate; // Parse string back to DateOnly
+            }
+        }
+    }
 
 
     @* protected override async Task OnInitializedAsync()
@@ -244,19 +268,21 @@
         user = await ProfileService.GetUserById(id);
         report.StartDate = DateOnly.FromDateTime(DateTime.Now);
         report.EndDate = DateOnly.FromDateTime(DateTime.Now);
+        Console.WriteLine(report.StartDate);
 
 
     }
-    
+
     private async Task NewReport()
     {
         Console.WriteLine(report.StartDate);
         Console.WriteLine(report.EndDate);
-        carPools = await CarPoolService.GetCarPoolByDatesAsync(report.StartDate, report.EndDate);
-        transports = await TransportService.GetTransportByDatesAsync(report.StartDate, report.EndDate);
-        savingFoods = await SavingFoodService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
-        stairs = await StairsService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
-        volunteerings = await VolunteeringService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
+        
+        carPools = await ActivitiesService.GetCarPoolByDatesAsync("2024-12-11", report.EndDate);
+        transports = await ActivitiesService.GetTransportByDatesAsync(report.StartDate, report.EndDate);
+        savingFoods = await ActivitiesService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
+        stairs = await ActivitiesService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
+        volunteerings = await ActivitiesService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
     }
     private int CalcEmissions(IEnumerable<Transport> transports)
     {
@@ -307,7 +333,7 @@
         return sum;
     }
     private async Task HandleSelect(int value)
-    {   
+    {
         if (value == 0)
             Console.WriteLine("This was 0");
         if (value == 1)
@@ -360,7 +386,8 @@
             FloorsCovered = CalcFloors(stairs);
         }
     }
-    private async Task ConfirmSelection(){
+    private async Task ConfirmSelection()
+    {
         kind = tempKind;
         await HandleSelect(kind);
         StateHasChanged();

@@ -507,3 +507,7 @@ Accept: application/json
     "type": "cycling",
     "emissionsSaved": 20
 }
+
+### Get team by id
+GET http://localhost:5205/api/carPool/dates/2024-12-11/2024-12-11
+Accept: application/json
