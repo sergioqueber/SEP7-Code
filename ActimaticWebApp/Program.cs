@@ -28,6 +28,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
 builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
 
 
 AuthorizationPolicies.AddPolicies(builder.Services);

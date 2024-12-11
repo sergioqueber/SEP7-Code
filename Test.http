@@ -11,12 +11,12 @@ POST http://localhost:5205/api/User
 Content-Type: application/json
 
 {
-    "name": "John",
+    "name": "Marcin",
     "surname": "Doe",
-    "email": "john.doe@example.com",
+    "email": "marcin.doe@example.com",
     "password": "password123",
-    "role": "Manager",
-    "points": 100
+    "role": "Employee",
+    "points": 200
 }
 
 ### Put staff
@@ -38,8 +38,7 @@ POST http://localhost:5205/api/Department
 Content-Type: application/json
 
 {
-    "name": "AAAA",
-    "id": 1
+    "name": "IT"
 }
 
 ### Get all staff
