@@ -20,14 +20,18 @@ Content-Type: application/json
 }
 
 ### Put staff
-PUT http://localhost:5205/api/Staff
+PUT http://localhost:5205/api/User
 Content-Type: application/json
 
 {
+    "id": 2,
     "name": "Sergio",
     "surname": "Doe",
     "email": "john.doe@example.com",
-    "password": "newpassword123"}
+    "password": "newpassword123",
+    "role": "Manager",
+    "points": 100
+    }
 
 ### Delete staff
 DELETE http://localhost:5205/api/Staff/1

@@ -50,7 +50,6 @@ public class UserService(ApplicationDbContext context) : IUserService
         var userToUpdate = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         if (userToUpdate != null)
         {
-            userToUpdate.Id = user.Id;
             userToUpdate.Points = user.Points;
             userToUpdate.Role = user.Role;
             userToUpdate.Team = user.Team;
@@ -58,6 +57,7 @@ public class UserService(ApplicationDbContext context) : IUserService
             userToUpdate.Surname = user.Surname;
             userToUpdate.Email = user.Email;
             userToUpdate.Password = user.Password;
+            _context.Update(userToUpdate);
             await _context.SaveChangesAsync();
         }
         return await Task.FromResult(userToUpdate);

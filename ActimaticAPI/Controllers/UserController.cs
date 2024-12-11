@@ -36,10 +36,10 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateUser([FromBody] User user)
+    public async Task<ActionResult<User>>UpdateUser([FromBody] User user)
     {
         await _userService.UpdateUser(user);
-        return NoContent();
+        return Ok(user);
     }
 
     [HttpDelete("{id}")]
