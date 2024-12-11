@@ -33,12 +33,13 @@
         </EditForm>
         <h2 class="mb-4">ESG Report</h2>
         <label for="kind">Select kind of report:</label>
-        <InputSelect id="kind" @bind-Value="kind" @onselect="HandleSelect">
+        <InputSelect id="kind" @bind-Value="tempKind">
             <option value="0">-- Select kind --</option>
             <option value="1">Team</option>
             <option value="2">Specific worker</option>
             <option value="3">Everyone</option>
         </InputSelect>
+        <button @onclick="ConfirmSelection" class="btn btn-primary">iuhbihbhijk</button>
         <div class="row">
             <div class="col-md-3">
                 <div class="card mb-4">
@@ -76,11 +77,9 @@
                                 <InputRadioGroup @bind-Value="selectedUserId" class="list-unstyled">
                                     @foreach (var user in users)
                                     {
-                                        <li>
                                             <label>
                                                 <InputRadio Value="@user.Id" /> @user.Name @user.Surname
                                             </label>
-                                        </li>
                                     }
                                 </InputRadioGroup>
                             }
@@ -104,7 +103,9 @@
                                 <li>Date: @carPool.Date</li>
                             }
                         </ul>
-                    }else{
+                    }
+                    else
+                    {
                         <p>No car pooling activities in selected period of time</p>
                     }
                     @if (transports != null)
@@ -117,7 +118,9 @@
                                 <li>Date: @transport.Date</li>
                             }
                         </ul>
-                    }else{
+                    }
+                    else
+                    {
                         <p>No transport activities in selected period of time</p>
                     }
                     @if (volunteerings != null)
@@ -130,7 +133,9 @@
                                 <li>Date: @volunteering.Date</li>
                             }
                         </ul>
-                    }else{
+                    }
+                    else
+                    {
                         <p>No volunteering activities in selected period of time</p>
                     }
                     @if (savingFoods != null)
@@ -143,7 +148,9 @@
                                 <li>Date: @savingFood.Date</li>
                             }
                         </ul>
-                    }else{
+                    }
+                    else
+                    {
                         <p>No saving food activities in selected period of time</p>
                     }
                     @if (stairs != null)
@@ -156,7 +163,9 @@
                                 <li>Date: @stair.Date</li>
                             }
                         </ul>
-                    }else{
+                    }
+                    else
+                    {
                         <p>No stairs activities in selected period of time</p>
                     }
                 </div>
@@ -165,9 +174,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Stats</h5>
-                        <p>Emissions saved:</p>
-                        <p>Food saved:</p>
-                        <p>Emissions saved:</p>
+                        <p>Emissions saved: @EmissionsSaved</p>
+                        <p>Food saved: @SavedFood kg</p>
+                        <p>Hours volunteered: @HoursVolunteered</p>
+                        <p>Floors covered: @FloorsCovered</p>
                     </div>
                 </div>
             </div>
@@ -185,14 +195,21 @@
     private bool isLoggedIn;
     private Report report = new Report();
     private int kind;
+    private int tempKind;
     public IEnumerable<Team>? Teams { get; set; }
+    private IEnumerable<User> TeamUsers = Enumerable.Empty<User>();
     private int selectedTeamId;
     private int selectedUserId;
-    private IEnumerable<CarPool>? carPools = null;
-    private IEnumerable<Transport>? transports = null;
-    private IEnumerable<SavingFood>? savingFoods = null;
-    private IEnumerable<Stairs>? stairs = null;
-    private IEnumerable<Volunteering>? volunteerings = null;
+    private IEnumerable<CarPool>? carPools = Enumerable.Empty<CarPool>();
+    private IEnumerable<Transport>? transports = Enumerable.Empty<Transport>();
+    private IEnumerable<SavingFood>? savingFoods = Enumerable.Empty<SavingFood>();
+    private IEnumerable<Stairs>? stairs = Enumerable.Empty<Stairs>();
+    private IEnumerable<Volunteering>? volunteerings = Enumerable.Empty<Volunteering>();
+    private int EmissionsSaved;
+    private int SavedFood;
+    private int HoursVolunteered;
+    private int FloorsCovered;
+    private Team? team = null;
 
 
     @* protected override async Task OnInitializedAsync()
@@ -230,6 +247,7 @@
 
 
     }
+    
     private async Task NewReport()
     {
         Console.WriteLine(report.StartDate);
@@ -240,10 +258,112 @@
         stairs = await StairsService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
         volunteerings = await VolunteeringService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
     }
-    private async Task HandleSelect()
+    private int CalcEmissions(IEnumerable<Transport> transports)
     {
-        Teams = await TeamService.GetAllTeams();
-        users = await ProfileService.GetAllUsers();
+        int sum = 0;
+        if (transports != null)
+        {
+            foreach (var transport in transports)
+            {
+                sum += transport.EmissionsSaved;
+            }
+        }
+        return sum;
+    }
+    private int CalcFood(IEnumerable<SavingFood> savingFoods)
+    {
+        int sum = 0;
+        if (savingFoods != null)
+        {
+            foreach (var savings in savingFoods)
+            {
+                sum += savings.PackagesSaved;
+            }
+        }
+        return sum;
+    }
+    private int CalcHours(IEnumerable<Volunteering> volunteerings)
+    {
+        int sum = 0;
+        if (volunteerings != null)
+        {
+            foreach (var vol in volunteerings)
+            {
+                sum += vol.Hours;
+            }
+        }
+        return sum;
+    }
+    private int CalcFloors(IEnumerable<Stairs> stairs)
+    {
+        int sum = 0;
+        if (stairs != null)
+        {
+            foreach (var stair in stairs)
+            {
+                sum += stair.Floors;
+            }
+        }
+        return sum;
+    }
+    private async Task HandleSelect(int value)
+    {   
+        if (value == 0)
+            Console.WriteLine("This was 0");
+        if (value == 1)
+        {
+            Teams = await TeamService.GetAllTeams();
+            team = await TeamService.GetTeamById(selectedTeamId);
+            IEnumerable<CarPool> carPoolsByTeam = Enumerable.Empty<CarPool>();
+            IEnumerable<SavingFood> savingFoodByTeam = Enumerable.Empty<SavingFood>();
+            IEnumerable<Transport> transportsByTeam = Enumerable.Empty<Transport>();
+            IEnumerable<Stairs> stairsByTeam = Enumerable.Empty<Stairs>();
+            IEnumerable<Volunteering> volunteeringsByTeam = Enumerable.Empty<Volunteering>();
+
+            if (team != null)
+            {
+                foreach (var user in team.Staff)
+                {
+                    carPoolsByTeam = carPoolsByTeam.Concat(carPools.Where(x => x.UserId == user.Id));
+                    savingFoodByTeam = savingFoodByTeam.Concat(savingFoods.Where(x => x.UserId == user.Id));
+                    transportsByTeam = transportsByTeam.Concat(transports.Where(x => x.UserId == user.Id));
+                    stairsByTeam = stairsByTeam.Concat(stairs.Where(x => x.UserId == user.Id));
+                    volunteeringsByTeam = volunteeringsByTeam.Concat(volunteerings.Where(x => x.UserId == user.Id));
+                }
+            }
+            EmissionsSaved = CalcEmissions(transportsByTeam);
+            SavedFood = CalcFood(savingFoodByTeam);
+            HoursVolunteered = CalcHours(volunteeringsByTeam);
+            FloorsCovered = CalcFloors(stairsByTeam);
+        }
+        else if (value == 2)
+        {
+            users = await ProfileService.GetAllUsers();
+            var carPoolsByUser = carPools.Where(x => x.UserId == selectedUserId);
+            var volunteeringsByUser = volunteerings.Where(x => x.UserId == selectedUserId);
+            var savingFoodsByUser = savingFoods.Where(x => x.UserId == selectedUserId);
+            var stairsByUser = stairs.Where(x => x.UserId == selectedUserId);
+            var transportsByUser = transports.Where(x => x.UserId == selectedUserId);
+            EmissionsSaved = CalcEmissions(transportsByUser);
+            SavedFood = CalcFood(savingFoodsByUser);
+            HoursVolunteered = CalcHours(volunteeringsByUser);
+            FloorsCovered = CalcFloors(stairsByUser);
+            Console.WriteLine("Loading users"
+            );
+        }
+        else if (value == 3)
+        {
+            //users = await ProfileService.GetAllUsers();
+            EmissionsSaved = CalcEmissions(transports);
+            SavedFood = CalcFood(savingFoods);
+            HoursVolunteered = CalcHours(volunteerings);
+            FloorsCovered = CalcFloors(stairs);
+        }
+    }
+    private async Task ConfirmSelection(){
+        kind = tempKind;
+        await HandleSelect(kind);
+        StateHasChanged();
     }
 }
 <style>
