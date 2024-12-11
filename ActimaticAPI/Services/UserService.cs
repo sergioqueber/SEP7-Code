@@ -57,7 +57,8 @@ public class UserService(ApplicationDbContext context) : IUserService
             userToUpdate.Surname = user.Surname;
             userToUpdate.Email = user.Email;
             userToUpdate.Password = user.Password;
-            _context.Update(userToUpdate);
+            userToUpdate.TeamId = user.TeamId;
+            _context.Users.Update(userToUpdate);
             await _context.SaveChangesAsync();
         }
         return await Task.FromResult(userToUpdate);
