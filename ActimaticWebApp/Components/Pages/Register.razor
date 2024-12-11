@@ -98,7 +98,8 @@
             var resgisteredUser = await authService.RegisterUserAsync(newUser);
             generatedId = resgisteredUser.Id;
             // Show the success modal
-            Console.WriteLine(generatedId);
+            Console.WriteLine(resgisteredUser.Name );
+            Console.WriteLine(generatedId );
             showModal = true;
             StartCountdown();
             // Clear the form
