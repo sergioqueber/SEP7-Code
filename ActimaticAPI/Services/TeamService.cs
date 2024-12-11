@@ -49,6 +49,8 @@ namespace Services;
                 teamToUpdate.Name = team.Name;
                 teamToUpdate.Department = team.Department;
                 teamToUpdate.TeamRewards = team.TeamRewards;
+                teamToUpdate.TotalPoints = team.TotalPoints;
+                _context.Teams.Update(teamToUpdate);
             }
             await _context.SaveChangesAsync();
             return await Task.FromResult(teamToUpdate);

@@ -114,7 +114,7 @@
             else
             {
                 <div class="mb-4">
-                    <h4>Your team currently has @totalTeamPoints points</h4>
+                    <h4>Your team currently has @team?.TotalPoints points</h4>
     <div class="table-responsive">
         <table class="table table-striped table-bordered mt-3">
             <thead class="thead-dark">
@@ -144,6 +144,20 @@
         </table>
     </div>
 </div>
+
+<div class="card mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h5>Contribute Points to Your Team</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="pointsToContribute" class="form-label">Points to Contribute:</label>
+                            <input type="number" id="pointsToContribute" @bind="pointsToContribute" class="form-control" />
+                        </div>
+                        <button @onclick="ContributePoints" class="btn btn-primary">Contribute</button>
+                    </div>
+                </div>
+
                     <div class="col-md-6">
                         <h5>Rewards</h5>
                         @if (rewards != null && rewards.Any())
@@ -189,6 +203,7 @@
     private List<Team> availableTeams = new();
         private List<User> teamMembers = new();
     private int totalTeamPoints = 0;
+    private int pointsToContribute = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -219,7 +234,7 @@
                     .Where(u => u.TeamId == currentUser.TeamId)
                     .ToList();
 
-                     totalTeamPoints = teamMembers.Sum(member => member.Points);
+                     totalTeamPoints = team.TotalPoints;
 
                     // Fetch rewards associated with the team
                     rewards = (await RewardService.GetAllRewards()).ToList();
@@ -231,12 +246,8 @@
             }
 
             availableDepartments = (await DepartmentService.GetAllDepartments()).ToList();
-
-// Fetch available teams for the "Add Employees to a Team" dropdown
-        availableTeams = (await TeamService.GetAllTeams()).ToList();
-
-        // Fetch available users who are not assigned to any team
-        availableUsers = (await UserService.GetAllUsers())
+            availableTeams = (await TeamService.GetAllTeams()).ToList();
+            availableUsers = (await UserService.GetAllUsers())
             .Where(u => u.TeamId == null)
             .ToList();
         }
@@ -245,6 +256,49 @@
             Console.WriteLine($"Error: {ex.Message}");
         }
     }
+
+ 
+private async Task ContributePoints()
+{
+    if (pointsToContribute <= 0)
+    {
+        Console.WriteLine("Points to contribute must be greater than 0.");
+        return;
+    }
+
+    if (currentUser.Points < pointsToContribute)
+    {
+        Console.WriteLine("You do not have enough points to contribute.");
+        return;
+    }
+
+    try
+    {
+        // Deduct points from the user
+        currentUser.Points -= pointsToContribute;
+        await UserService.UpdateUser(currentUser);
+
+        // Add points to the team's total points
+        if (team != null)
+        {
+            team.TotalPoints += pointsToContribute;
+            await TeamService.UpdateTeam(team);
+        }
+
+        // Refresh total points
+        totalTeamPoints += pointsToContribute;
+
+        // Reset the input
+        pointsToContribute = 0;
+
+        Console.WriteLine("Points successfully contributed.");
+        StateHasChanged();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error contributing points: {ex.Message}");
+    }
+}
 
     private async Task CreateTeam()
     {
