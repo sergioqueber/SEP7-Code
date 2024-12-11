@@ -1,4 +1,31 @@
 @page "/rewards"
+@inject AppInterfaces.IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Interfaces
+@inject IUserService userService
 @using Interfaces
 
-<RedeemReward></RedeemReward>
+<RedeemReward currentUserId="@currentUserId"></RedeemReward>
+
+@code{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+    private int currentUserId;
+    private IEnumerable<Claim>? userClaims;
+    private bool isLoggedIn = false;
+      protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await AuthState;
+        ClaimsPrincipal userToLog = authState.User;
+        isLoggedIn = userToLog.Identity != null;
+
+        if (!isLoggedIn) return;
+        userClaims = userToLog.Claims;
+        currentUserId = int.Parse(userToLog.Claims.First(claim => claim.Type.Equals("Id")).Value);
+        Console.WriteLine("Id is : " + currentUserId);
+
+    }
+}

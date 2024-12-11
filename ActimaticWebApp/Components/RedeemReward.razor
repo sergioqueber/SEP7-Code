@@ -1,20 +1,45 @@
 @using Interfaces
 @inject IRewardService rewardService;
+@inject IRedeemedRewardService redeemedRewardService;
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 @using Model
+@inject IUserService userService
 
 <div class="container mt-4">
     <h2 class="mb-4">Available Rewards</h2>
-    <AuthorizeView>
-        <button class="btn btn-primary mb-4" @onclick="ToggleModal" >Add Reward</button>
+    <AuthorizeView Policy="MustBeHr">
+        <Authorized>
+            <button class="btn btn-primary mb-4" @onclick="ToggleModal">Add Reward</button>
+        </Authorized>
     </AuthorizeView>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Not enough points!</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null" aria-label="Close"></button>
+        </div>
+    }
+    @if (showNotification)
+    {
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto">Activity Recorded!</strong>
+                    <button type="button" class="btn-close btn-close-white" @onclick="HideNotification"></button>
+                </div>
+                <div class="toast-body">
+                    Congratulations! You got youself a rewards! Your current points are @currentPoints 🎉
+                </div>
+            </div>
+        </div>
+    }
     @if (showModal)
     {
         <EditForm Model="@newReward" OnValidSubmit="addReward">
             <DataAnnotationsValidator />
             <div class="mb-3">
-                <label class="form-label" >Name</label>
+                <label class="form-label">Name</label>
                 <InputText @bind-Value="@newReward.Name" class="form-control" />
             </div>
             <div class="mb-3">
@@ -46,7 +71,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var reward in rewards)
             {
-                @if (reward.Availability)
+                @if (reward.Availability || currentUser.Role == "Hr")
                 {
 
                     <div class="col">
@@ -57,9 +82,21 @@
                                 <p class="card-text"><small class="text-muted">@reward.PointsRequired Points</small></p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge bg-primary">@reward.PointsRequired Points</span>
-                                    <button class="btn btn-success">
+                                    <button class="btn btn-success" @onclick="() => RedeemRewardUser(reward.Id)">
                                         Redeem
                                     </button>
+                                    <AuthorizeView Policy="MustBeHr">
+                                        <Authorized>
+                                            <button class="btn btn-danger" @onclick="() => RemoveReward(reward.Id)">
+                                                Delete
+                                            </button>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" checked="@reward.Availability"
+                                                    @onchange="async (e) => await UpdateAvailability(reward, e.Value)" />
+                                                <label class="form-check-label">Available</label>
+                                            </div>
+                                        </Authorized>
+                                    </AuthorizeView>
                                 </div>
                             </div>
                         </div>
@@ -71,18 +108,68 @@
 </div>
 
 @code {
+    private bool showNotification = false;
+    private string? errorMessage;
+
     private IEnumerable<Reward> rewards = new List<Reward>();
     private bool showModal = false;
     private Reward newReward = new Reward();
+    private User currentUser = new User();
+    private int currentPoints;
+    [Parameter] public int currentUserId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         rewards = await rewardService.GetAllRewards();
+        currentUser = await userService.GetUserById(currentUserId);
+    }
+    private async Task UpdateAvailability(Reward reward, object? value)
+    {
+        if (value is bool isAvailable)
+        {
+            Console.WriteLine(isAvailable);
+            reward.Availability = isAvailable;
+            await rewardService.UpdateReward(reward);
+        }
+    }
+
+    private async Task ShowNotification(int points)
+    {
+        currentPoints = points;
+        showNotification = true;
+        StateHasChanged();
+        await Task.Delay(7000); // Hide after 3 seconds
+        showNotification = false;
+        StateHasChanged();
+    }
+
+    private void HideNotification()
+    {
+        showNotification = false;
     }
 
     private async Task RedeemRewardUser(int rewardId)
     {
         var reward = rewards.FirstOrDefault(r => r.Id == rewardId);
+        var selectedRewardPoints = reward.PointsRequired;
         if (reward == null) return;
+
+        var redeemedReward = new RedeemedReward
+            {
+                RewardId = reward.Id,
+                UserId = currentUserId, //Use claims
+                Date = DateOnly.FromDateTime(DateTime.Now)
+            };
+        await redeemedRewardService.CreateRedeemedReward(redeemedReward);
+        if (currentUser.Points < selectedRewardPoints)
+        {
+            errorMessage = $"You need {reward.PointsRequired} points to redeem this reward. You currently have {currentUser.Points} points.";
+            return;
+        }
+        currentUser.Points -= selectedRewardPoints;
+        await userService.UpdateUser(currentUser);
+        await ShowNotification(currentUser.Points);
+        Console.WriteLine("Redeemed");
 
     }
 
@@ -94,6 +181,12 @@
         rewards = await rewardService.GetAllRewards();
     }
 
+    private async Task RemoveReward(int rewardId)
+    {
+        await rewardService.RemoveReward(rewardId);
+        rewards = await rewardService.GetAllRewards();
+        StateHasChanged();
+    }
     private void ToggleModal()
     {
         showModal = !showModal;

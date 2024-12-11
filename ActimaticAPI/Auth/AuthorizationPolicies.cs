@@ -11,6 +11,7 @@ public static class AuthorizationPolicies{
 
             options.AddPolicy("MustBeEmployee", a =>
                 a.RequireAuthenticatedUser().RequireClaim("Role", "Employee"));
+            options.AddPolicy("MustBeHr", a => a.RequireAuthenticatedUser().RequireClaim("Role", "Hr"));
         });
     }
 }
