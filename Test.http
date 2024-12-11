@@ -11,13 +11,12 @@ POST http://localhost:5205/api/User
 Content-Type: application/json
 
 {
-    "name": "Marcin",
-    "surname": "Doe",
-    "email": "marcin.doe@example.com",
+    "name": "Jan",
+    "surname": "Bosy",
+    "email": "jan@baby.com",
     "password": "password123",
     "role": "Employee",
-    "points": 200,
-    "teamId": 2
+    "points": 12345
 }
 
 ### Put staff
@@ -48,7 +47,7 @@ POST http://localhost:5205/api/Department
 Content-Type: application/json
 
 {
-    "name": "IT"
+    "name": "Marketing"
 }
 
 ### Get all staff
@@ -381,8 +380,8 @@ POST http://localhost:5205/api/Team
 Content-Type: application/json
 
 {
-    "id": 6,
-    "name": "Team lalal",
+    
+    "name": "super",
 
     "teamRewards": [
        
@@ -424,7 +423,7 @@ Content-Type: application/json
 }
 
 ### Delete team
-DELETE http://localhost:5205/api/Team/1
+DELETE http://localhost:5205/api/Team/3
 Accept: application/json
 
 ### Get all teams
@@ -506,6 +505,7 @@ Content-Type: application/json
 ### Delete team
 DELETE http://localhost:5205/api/Team/1
 Accept: application/json
+{
     "name": "transport",
     "awardedPoints": 69,
     "date": "2024-11-11",
@@ -514,6 +514,41 @@ Accept: application/json
     "emissionsSaved": 20
 }
 
-### Get team by id
-GET http://localhost:5205/api/carPool/dates/2024/12/11/2024/12/11
+### Get all volunteerings
+GET http://localhost:5205/api/Volunteering
+Accept: application/json
+
+### Get volunteering by id
+GET http://localhost:5205/api/Volunteering/1
+Accept: application/json
+### Put volunteering
+PUT http://localhost:5205/api/Volunteering
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "volunteering",
+    "awardedPoints": 40,
+    "date": "2024-11-11",
+    "location": "Community Center",
+    "hours": 5
+}
+
+### Put transport
+PUT http://localhost:5205/api/Transport
+Content-Type: application/json
+    
+    {
+        "distance": 35,
+        "type": "Bike",
+        "emissionsSaved": 0,
+        "id": 1,
+        "awardedPoints": 40,
+        "userId": 2,
+        "date": "2024-11-11"
+    }
+
+
+### get transport by id
+GET http://localhost:5205/api/Transport/1
 Accept: application/json

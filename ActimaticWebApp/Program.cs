@@ -23,6 +23,7 @@ builder.Services.AddScoped<IStairsService, ActivitiesService>();
 builder.Services.AddScoped<ITransportService, ActivitiesService>();
 builder.Services.AddScoped<IVolunteeringService, ActivitiesService>();
 builder.Services.AddScoped<IRewardService, RewardsService>();
+builder.Services.AddScoped<IRedeemedRewardService, RedeemedRewardsService>();
 builder.Services.AddScoped<ICarPoolService, ActivitiesService>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorizationCore();

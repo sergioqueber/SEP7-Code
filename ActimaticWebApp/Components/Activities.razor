@@ -1,0 +1,302 @@
+@page "/activities"
+@using Interfaces
+@using AppServices
+@using Model
+@inject ActivitiesService ActivitiesService
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@attribute [Authorize]
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            @if (isLoading)
+            {
+                <div class="text-center">
+                    <p>Loading...</p>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        @if (amount == "max")
+                        {
+                            <h3 class="mb-0">All Activities</h3>
+                        }
+                        else
+                        {
+                            <h3 class="mb-0">Latest Activities</h3>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <h4>Transport</h4>
+                        @if (transports.Where(t => t.UserId == userId).Any() && amount == "max")
+                        {
+                            <dl>
+                            <ul>
+                                @foreach (var transport in transports.Where(t => t.UserId == userId))
+                                {   
+                                    <li>
+                                    @if (transport.Name != null)
+                                    {
+                                        <dt>@transport.Type: @transport.Name</dt>
+                                    }
+                                    else
+                                    {
+                                        <dt>@transport.Type</dt>
+                                    }
+                                    <dd>Distance: @transport.Distance km</dd>
+                                    <dd>Emissions saved: @transport.EmissionsSaved kg CO2</dd>
+                                    <dd>Date: @transport.Date</dd>
+                                    <dd>Points: @transport.AwardedPoints</dd>
+                                    </li>
+                                }
+                            </ul>
+                            </dl>
+                        }
+                        else if (transports.Where(t => t.UserId == userId).Any() && amount == "few")
+                        {
+                            <ul>
+                                @foreach (var transport in transports.Where(t => t.UserId == userId).OrderByDescending(t => t.Id).Take(1))
+                                {
+                                    <li>
+                                    @if (transport.Name != null)
+                                    {
+                                        <li>@transport.Name: @transport.Type (@transport.AwardedPoints points)</li>
+                                    }
+                                    else
+                                    {
+                                        <li>@transport.Type (@transport.AwardedPoints points)</li>
+                                    }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No transport activities found.</p>
+                        }
+
+                        <h4>Stairs</h4>
+                        @if (stairs.Where(t => t.UserId == userId).Any() && amount == "max")
+                        {
+                            <ul>
+                                @foreach (var stair in stairs.Where(t => t.UserId == userId))
+                                {
+                                    <li>
+                                     @if (stair.Name != null)
+                                    {
+                                        <dt>Stairs: @stair.Name</dt>
+                                    }
+                                    else
+                                    {
+                                        <dt>Stairs</dt>
+                                    }
+                                    <dd>Floors climbed: @stair.Floors</dd>
+                                    <dd>Date: @stair.Date</dd>
+                                    <dd>Points: @stair.AwardedPoints</dd>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else if (stairs.Where(t => t.UserId == userId).Any() && amount == "few")
+                        {
+                            <ul>
+                                @foreach (var stair in stairs.Where(t => t.UserId == userId).OrderByDescending(t => t.Id).Take(1))
+                                {
+                                    <li>
+                                     @if (stair.Name != null)
+                                    {
+                                        <li>@stair.Name: @stair.Floors Floors Climbed (@stair.AwardedPoints points)</li>
+                                    }
+                                    else
+                                    {
+                                        <li>@stair.Floors Floors climbed (@stair.AwardedPoints points)</li>
+                                    }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No stairs activities found.</p>
+                        }
+                        
+                        <h4>Volunteering</h4>
+                        @if (volunteerings.Where(t => t.UserId == userId).Any() && amount == "max")
+                        {
+                            <ul>
+                                @foreach (var volunteering in volunteerings.Where(t => t.UserId == userId))
+                                {
+                                    <li>
+                                    @if (volunteering.Name != null)
+                                    {
+                                        <dt>@volunteering.Location: @volunteering.Name</dt>
+                                    }
+                                    else
+                                    {
+                                        <dt>@volunteering.Location</dt>
+                                    }
+                                    <dd>Hours: @volunteering.Hours</dd>
+                                    <dd>Date: @volunteering.Date</dd>
+                                    <dd>Points: @volunteering.AwardedPoints</dd>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else if (volunteerings.Where(t => t.UserId == userId).Any() && amount == "few")
+                        {
+                            <ul>
+                                @foreach (var volunteering in volunteerings.Where(t => t.UserId == userId).OrderByDescending(t => t.Id).Take(1))
+                                {
+                                    <li>
+                                    @if (volunteering.Name != null)
+                                    {
+                                        <li>@volunteering.Name: @volunteering.Location (@volunteering.AwardedPoints points)</li>
+                                    }
+                                    else
+                                    {
+                                        <li>Volunteering at @volunteering.Location (@volunteering.AwardedPoints points)</li>
+                                    }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No volunteering activities found.</p>
+                        }
+
+                        <h4>Saving Food</h4>
+                        @if (savingFoods.Where(t => t.UserId == userId).Any() && amount == "max")
+                        {
+                            <ul>
+                                @foreach (var savingFood in savingFoods.Where(t => t.UserId == userId))
+                                {
+                                    <li>
+                                    @if (savingFood.Name != null)
+                                    {
+                                        <dt>Food Saved: @savingFood.Name</dt>
+                                    }
+                                    else
+                                    {
+                                        <dt>Food Saved</dt>
+                                    }
+                                    <dd>Packages: @savingFood.PackagesSaved</dd>
+                                    <dd>Date: @savingFood.Date</dd>
+                                    <dd>Points: @savingFood.AwardedPoints</dd>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else if (savingFoods.Where(t => t.UserId == userId).Any() && amount == "few")
+                        {
+                            <ul>
+                                @foreach (var savingFood in savingFoods.Where(t => t.UserId == userId).OrderByDescending(t => t.Id).Take(1))
+                                {
+                                    <li>
+                                    @if (savingFood.Name != null)
+                                    {
+                                        <li>@savingFood.Name: @savingFood.PackagesSaved Packages saved (@savingFood.AwardedPoints points)</li>
+                                    }
+                                    else
+                                    {
+                                        <li>@savingFood.PackagesSaved Packages saved (@savingFood.AwardedPoints points)</li>
+                                    }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No saving food activities found.</p>
+                        }
+                        <h4>Car Pool</h4>
+                        @if (carPools.Where(t => t.UserId == userId).Any() && amount == "max")
+                        {
+                            <ul>
+                                @foreach (var carPool in carPools.Where(t => t.UserId == userId))
+                                {
+                                    <li>
+                                    @if (carPool.Name != null)
+                                    {
+                                        <dt>@carPool.Name: In a @carPool.CarType Car</dt>
+                                    }
+                                    else
+                                    {
+                                        <dt>In a @carPool.CarType Car</dt>
+                                    }
+                                    <dd>Distance: @carPool.Distance km</dd>
+                                    <dd>Date: @carPool.Date</dd>
+                                    <dd>Points: @carPool.AwardedPoints</dd>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else if (carPools.Where(t => t.UserId == userId).Any() && amount == "few")
+                        {
+                            <ul>
+                                @foreach (var carPool in carPools.Where(t => t.UserId == userId).OrderByDescending(t => t.Id).Take(1))
+                                {
+                                    <li>
+                                    @if (carPool.Name != null)
+                                    {
+                                        <li>@carPool.Name: In a @carPool.CarType Car (@carPool.AwardedPoints points)</li>
+                                    }
+                                    else
+                                    {
+                                        <li>In a @carPool.CarType Car (@carPool.AwardedPoints points)</li>
+                                    }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No car pool activities found.</p>
+                        }
+                        
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<Transport> transports = new List<Transport>();
+    private IEnumerable<Stairs> stairs = new List<Stairs>();
+    private IEnumerable<Volunteering> volunteerings = new List<Volunteering>();
+    private IEnumerable<SavingFood> savingFoods = new List<SavingFood>();
+    private IEnumerable<CarPool> carPools = new List<CarPool>();
+    private bool isLoading = true;
+    [Parameter] public string amount { get; set; } = "max";
+    [Parameter] public int userId { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            await LoadActivities();
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading activities: {ex.Message}");
+        }
+    }
+    private async Task LoadActivities()
+    {
+        transports = await ActivitiesService.GetAllTransport();
+        stairs = await ActivitiesService.GetAllStairsAsync();
+        volunteerings = await ActivitiesService.GetAllVolunteeringAsync();
+        savingFoods = await ActivitiesService.GetAllSavingFoodAsync();
+        carPools = await ActivitiesService.GetAllCarPool();
+    }
+}
