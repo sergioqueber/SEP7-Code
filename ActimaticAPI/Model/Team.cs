@@ -7,6 +7,7 @@ public class Team
     public Department? Department { get; set; }
 
     public int? DepartmentId { get; set; }
+    public int TotalPoints { get; set; } = 0;
     public List<RedeemedReward>? TeamRewards { get; set; }
     public List<User>? Staff { get; set; } = [];
     public Team() { }
