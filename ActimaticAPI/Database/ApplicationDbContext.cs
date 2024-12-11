@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Department> Departments { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Reward> Rewards { get; set; }
+    public DbSet<RedeemedReward> RedeemedRewards { get; set; }
     public DbSet<SavingFood> SavingFoods { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Stairs> Stairs { get; set; }

@@ -21,6 +21,7 @@ builder.Services.AddScoped<ISavingFoodService, ActivitiesService>();
 builder.Services.AddScoped<IStairsService, ActivitiesService>();
 builder.Services.AddScoped<ITransportService, ActivitiesService>();
 builder.Services.AddScoped<IVolunteeringService, ActivitiesService>();
+builder.Services.AddScoped<IRewardService, RewardsService>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
