@@ -58,10 +58,15 @@ public class UserService(ApplicationDbContext context) : IUserService
             userToUpdate.Email = user.Email;
             userToUpdate.Password = user.Password;
             userToUpdate.TeamId = user.TeamId;
+            userToUpdate.IsApproved = user.IsApproved;
             _context.Users.Update(userToUpdate);
             await _context.SaveChangesAsync();
         }
         return await Task.FromResult(userToUpdate);
+    }
+    public async Task<IEnumerable<User>> GetAllUsersByTeamId(int id)
+    {
+        return await Task.FromResult( _context.Users.Where(x => x.TeamId == id).AsEnumerable());
     }
 
 }

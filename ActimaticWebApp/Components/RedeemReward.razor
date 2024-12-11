@@ -71,7 +71,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var reward in rewards)
             {
-                @if (reward.Availability || currentUser.Role == "Hr")
+                @if ((reward.Availability && !reward.IsTeamReward) || (currentUser.Role == "Hr" && !reward.IsTeamReward))
                 {
 
                     <div class="col">
@@ -175,6 +175,7 @@
 
     private async Task addReward()
     {
+        newReward.IsTeamReward = false;
         await rewardService.CreateReward(newReward);
         newReward = new Reward();
         showModal = false;

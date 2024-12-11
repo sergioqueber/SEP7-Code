@@ -1,0 +1,94 @@
+@page "/admin-page"
+@using Model
+@using Interfaces
+@inject IUserService UserService
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize (Policy ="MustBeAdmin")]
+
+<div class="container mt-4">
+    <h2>User Approval Management</h2>
+
+    @if (users == null)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td>@user.Name @user.Surname</td>
+                            <td>@user.Email</td>
+                            <td>@user.Role</td>
+                            <td>
+                                @if (user.IsApproved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Pending Approval</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-success btn-sm" @onclick="() => ApproveUser(user.Id)">
+                                    Approve
+                                </button>
+                                <button class="btn btn-danger btn-sm" @onclick="() => RejectUser(user.Id)">
+                                    Reject
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private List<User>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = (await UserService.GetAllUsers()).ToList();
+    }
+
+    private async Task ApproveUser(int userId)
+    {
+        var user = users?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            user.IsApproved = true;
+            await UserService.UpdateUser(user);
+            users = (await UserService.GetAllUsers()).ToList();
+        }
+    }
+
+    private async Task RejectUser(int userId)
+    {
+        var user = users?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            user.IsApproved = false;
+            await UserService.UpdateUser(user);
+            users = (await UserService.GetAllUsers()).ToList();
+        }
+    }
+}

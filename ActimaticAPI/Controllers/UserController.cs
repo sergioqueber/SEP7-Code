@@ -48,4 +48,11 @@ public class UserController : ControllerBase
         return await _userService.RemoveUser(id);
     
     }
+
+    [HttpGet("teamId/{id}")]
+    public async Task<ActionResult<IEnumerable<User>>> GetAllUserByTEamId(int id)
+    {
+        var user = await _userService.GetAllUsersByTeamId(id);
+        return Ok(user);
+    }
 }

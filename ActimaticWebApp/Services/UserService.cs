@@ -43,4 +43,9 @@ public class UserService : IUserService
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<User>();
     }
+    public async Task<IEnumerable<User>> GetAllUsersByTeamId(int id)
+    {
+        return await _httpClient.GetFromJsonAsync<List<User>>($"http://localhost:5205/api/user/teamId/{id}")
+                   ?? new List<User>();
+    }
 }

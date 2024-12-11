@@ -41,7 +41,9 @@ public class ActivitiesService : ITransportService, IStairsService, IVolunteerin
 
     public async Task<IEnumerable<Transport>> GetTransportByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
-        return await _httpClient.GetFromJsonAsync<List<Transport>>($"api/transport/dates/{startDate}/{endDate}")
+        string formattedStartDate = startDate.ToString("yyyy-MM-dd");
+        string formattedEndDate = endDate.ToString("yyyy-MM-dd");
+        return await _httpClient.GetFromJsonAsync<List<Transport>>($"api/transport/dates/{formattedStartDate}/{formattedEndDate}")
                    ?? new List<Transport>();
     }
     public async Task<IEnumerable<Stairs>> GetAllStairsAsync()
@@ -169,25 +171,34 @@ public class ActivitiesService : ITransportService, IStairsService, IVolunteerin
     }
     public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
-        return await _httpClient.GetFromJsonAsync<List<SavingFood>>($"api/savingFood/dates/{startDate}/{endDate}")
+        string formattedStartDate = startDate.ToString("yyyy-MM-dd");
+        string formattedEndDate = endDate.ToString("yyyy-MM-dd");
+        return await _httpClient.GetFromJsonAsync<List<SavingFood>>($"api/savingFood/dates/{formattedStartDate}/{formattedEndDate}")
                    ?? new List<SavingFood>();
     }
 
     public async Task<IEnumerable<Stairs>> GetStairsByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
-        return await _httpClient.GetFromJsonAsync<List<Stairs>>($"api/stairs/dates/{startDate}/{endDate}")
+        string formattedStartDate = startDate.ToString("yyyy-MM-dd");
+        string formattedEndDate = endDate.ToString("yyyy-MM-dd");
+        return await _httpClient.GetFromJsonAsync<List<Stairs>>($"api/stairs/dates/{formattedStartDate}/{formattedEndDate}")
                    ?? new List<Stairs>();
     }
 
     public async Task<IEnumerable<Volunteering>> GetVolunteeringByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
-        return await _httpClient.GetFromJsonAsync<List<Volunteering>>($"api/volunteering/dates/{startDate}/{endDate}")
+        string formattedStartDate = startDate.ToString("yyyy-MM-dd");
+        string formattedEndDate = endDate.ToString("yyyy-MM-dd");
+        return await _httpClient.GetFromJsonAsync<List<Volunteering>>($"api/volunteering/dates/{formattedStartDate}/{formattedEndDate}")
                    ?? new List<Volunteering>();
     }
 
     public async Task<IEnumerable<CarPool>> GetCarPoolByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
-        return await _httpClient.GetFromJsonAsync<List<CarPool>>($"api/carPool/dates/{startDate}/{endDate}")
+        string formattedStartDate = startDate.ToString("yyyy-MM-dd");
+        string formattedEndDate = endDate.ToString("yyyy-MM-dd");
+        Console.WriteLine(formattedStartDate);
+        return await _httpClient.GetFromJsonAsync<List<CarPool>>($"api/carPool/dates/{formattedStartDate}/{formattedEndDate}")
                    ?? new List<CarPool>();
     }
 

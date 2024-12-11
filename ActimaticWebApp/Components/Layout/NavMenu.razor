@@ -50,6 +50,14 @@
                         </NavLink>
                     </NotAuthorized>
                 </AuthorizeView>
+                <AuthorizeView Policy="MustBeAdmin">
+                    <Authorized>
+                        <NavLink href="/admin-page" Match="NavLinkMatch.All" class="nav-item">
+                            <span class="nav-icon">🔒</span>
+                            User approval
+                        </NavLink>
+                    </Authorized>
+                </AuthorizeView>
             </div>
 
             <!-- Profile Bar -->

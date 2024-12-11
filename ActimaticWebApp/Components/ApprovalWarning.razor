@@ -1,0 +1,34 @@
+@using Interfaces
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+
+@if (!isApproved)
+{
+    <div class="alert alert-warning" role="alert">
+        Your account is pending approval. Please wait for an administrator to approve your account.
+    </div>
+}
+else
+{
+     @ChildContent
+
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    private bool isApproved = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            var userId = int.Parse(user.FindFirst("Id")?.Value ?? "0");
+            var currentUser = await UserService.GetUserById(userId);
+            isApproved = currentUser?.IsApproved ?? false;
+        }
+    }
+}

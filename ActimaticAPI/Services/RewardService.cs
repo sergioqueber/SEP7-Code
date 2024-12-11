@@ -49,6 +49,7 @@ public class RewardService(ApplicationDbContext context) : IRewardService{
                 rewardToUpdate.Description = reward.Description;
                 rewardToUpdate.PointsRequired = reward.PointsRequired;
                 rewardToUpdate.Availability = reward.Availability;
+                rewardToUpdate.IsTeamReward = reward.IsTeamReward;
                 _context.Rewards.Update(rewardToUpdate);
                 await _context.SaveChangesAsync();
             }

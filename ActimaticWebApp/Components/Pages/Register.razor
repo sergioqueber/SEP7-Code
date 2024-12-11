@@ -58,23 +58,6 @@
                     {
                         <div class="alert alert-danger mt-3">@errorMessage</div>
                     }
-
-                    @if (showModal)
-                    {
-                        <div class="modal" style="display:block; background-color:rgba(0,0,0,0.5);">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Registration Successful!</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Your user ID is <strong>@generatedId</strong></p>
-                                        <p>Redirecting to login in <strong>@countdown</strong> seconds...</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
                 </div>
             </div>
         </div>
@@ -92,7 +75,7 @@
         <div class="modal-dialog"
             style="background:white; margin:15% auto; padding:20px; max-width:400px; text-align:center; border-radius:10px;">
             <h4>Registration Successful!</h4>
-            <p>Your user ID is <strong>@generatedId</strong>.</p>
+            <p>Your user ID is <strong>@generatedId</strong></p>
             <p>Going top log in page in <strong>@countdown</strong> seconds...</p>
 
 
@@ -115,7 +98,8 @@
             var resgisteredUser = await authService.RegisterUserAsync(newUser);
             generatedId = resgisteredUser.Id;
             // Show the success modal
-            Console.WriteLine(generatedId);
+            Console.WriteLine(resgisteredUser.Name );
+            Console.WriteLine(generatedId );
             showModal = true;
             StartCountdown();
             // Clear the form

@@ -3,7 +3,7 @@ GET http://localhost:5205/api/user
 Accept: application/json
 
 ### Get staff by id
-GET http://localhost:5205/api/User/1
+GET http://localhost:5205/api/User/3
 Accept: application/json
 
 ### Post staff
@@ -24,14 +24,19 @@ PUT http://localhost:5205/api/User
 Content-Type: application/json
 
 {
-    "id": 2,
-    "name": "Sergio",
-    "surname": "Doe",
-    "email": "john.doe@example.com",
-    "password": "newpassword123",
-    "role": "Manager",
-    "points": 100
-    }
+  "id": 3,
+  "name": "Jan2",
+  "surname": "Niezbędny2",
+  "email": "dddd",
+  "password": "123456",
+  "role": "Employee",
+  "points": 0,
+  "activities": [],
+  "rewards": [],
+  "team": null,
+  "teamId": 2,
+  "reports": []
+}
 
 ### Delete staff
 DELETE http://localhost:5205/api/Staff/1

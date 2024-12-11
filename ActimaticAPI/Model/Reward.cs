@@ -9,18 +9,20 @@ public class Reward
     public int PointsRequired { get; set; }
 
     public bool Availability { get; set; }
+    public bool IsTeamReward { get; set; }
     public List<RedeemedReward> RedeemedRewards { get; set; } = [];
     public List<Team> Teams { get; set; } = [];
 
     public Reward() { }
 
 
-    public Reward(int id, string name, string description, int pointsRequired, bool availability)
+    public Reward(int id, string name, string description, int pointsRequired, bool availability, bool isTeamReward)
     {
         Id = id;
         Name = name;
         Description = description;
         PointsRequired = pointsRequired;
         Availability = availability;
+        IsTeamReward = isTeamReward;
     }
 }

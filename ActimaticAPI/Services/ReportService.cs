@@ -51,6 +51,10 @@ public class ReportService(ApplicationDbContext context) : IReportService
             reportToUpdate.AwardedRewards = report.AwardedRewards;
             reportToUpdate.CompletedActivities = report.CompletedActivities;
             reportToUpdate.EmissionsSaved = report.EmissionsSaved;
+            reportToUpdate.HoursVolunteered = report.HoursVolunteered;
+            reportToUpdate.Floors = report.Floors;
+            reportToUpdate.FoodSaved = report.FoodSaved;
+            _context.Reports.Update(report);
             await _context.SaveChangesAsync();
         }
 
