@@ -11,7 +11,7 @@
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-12 col-lg-10">
             @if (isLoading)
             {
                 <div class="text-center">
@@ -32,30 +32,38 @@
                         }
                     </div>
                     <div class="card-body">
+                        @if (transports.Where(t => t.UserId == userId).Any())
+                        {
                         <h4>Transport</h4>
+                        }
                         @if (transports.Where(t => t.UserId == userId).Any() && amount == "max")
                         {
-                            <dl>
-                            <ul>
-                                @foreach (var transport in transports.Where(t => t.UserId == userId))
+                            <div class="row g-4 mb-2" >
+                                @foreach (var transport in transports.Where(t => t.UserId == userId).OrderByDescending(t => t.Id))
                                 {   
-                                    <li>
-                                    @if (transport.Name != null)
-                                    {
-                                        <dt>@transport.Type: @transport.Name</dt>
-                                    }
-                                    else
-                                    {
-                                        <dt>@transport.Type</dt>
-                                    }
-                                    <dd>Distance: @transport.Distance km</dd>
-                                    <dd>Emissions saved: @transport.EmissionsSaved kg CO2</dd>
-                                    <dd>Date: @transport.Date</dd>
-                                    <dd>Points: @transport.AwardedPoints</dd>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    @if (transport.Name != null)
+                                                    {
+                                                        @($"{transport.Type}: {transport.Name}")
+                                                    }
+                                                    else
+                                                    {
+                                                        @transport.Type
+                                                    }
+                                                </h5>
+                                                <dl class="mb-0">
+                                                    <dd>Distance: @transport.Distance</dd>
+                                                    <dd>Points: @transport.AwardedPoints</dd>
+                                                    <dd>Date: @transport.Date.ToString("dd/MM/yyyy")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
-                            </dl>
+                            </div>
                         }
                         else if (transports.Where(t => t.UserId == userId).Any() && amount == "few")
                         {
@@ -75,32 +83,37 @@
                                 }
                             </ul>
                         }
-                        else
-                        {
-                            <p>No transport activities found.</p>
-                        }
-
+                        @if (stairs.Where(t => t.UserId == userId).Any()){
                         <h4>Stairs</h4>
+                        }
                         @if (stairs.Where(t => t.UserId == userId).Any() && amount == "max")
                         {
-                            <ul>
-                                @foreach (var stair in stairs.Where(t => t.UserId == userId))
+                            <div class="row g-4 mb-2" >
+                                @foreach (var stair in stairs.Where(t => t.UserId == userId).OrderByDescending(t => t.Id))
                                 {
-                                    <li>
-                                     @if (stair.Name != null)
-                                    {
-                                        <dt>Stairs: @stair.Name</dt>
-                                    }
-                                    else
-                                    {
-                                        <dt>Stairs</dt>
-                                    }
-                                    <dd>Floors climbed: @stair.Floors</dd>
-                                    <dd>Date: @stair.Date</dd>
-                                    <dd>Points: @stair.AwardedPoints</dd>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    @if (stair.Name != null)
+                                                    {
+                                                        @($"Stairs: {stair.Name}")
+                                                    }
+                                                    else
+                                                    {
+                                                        @("Stairs")
+                                                    }
+                                                </h5>
+                                                <dl class="mb-0">
+                                                    <dd>Floors: @stair.Floors</dd>
+                                                    <dd>Points: @stair.AwardedPoints</dd>
+                                                    <dd>Date: @stair.Date.ToString("dd/MM/yyyy")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
                         }
                         else if (stairs.Where(t => t.UserId == userId).Any() && amount == "few")
                         {
@@ -120,32 +133,37 @@
                                 }
                             </ul>
                         }
-                        else
-                        {
-                            <p>No stairs activities found.</p>
-                        }
-                        
+                        @if (volunteerings.Where(t => t.UserId == userId).Any()){
                         <h4>Volunteering</h4>
+                        }
                         @if (volunteerings.Where(t => t.UserId == userId).Any() && amount == "max")
                         {
-                            <ul>
-                                @foreach (var volunteering in volunteerings.Where(t => t.UserId == userId))
+                            <div class="row g-4 mb-2" >
+                                @foreach (var volunteering in volunteerings.Where(t => t.UserId == userId).OrderByDescending(t => t.Id))
                                 {
-                                    <li>
-                                    @if (volunteering.Name != null)
-                                    {
-                                        <dt>@volunteering.Location: @volunteering.Name</dt>
-                                    }
-                                    else
-                                    {
-                                        <dt>@volunteering.Location</dt>
-                                    }
-                                    <dd>Hours: @volunteering.Hours</dd>
-                                    <dd>Date: @volunteering.Date</dd>
-                                    <dd>Points: @volunteering.AwardedPoints</dd>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    @if (volunteering.Name != null)
+                                                    {
+                                                        @($"{volunteering.Location}: {volunteering.Name}")
+                                                    }
+                                                    else
+                                                    {
+                                                        @volunteering.Location
+                                                    }
+                                                </h5>
+                                                <dl class="mb-0">
+                                                    <dd>Hours: @volunteering.Hours</dd>
+                                                    <dd>Points: @volunteering.AwardedPoints</dd>
+                                                    <dd>Date: @volunteering.Date.ToString("dd/MM/yyyy")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
                         }
                         else if (volunteerings.Where(t => t.UserId == userId).Any() && amount == "few")
                         {
@@ -165,32 +183,38 @@
                                 }
                             </ul>
                         }
-                        else
-                        {
-                            <p>No volunteering activities found.</p>
-                        }
+                        @if (savingFoods.Where(t => t.UserId == userId).Any()){
 
                         <h4>Saving Food</h4>
+                        }
                         @if (savingFoods.Where(t => t.UserId == userId).Any() && amount == "max")
                         {
-                            <ul>
-                                @foreach (var savingFood in savingFoods.Where(t => t.UserId == userId))
+                            <div class="row g-4 mb-2" >
+                                @foreach (var savingFood in savingFoods.Where(t => t.UserId == userId).OrderByDescending(t => t.Id))
                                 {
-                                    <li>
-                                    @if (savingFood.Name != null)
-                                    {
-                                        <dt>Food Saved: @savingFood.Name</dt>
-                                    }
-                                    else
-                                    {
-                                        <dt>Food Saved</dt>
-                                    }
-                                    <dd>Packages: @savingFood.PackagesSaved</dd>
-                                    <dd>Date: @savingFood.Date</dd>
-                                    <dd>Points: @savingFood.AwardedPoints</dd>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    @if (savingFood.Name != null)
+                                                    {
+                                                        @($"Food Saved: {savingFood.Name}")
+                                                    }
+                                                    else
+                                                    {
+                                                        @("Food Saved")
+                                                    }
+                                                </h5>
+                                                <dl class="mb-0">
+                                                    <dd>Packages: @savingFood.PackagesSaved</dd>
+                                                    <dd>Points: @savingFood.AwardedPoints</dd>
+                                                    <dd>Date: @savingFood.Date.ToString("dd/MM/yyyy")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
                         }
                         else if (savingFoods.Where(t => t.UserId == userId).Any() && amount == "few")
                         {
@@ -210,31 +234,38 @@
                                 }
                             </ul>
                         }
-                        else
-                        {
-                            <p>No saving food activities found.</p>
-                        }
+                        @if (carPools.Where(t => t.UserId == userId).Any()){
                         <h4>Car Pool</h4>
+                        }
                         @if (carPools.Where(t => t.UserId == userId).Any() && amount == "max")
                         {
-                            <ul>
-                                @foreach (var carPool in carPools.Where(t => t.UserId == userId))
+                            <div class="row g-4 mb-2" >
+                                @foreach (var carPool in carPools.Where(t => t.UserId == userId).OrderByDescending(t => t.Id))
                                 {
-                                    <li>
-                                    @if (carPool.Name != null)
-                                    {
-                                        <dt>@carPool.Name: In a @carPool.CarType Car</dt>
-                                    }
-                                    else
-                                    {
-                                        <dt>In a @carPool.CarType Car</dt>
-                                    }
-                                    <dd>Distance: @carPool.Distance km</dd>
-                                    <dd>Date: @carPool.Date</dd>
-                                    <dd>Points: @carPool.AwardedPoints</dd>
-                                    </li>
+                                    <div class="col-md-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    @if (carPool.Name != null)
+                                                    {
+                                                        @($"{carPool.CarType}: {carPool.Name}")
+                                                    }
+                                                    else
+                                                    {
+                                                        @carPool.CarType
+                                                    }
+                                                </h5>
+                                                <dl class="mb-0">
+                                                    <dd>Distance: @carPool.Distance</dd>
+                                                    <dd>Seats: @carPool.FilledSeats/@(carPool.EmptySeats + carPool.FilledSeats)</dd>
+                                                    <dd>Points: @carPool.AwardedPoints</dd>
+                                                    <dd>Date: @carPool.Date.ToString("dd/MM/yyyy")</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
                         }
                         else if (carPools.Where(t => t.UserId == userId).Any() && amount == "few")
                         {
@@ -253,10 +284,6 @@
                                     </li>
                                 }
                             </ul>
-                        }
-                        else
-                        {
-                            <p>No car pool activities found.</p>
                         }
                         
                     </div>
