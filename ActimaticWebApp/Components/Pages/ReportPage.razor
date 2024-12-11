@@ -14,6 +14,7 @@
 @inject ISavingFoodService SavingFoodService
 @inject IVolunteeringService VolunteeringService
 @inject IStairsService StairsService
+@inject ICarPoolService CarPoolService
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -32,7 +33,7 @@
         </EditForm>
         <h2 class="mb-4">ESG Report</h2>
         <label for="kind">Select kind of report:</label>
-        <InputSelect id="kind" @bind-Value="kind" @onclick="HandleSelect">
+        <InputSelect id="kind" @bind-Value="kind" @onselect="HandleSelect">
             <option value="0">-- Select kind --</option>
             <option value="1">Team</option>
             <option value="2">Specific worker</option>
@@ -84,7 +85,8 @@
                                 </InputRadioGroup>
                             }
                         }
-                        @if(kind == 3){
+                        @if (kind == 3)
+                        {
                             <h5 class="card-title">Report for the whole company</h5>
                         }
                     </div>
@@ -92,8 +94,71 @@
             </div>
             <div class="col-md-6">
                 <div class="chart-container mb-4">
-                    @* <canvas id="lineChart"></canvas>
-                        <canvas id="barChart"></canvas> *@
+                    @if (carPools != null)
+                    {
+                        <h3>Car pooling activities</h3>
+                        <ul>
+                            @foreach (var carPool in carPools)
+                            {
+                                <li>@carPool.Name: @carPool.AwardedPoints</li>
+                                <li>Date: @carPool.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No car pooling activities in selected period of time</p>
+                    }
+                    @if (transports != null)
+                    {
+                        <h3>Transport activities</h3>
+                        <ul>
+                            @foreach (var transport in transports)
+                            {
+                                <li>@transport.Name: @transport.AwardedPoints</li>
+                                <li>Date: @transport.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No transport activities in selected period of time</p>
+                    }
+                    @if (volunteerings != null)
+                    {
+                        <h3>Volunteering activities</h3>
+                        <ul>
+                            @foreach (var volunteering in volunteerings)
+                            {
+                                <li>@volunteering.Name: @volunteering.AwardedPoints</li>
+                                <li>Date: @volunteering.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No volunteering activities in selected period of time</p>
+                    }
+                    @if (savingFoods != null)
+                    {
+                        <h3>Saving foods activities</h3>
+                        <ul>
+                            @foreach (var savingFood in savingFoods)
+                            {
+                                <li>@savingFood.Name: @savingFood.AwardedPoints</li>
+                                <li>Date: @savingFood.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No saving food activities in selected period of time</p>
+                    }
+                    @if (stairs != null)
+                    {
+                        <h3>Saving foods activities</h3>
+                        <ul>
+                            @foreach (var stair in stairs)
+                            {
+                                <li>@stair.Name: @stair.AwardedPoints</li>
+                                <li>Date: @stair.Date</li>
+                            }
+                        </ul>
+                    }else{
+                        <p>No stairs activities in selected period of time</p>
+                    }
                 </div>
             </div>
             <div class="col-md-3">
@@ -120,9 +185,14 @@
     private bool isLoggedIn;
     private Report report = new Report();
     private int kind;
-    public IEnumerable<Team> Teams { get; set; }
+    public IEnumerable<Team>? Teams { get; set; }
     private int selectedTeamId;
     private int selectedUserId;
+    private IEnumerable<CarPool>? carPools = null;
+    private IEnumerable<Transport>? transports = null;
+    private IEnumerable<SavingFood>? savingFoods = null;
+    private IEnumerable<Stairs>? stairs = null;
+    private IEnumerable<Volunteering>? volunteerings = null;
 
 
     @* protected override async Task OnInitializedAsync()
@@ -164,6 +234,11 @@
     {
         Console.WriteLine(report.StartDate);
         Console.WriteLine(report.EndDate);
+        carPools = await CarPoolService.GetCarPoolByDatesAsync(report.StartDate, report.EndDate);
+        transports = await TransportService.GetTransportByDatesAsync(report.StartDate, report.EndDate);
+        savingFoods = await SavingFoodService.GetSavingFoodByDatesAsync(report.StartDate, report.EndDate);
+        stairs = await StairsService.GetStairsByDatesAsync(report.StartDate, report.EndDate);
+        volunteerings = await VolunteeringService.GetVolunteeringByDatesAsync(report.StartDate, report.EndDate);
     }
     private async Task HandleSelect()
     {

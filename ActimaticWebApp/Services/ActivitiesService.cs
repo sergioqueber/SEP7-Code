@@ -2,7 +2,8 @@ using Model;
 using Interfaces;
 namespace AppServices;
 
-public class ActivitiesService: ITransportService, IStairsService,IVolunteeringService,ISavingFoodService,ICarPoolService{
+public class ActivitiesService : ITransportService, IStairsService, IVolunteeringService, ISavingFoodService, ICarPoolService
+{
     private readonly HttpClient _httpClient;
 
     public ActivitiesService(HttpClient httpClient)
@@ -42,14 +43,15 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
     {
         return await _httpClient.GetFromJsonAsync<List<Transport>>($"api/transport/dates/{startDate}/{endDate}")
                    ?? new List<Transport>();
-    } 
+    }
     public async Task<IEnumerable<Stairs>> GetAllStairsAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<Stairs>>("api/stairs")
                    ?? new List<Stairs>();
     }
 
-    public async Task<Stairs?> GetStairsByIdAsync(int id){
+    public async Task<Stairs?> GetStairsByIdAsync(int id)
+    {
         return await _httpClient.GetFromJsonAsync<Stairs>($"api/stairs/{id}");
     }
     public async Task<Stairs> CreateStairsAsync(Stairs stairs)
@@ -76,7 +78,8 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
                    ?? new List<Volunteering>();
     }
 
-    public async Task<Volunteering?> GetVolunteeringByIdAsync(int id){
+    public async Task<Volunteering?> GetVolunteeringByIdAsync(int id)
+    {
         return await _httpClient.GetFromJsonAsync<Volunteering>($"api/volunteering/{id}");
     }
 
@@ -107,7 +110,8 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
                    ?? new List<SavingFood>();
     }
 
-    public async Task<SavingFood?> GetSavingFoodByIdAsync(int id){
+    public async Task<SavingFood?> GetSavingFoodByIdAsync(int id)
+    {
         return await _httpClient.GetFromJsonAsync<SavingFood>($"api/savingfood/{id}");
     }
 
@@ -145,7 +149,8 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
                    ?? new List<CarPool>();
     }
 
-    public async Task<CarPool?> GetCarPoolById(int id){
+    public async Task<CarPool?> GetCarPoolById(int id)
+    {
         return await _httpClient.GetFromJsonAsync<CarPool>($"api/carpool/{id}");
     }
 
@@ -161,22 +166,29 @@ public class ActivitiesService: ITransportService, IStairsService,IVolunteeringS
         var response = await _httpClient.PutAsJsonAsync($"api/carpool", carPool);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<CarPool>();
-    }    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate)
+    }
+    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
         return await _httpClient.GetFromJsonAsync<List<SavingFood>>($"api/savingFood/dates/{startDate}/{endDate}")
                    ?? new List<SavingFood>();
-    } 
+    }
 
     public async Task<IEnumerable<Stairs>> GetStairsByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
         return await _httpClient.GetFromJsonAsync<List<Stairs>>($"api/stairs/dates/{startDate}/{endDate}")
                    ?? new List<Stairs>();
-    } 
+    }
 
     public async Task<IEnumerable<Volunteering>> GetVolunteeringByDatesAsync(DateOnly startDate, DateOnly endDate)
     {
         return await _httpClient.GetFromJsonAsync<List<Volunteering>>($"api/volunteering/dates/{startDate}/{endDate}")
                    ?? new List<Volunteering>();
+    }
+
+    public async Task<IEnumerable<CarPool>> GetCarPoolByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
+        return await _httpClient.GetFromJsonAsync<List<CarPool>>($"api/carPool/dates/{startDate}/{endDate}")
+                   ?? new List<CarPool>();
     }
 
 

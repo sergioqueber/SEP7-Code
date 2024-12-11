@@ -8,11 +8,12 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
+@inject IUserService userService
 
 <div class="container mb-4">
     <h3 class="mb-4">Record an activity</h3>
     <div class="row g-4">
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Transport</h5>
@@ -24,7 +25,7 @@
             </div>
 
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Stairs</h5>
@@ -35,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Food Saving</h5>
@@ -46,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Volunteering</h5>
@@ -57,7 +58,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Carpool </h5>
@@ -94,7 +95,8 @@
                                     </div>
                                     <div class=" mb-3">
                                         <label class="form-label">Transport Type</label>
-                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control">
+                                        <InputSelect @bind-Value="@transportActivity.Type" class="form-control" required>
+                                            <option value="" selected>Select transport type...</option>
                                             <option value="Train">Train</option>
                                             <option value="Bus"> Bus</option>
                                             <option value="Bike">Bike</option>
@@ -164,7 +166,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Passengers</label>
-                                        <InputNumber @bind-Value="carPoolActivity.EmptySeats" class="form-control"required />
+                                        <InputNumber @bind-Value="carPoolActivity.EmptySeats" class="form-control" required />
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Car Type</label>
@@ -187,10 +189,27 @@
         <div class="modal-backdrop show"></div>
 
     }
+    @if (showNotification)
+    {
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto">Activity Recorded!</strong>
+                    <button type="button" class="btn-close btn-close-white" @onclick="HideNotification"></button>
+                </div>
+                <div class="toast-body">
+                    Congratulations! You earned @earnedPoints points! 🎉
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private bool showModal = false;
+    private bool showNotification = false;
+    private int earnedPoints = 0;
+    private User currentUser = new User();
     private ActivityType currentActivityType;
     private Transport? transportActivity = new Transport();
     private Stairs? stairsActivity = new Stairs();
@@ -199,8 +218,10 @@
     private CarPool? carPoolActivity = new CarPool();
     private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
     private bool isLoggedIn;
+    [Parameter]
+    public EventCallback<int> OnPointsUpdated { get; set; }
 
-     [CascadingParameter]
+    [CascadingParameter]
     public Task<AuthenticationState> AuthState { get; set; } = null!;
     [Parameter] public int currentUserId { get; set; }
     private IEnumerable<Claim>? userClaims;
@@ -214,8 +235,22 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        currentUser = await userService.GetUserById(currentUserId);
+    }
+    private async Task ShowPointsNotification(int points)
+    {
+        earnedPoints = points;
+        showNotification = true;
+        StateHasChanged();
+        await Task.Delay(7000); // Hide after 3 seconds
+        showNotification = false;
+        StateHasChanged();
     }
 
+    private void HideNotification()
+    {
+        showNotification = false;
+    }
     private void ShowModal(ActivityType activityType)
     {
         currentActivityType = activityType;
@@ -233,27 +268,62 @@
             case ActivityType.Transport:
                 transportActivity.UserId = currentUserId; //Use claims to state the user ID here
                 transportActivity.Date = currentDate;
-                await activitiesService.CreateTransport(transportActivity);
+                var recordedTrassport = await activitiesService.CreateTransport(transportActivity);
+                currentUser.Points += recordedTrassport.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
+                showModal = false;
+                await ShowPointsNotification(recordedTrassport.AwardedPoints);
+                transportActivity = new Transport();
+                StateHasChanged();
                 break;
             case ActivityType.Stairs:
                 stairsActivity.UserId = currentUserId; //Use claims to state the user ID here
                 stairsActivity.Date = currentDate;
-                await activitiesService.CreateStairsAsync(stairsActivity);
+                var recordedStairs = await activitiesService.CreateStairsAsync(stairsActivity);
+                currentUser.Points += recordedStairs.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
+                showModal = false;
+                await ShowPointsNotification(recordedStairs.AwardedPoints);
+                stairsActivity = new Stairs();
+                StateHasChanged();
                 break;
             case ActivityType.FoodSaving:
                 foodSavingActivity.UserId = currentUserId; //Use claims to state the user ID here
                 foodSavingActivity.Date = currentDate;
-                await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                var recordedFoodActivity = await activitiesService.CreateSavingFoodAsync(foodSavingActivity);
+                currentUser.Points += recordedFoodActivity.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
+                showModal = false;
+                await ShowPointsNotification(recordedFoodActivity.AwardedPoints);
+                foodSavingActivity = new SavingFood();
+                StateHasChanged();
                 break;
             case ActivityType.Volunteering:
                 volunteeringActivity.UserId = currentUserId; //Use claims to state the user ID here
                 volunteeringActivity.Date = currentDate;
-                await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                var recordedVolunteering = await activitiesService.CreateVolunteeringAsync(volunteeringActivity);
+                currentUser.Points += recordedVolunteering.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
+                showModal = false;
+                await ShowPointsNotification(recordedVolunteering.AwardedPoints);
+                volunteeringActivity = new Volunteering();
+                StateHasChanged();
                 break;
             case ActivityType.CarPool:
                 carPoolActivity.UserId = currentUserId; //Use claims to state the user ID here
                 carPoolActivity.Date = currentDate;
-                await activitiesService.CreateCarPool(carPoolActivity);
+                var recodedCarPool = await activitiesService.CreateCarPool(carPoolActivity);
+                currentUser.Points += recodedCarPool.AwardedPoints;
+                await userService.UpdateUser(currentUser);
+                await OnPointsUpdated.InvokeAsync(currentUser.Points); // Notify parent
+                showModal = false;
+                await ShowPointsNotification(recodedCarPool.AwardedPoints);
+                carPoolActivity = new CarPool();
+                StateHasChanged();
                 break;
         }
         showModal = false;
@@ -262,5 +332,9 @@
 <style>
     .modal-backdrop {
         background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .toast {
+        transition: opacity 0.3s ease-in-out;
     }
 </style>

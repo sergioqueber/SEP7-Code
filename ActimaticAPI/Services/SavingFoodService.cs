@@ -8,13 +8,19 @@ namespace Services;
 public class SavingFoodService (ApplicationDbContext context) : ISavingFoodService{
 
     private readonly ApplicationDbContext _context = context;
+    private const int basePointsPerPackage = 5;
 
     static SavingFoodService(){
 
     }
+    public int CalculatePointsAsync(SavingFood savingFood)
+    {
+        return savingFood.PackagesSaved * basePointsPerPackage;
+    }
 
     public async Task<SavingFood> CreateSavingFoodAsync(SavingFood savingFood)
     {
+        savingFood.AwardedPoints = CalculatePointsAsync(savingFood);
         await _context.SavingFoods.AddAsync(savingFood);
         await _context.SaveChangesAsync();
         return await Task.FromResult(savingFood);
@@ -53,8 +59,8 @@ public class SavingFoodService (ApplicationDbContext context) : ISavingFoodServi
         return await Task.FromResult(savingFoodToUpdate);
         
     }
-
-    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate){
+    public async Task<IEnumerable<SavingFood>> GetSavingFoodByDatesAsync(DateOnly startDate, DateOnly endDate)
+    {
         return await Task.FromResult(_context.SavingFoods.Where(sf => sf.Date >= startDate && sf.Date <= endDate).AsEnumerable());
     }
     
