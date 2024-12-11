@@ -8,139 +8,168 @@
 @inject AppInterfaces.IAuthService AuthService
 @using Microsoft.AspNetCore.Authorization
 
-<AuthorizeView Policy="MustBeManager">
-    <Authorized>
-        <button @onclick="ToggleCreateTeamForm" class="btn btn-primary">Create Team</button>
-        <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Add Employees to a Team</button>
-        
-        @if (showCreateTeamForm)
-        {
-            <div>
-                <h4>Create a New Team</h4>
-                <div>
-                    <label for="teamName">Team Name:</label>
-                    <input id="teamName" @bind="newTeamName" placeholder="Enter team name" class="form-control" />
-                </div>
-                <div>
-                    <label for="department">Select Department:</label>
-                    <select id="department" @bind="selectedDepartmentId" class="form-control">
-                        <option value="0">-- Select a Department --</option>
-                        @foreach (var department in availableDepartments)
-                        {
-                            <option value="@department.Id">@department.Name</option>
-                        }
-                    </select>
-                </div>
-                <div>
-                    <button @onclick="CreateTeam" class="btn btn-success">Submit</button>
-                    <button @onclick="ToggleCreateTeamForm" class="btn btn-secondary">Cancel</button>
-                </div>
+<div class="container mt-5">
+    <AuthorizeView Policy="MustBeManager">
+        <Authorized>
+            <div class="d-flex justify-content-between mb-4">
+                <button @onclick="ToggleCreateTeamForm" class="btn btn-primary">Create Team</button>
+                <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Add Employees to a Team</button>
             </div>
-        }
 
-@if (showAddEmployeesForm)
-        {
-            <div>
-                <h4>Add Employees to a Team</h4>
-                <div>
-                    <label for="teamSelect">Select Team:</label>
-                    <select id="teamSelect" @bind="selectedTeamId" class="form-control">
-                        <option value="0">-- Select a Team --</option>
-                        @foreach (var team in availableTeams)
-                        {
-                            <option value="@team.Id">@team.Name</option>
-                        }
-                    </select>
-                </div>
-                <div>
-                    <h5>Select Employees to Add:</h5>
-                    @foreach (var user in availableUsers)
-                    {
-                        <div>
-                            <input type="checkbox" id="user_@user.Id" value="@user.Id" @onchange="e => ToggleUserSelection(e, user.Id)" />
-                            <label for="user_@user.Id">@user.Name @user.Surname</label>
+            @if (showCreateTeamForm)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Create a New Team</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="teamName" class="form-label"><b>Team Name</b></label>
+                            <input id="teamName" @bind="newTeamName" placeholder="Enter team name" class="form-control" />
                         </div>
-                    }
+                        <div class="mb-3">
+                            <label for="department" class="form-label"><b>Select Department</b></label>
+                            <div class="input-group"> 
+                            <select id="department" @bind="selectedDepartmentId" class="form-control">
+                                <option value="0">-- Select a Department --</option>
+                                @foreach (var department in availableDepartments)
+                                {
+                                    <option value="@department.Id">@department.Name</option>
+                                }
+                            </select>
+                        </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button @onclick="CreateTeam" class="btn btn-success me-2">Submit</button>
+                            <button @onclick="ToggleCreateTeamForm" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <button @onclick="AddEmployeesToTeam" class="btn btn-success">Submit</button>
-                    <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Cancel</button>
-                </div>
-            </div>
-        }
+            }
 
-    </Authorized>
-</AuthorizeView>
-
-@if (!string.IsNullOrEmpty(successMessage))
-{
-    <div class="alert alert-success mt-3">@successMessage</div>
-}
-
-<h3>My Team</h3>
-
-@if (currentUser == null)
-{
-    <p>Loading user data...</p>
-}
-else if (currentUser.TeamId == null)
-{
-    <p>User is not part of any team.</p>
-}
-else if (team == null)
-{
-    <p>Loading team data...</p>
-}
-else
-{
-    <div>
-        <h4>Your team currently has @team.Staff.Sum(u => u.Points) points</h4>
-        <div style="display: flex; justify-content: space-between;">
-            <div style="flex: 1; margin-right: 20px;">
-                <h5>Team Members</h5>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var member in members)
-                        {
-                            <tr>
-                                <td>@member.Name @member.Surname</td>
-                                <td>@member.Points</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="flex: 1;">
-                <h5>Rewards</h5>
-                <div class="reward-container">
-                    @if (rewards != null && rewards.Any())
-                    {
-                        @foreach (var reward in rewards)
-                        {
-                            <div class="reward-item">
-                                <h6>@reward.Name</h6>
-                                <p>@reward.Description</p>
-                                <p>Points required: @reward.PointsRequired</p>
-                                <button @onclick="() => RedeemReward(reward)">Redeem</button>
+            @if (showAddEmployeesForm)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">Add Employees to a Team</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="teamSelect" class="form-label"><b>Select Team</b></label>
+                            <select id="teamSelect" @bind="selectedTeamId" class="form-control">
+                                <option value="0">-- Select a Team --</option>
+                                @foreach (var team in availableTeams)
+                                {
+                                    <option value="@team.Id">@team.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                             <label class="form-label"><b>Select Employees to Add:</b></label>
+                            <div class="form-check">
+                                @foreach (var user in availableUsers)
+                                {
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input" type="checkbox" id="user_@user.Id" value="@user.Id" @onchange="e => ToggleUserSelection(e, user.Id)" />
+                                        <label class="form-check-label" for="user_@user.Id">
+                                            @user.Name @user.Surname
+                                        </label>
+                                    </div>
+                                }
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No rewards available.</p>
-                    }
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button @onclick="AddEmployeesToTeam" class="btn btn-success me-2">Submit</button>
+                            <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
+
+        </Authorized>
+    </AuthorizeView>
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success mt-3 text-center">@successMessage</div>
+    }
+
+    <div class="card shadow mt-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">My Team</h3>
+        </div>
+        <div class="card-body">
+            @if (currentUser == null)
+            {
+                <p>Loading user data...</p>
+            }
+            else if (currentUser.TeamId == null)
+            {
+                <p>User is not part of any team.</p>
+            }
+            else if (team == null)
+            {
+                <p>Loading team data...</p>
+            }
+            else
+            {
+                <div class="mb-4">
+                    <h4>Your team currently has @totalTeamPoints points</h4>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (teamMembers != null && teamMembers.Any())
+                {
+                    @foreach (var member in teamMembers)
+                    {
+                        <tr>
+                            <td>@member.Name @member.Surname</td>
+                            <td>@member.Points</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-center">No team members found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+                    <div class="col-md-6">
+                        <h5>Rewards</h5>
+                        @if (rewards != null && rewards.Any())
+                        {
+                            @foreach (var reward in rewards)
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@reward.Name</h6>
+                                        <p class="card-text">@reward.Description</p>
+                                        <p class="card-text"><small>Points required: <b>@reward.PointsRequired</b></small></p>
+                                        <button @onclick="() => RedeemReward(reward)" class="btn btn-primary btn-sm">Redeem</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No rewards available.</p>
+                        }
+                    </div>
+                
+            }
         </div>
     </div>
-}
+</div>
 
 @code {
     private Team? team;
@@ -158,6 +187,8 @@ else
        private bool showAddEmployeesForm = false;
     private int selectedTeamId = 0;
     private List<Team> availableTeams = new();
+        private List<User> teamMembers = new();
+    private int totalTeamPoints = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -183,8 +214,12 @@ else
 
                 if (team != null)
                 {
-                    // Fetch team members
-                    members = team.Staff ?? new List<User>();
+                    // Fetch all members of the same team
+                teamMembers = (await UserService.GetAllUsers())
+                    .Where(u => u.TeamId == currentUser.TeamId)
+                    .ToList();
+
+                     totalTeamPoints = teamMembers.Sum(member => member.Points);
 
                     // Fetch rewards associated with the team
                     rewards = (await RewardService.GetAllRewards()).ToList();
@@ -194,6 +229,7 @@ else
             {
                 Console.WriteLine("User is not part of any team.");
             }
+
             availableDepartments = (await DepartmentService.GetAllDepartments()).ToList();
 
 // Fetch available teams for the "Add Employees to a Team" dropdown
@@ -203,8 +239,6 @@ else
         availableUsers = (await UserService.GetAllUsers())
             .Where(u => u.TeamId == null)
             .ToList();
-    
-
         }
         catch (Exception ex)
         {
