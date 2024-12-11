@@ -380,3 +380,26 @@ Content-Type: application/json
     "type": "cycling",
     "emissionsSaved": 20
 }
+
+### Post Redeemed Reward 
+
+POST http://localhost:5205/api/RedeemedReward
+Content-Type: application/json
+
+{
+    "rewardId":5,
+    "userId":2,
+    "date":"2024-11-11"
+}
+
+### Update Reward
+PUT http://localhost:5205/api/Reward/6
+Content-Type: application/json
+
+{
+    "id": 6,
+    "name": "Car",
+    "description": "Smiths",
+    "pointsRequired": 5,
+    "availability": true
+}
