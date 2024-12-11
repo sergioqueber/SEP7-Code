@@ -58,6 +58,7 @@ public class UserService(ApplicationDbContext context) : IUserService
             userToUpdate.Email = user.Email;
             userToUpdate.Password = user.Password;
             userToUpdate.TeamId = user.TeamId;
+            userToUpdate.IsApproved = user.IsApproved;
             _context.Users.Update(userToUpdate);
             await _context.SaveChangesAsync();
         }
