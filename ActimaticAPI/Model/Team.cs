@@ -7,7 +7,7 @@ public class Team
     public Department? Department { get; set; }
 
     public int? DepartmentId { get; set; }
-    public List<Reward>? TeamRewards { get; set; }
+    public List<RedeemedReward>? TeamRewards { get; set; }
     public List<User>? Staff { get; set; } = [];
     public Team() { }
     public Team(int id, string name, Department department, List<Reward> teamRewards)
@@ -15,7 +15,6 @@ public class Team
         Id = id;
         Name = name;
         Department = department;
-        TeamRewards = teamRewards;
     }
 
 }
