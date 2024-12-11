@@ -11,12 +11,12 @@ POST http://localhost:5205/api/User
 Content-Type: application/json
 
 {
-    "name": "Marcin",
+    "name": "Natalia",
     "surname": "Doe",
-    "email": "marcin.doe@example.com",
+    "email": "natalia.doe@yo.com",
     "password": "password123",
     "role": "Employee",
-    "points": 200
+    "points": 6969
 }
 
 ### Put staff

@@ -11,7 +11,8 @@
 <AuthorizeView Policy="MustBeManager">
     <Authorized>
         <button @onclick="ToggleCreateTeamForm" class="btn btn-primary">Create Team</button>
-
+        <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Add Employees to a Team</button>
+        
         @if (showCreateTeamForm)
         {
             <div>
@@ -36,8 +37,46 @@
                 </div>
             </div>
         }
+
+@if (showAddEmployeesForm)
+        {
+            <div>
+                <h4>Add Employees to a Team</h4>
+                <div>
+                    <label for="teamSelect">Select Team:</label>
+                    <select id="teamSelect" @bind="selectedTeamId" class="form-control">
+                        <option value="0">-- Select a Team --</option>
+                        @foreach (var team in availableTeams)
+                        {
+                            <option value="@team.Id">@team.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <h5>Select Employees to Add:</h5>
+                    @foreach (var user in availableUsers)
+                    {
+                        <div>
+                            <input type="checkbox" id="user_@user.Id" value="@user.Id" @onchange="e => ToggleUserSelection(e, user.Id)" />
+                            <label for="user_@user.Id">@user.Name @user.Surname</label>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <button @onclick="AddEmployeesToTeam" class="btn btn-success">Submit</button>
+                    <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        }
+
     </Authorized>
 </AuthorizeView>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success mt-3">@successMessage</div>
+}
+
 <h3>My Team</h3>
 
 @if (currentUser == null)
@@ -115,6 +154,10 @@ else
     private List<User> availableUsers = new(); // List of users to select from
     private List<Department> availableDepartments = new(); // List of departments to select from
     private bool showCreateTeamForm = false;
+     private string successMessage = string.Empty;
+       private bool showAddEmployeesForm = false;
+    private int selectedTeamId = 0;
+    private List<Team> availableTeams = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -153,6 +196,15 @@ else
             }
             availableDepartments = (await DepartmentService.GetAllDepartments()).ToList();
 
+// Fetch available teams for the "Add Employees to a Team" dropdown
+        availableTeams = (await TeamService.GetAllTeams()).ToList();
+
+        // Fetch available users who are not assigned to any team
+        availableUsers = (await UserService.GetAllUsers())
+            .Where(u => u.TeamId == null)
+            .ToList();
+    
+
         }
         catch (Exception ex)
         {
@@ -184,7 +236,6 @@ else
                 {
                     Name = newTeamName,
                     DepartmentId = selectedDepartmentId,
-
                 @* TeamRewards = new List<Reward>() // Empty list for now *@
 };
 
@@ -193,14 +244,13 @@ else
 
             if (createdTeam != null)
             {
+                successMessage = $"Team '{createdTeam.Name}' created successfully!";
                 Console.WriteLine($"Team '{createdTeam.Name}' created successfully!");
+                 newTeamName = string.Empty;
+                selectedDepartmentId = 0;
                 showCreateTeamForm = false;
-                StateHasChanged();
-            }
-            else
-            {
-                Console.WriteLine("Failed to create team. Please try again.");
-            }
+                 StateHasChanged();
+              }
         }
         catch (Exception ex)
         {
@@ -211,6 +261,67 @@ else
     {
         showCreateTeamForm = !showCreateTeamForm;
     }
+
+ private void ToggleAddEmployeesForm()
+    {
+        showAddEmployeesForm = !showAddEmployeesForm;
+    }
+
+    private async Task AddEmployeesToTeam()
+    {
+        try
+        {
+            // Ensure a team is selected
+            if (selectedTeamId == 0)
+            {
+                Console.WriteLine("Please select a valid team.");
+                return;
+            }
+
+            // Ensure at least one employee is selected
+            if (!selectedUserIds.Any())
+            {
+                Console.WriteLine("Please select at least one employee to add.");
+                return;
+            }
+
+            // Update each selected user's TeamId
+            foreach (var userId in selectedUserIds)
+            {
+                var user = await UserService.GetUserById(userId);
+                if (user != null)
+                {
+                    user.TeamId = selectedTeamId;
+                    await UserService.UpdateUser(user);
+                }
+            }
+
+            successMessage = "Employees added to the team successfully!";
+            Console.WriteLine(successMessage);
+            selectedTeamId = 0;
+            selectedUserIds.Clear();
+            showAddEmployeesForm = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding employees to the team: {ex.Message}");
+        }
+    }
+private void ToggleUserSelection(ChangeEventArgs e, int userId)
+{
+    var isChecked = e?.Value != null && (bool)e.Value;
+    Console.WriteLine($"UserId: {userId}, Checked: {isChecked}");
+    if (isChecked && !selectedUserIds.Contains(userId))
+    {
+        selectedUserIds.Add(userId);
+    }
+    else if (!isChecked && selectedUserIds.Contains(userId))
+    {
+        selectedUserIds.Remove(userId);
+    }
+}
+
 
 
     private async Task RedeemReward(Reward reward)
