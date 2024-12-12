@@ -183,7 +183,12 @@
                             <h5 class="mb-0">Stats</h5>
                         </div>
                         <div class="card-body">
-                            <p><strong>Emissions Saved:</strong> @EmissionsSaved</p>
+                            @if (EmissionsSaved > 1000){
+                            <p><strong>Emissions Saved:</strong> @(EmissionsSaved/1000) kg CO2</p>
+                            }else{
+                                <p><strong>Emissions Saved:</strong> @EmissionsSaved g CO2</p>
+                            }
+
                             <p><strong>Food Saved:</strong> @SavedFood kg</p>
                             <p><strong>Hours Volunteered:</strong> @HoursVolunteered</p>
                             <p><strong>Floors Covered:</strong> @FloorsCovered</p>
@@ -254,6 +259,7 @@
 
         user = await ProfileService.GetUserById(id);
         users = await ProfileService.GetAllUsers();
+        Teams = await TeamService.GetAllTeams();
         report.StartDate = DateOnly.FromDateTime(DateTime.Now);
         report.EndDate = DateOnly.FromDateTime(DateTime.Now);
     }
