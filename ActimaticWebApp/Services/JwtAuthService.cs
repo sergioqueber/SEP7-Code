@@ -58,7 +58,7 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Jwt);
 
         IEnumerable<Claim> claims = ParseClaimsFromJwt(Jwt);
-        
+
         ClaimsIdentity identity = new(claims, "jwt");
         ClaimsPrincipal principal = new(identity);
         return principal;
@@ -84,7 +84,11 @@ public class JwtAuthService(HttpClient client, IJSRuntime jsRuntime) : IAuthServ
         {
             throw new Exception(responseContent);
         }
-        return JsonSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync());
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        return JsonSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync(), options);
     }
 
     public async Task<ClaimsPrincipal> GetAuthAsync()
