@@ -21,10 +21,6 @@
                             <span class="nav-icon">🏠</span>
                             Home
                         </NavLink>
-                        <NavLink href="/report" Match="NavLinkMatch.All" class="nav-item">
-                            <span class="nav-icon">📈</span>
-                            Report
-                        </NavLink>
                         <NavLink href="/rewards" Match="NavLinkMatch.All" class="nav-item">
                             <span class="nav-icon">🎁</span>
                             Redeem
@@ -63,6 +59,14 @@
                         <NavLink href="/admin-page" Match="NavLinkMatch.All" class="nav-item">
                             <span class="nav-icon">🔒</span>
                             User approval
+                        </NavLink>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView Policy="MustBeHr">
+                    <Authorized>
+                        <NavLink href="/report" Match="NavLinkMatch.All" class="nav-item">
+                            <span class="nav-icon">📈</span>
+                            Report
                         </NavLink>
                     </Authorized>
                 </AuthorizeView>
@@ -130,6 +134,7 @@
     .profile-bar {
         margin-left: 20px;
     }
+
     .navbar-toggler {
         border-color: white;
     }
@@ -144,9 +149,9 @@
             padding: 1rem;
         }
     }
-    
 
-   @*  @@media (max-width: 768px) {
+
+    @*  @@media (max-width: 768px) {
         .nav-links {
             display: none;
             flex-direction: column;
