@@ -123,4 +123,84 @@ public class CarPoolTest
         var returnedCarPools = Assert.IsAssignableFrom<IEnumerable<CarPool>>(okResult.Value);
         Assert.Equal(2, returnedCarPools.Count());
     }
+    [Fact]
+    public async Task CreateCarPool_ReturnsCreatedAtAction_WithCorrectPoints()
+    {
+        // Arrange
+        var carPoolToCreate = new CarPool
+        {
+            Name = "New CarPool",
+            Distance = 10,
+            CarType = "Electric",
+            EmptySeats = 4,
+            FilledSeats = 3 // 75% occupancy
+        };
+
+        _mockService.Setup(s => s.CreateCarPool(It.IsAny<CarPool>()))
+            .ReturnsAsync((CarPool cp) =>
+            {
+                // Base points (10) + Electric bonus (20) + High occupancy bonus (10)
+                cp.AwardedPoints = (cp.Distance * 1) +
+                                 (cp.CarType == "Electric" ? 20 : 0) +
+                                 (((double)cp.FilledSeats / cp.EmptySeats >= 0.75) ? 10 : 0);
+                return cp;
+            });
+
+        // Act
+        var result = await _controller.CreateCarPool(carPoolToCreate);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        Assert.Equal(nameof(CarPoolController.GetCarPoolById), createdAtActionResult.ActionName);
+        var returnedCarPool = Assert.IsType<CarPool>(createdAtActionResult.Value);
+        Assert.Equal(40, returnedCarPool.AwardedPoints); // 10 + 20 + 10
+    }
+
+    [Theory]
+    [InlineData("Electric", 4, 4, 40)] // Full occupancy: 10 (distance) + 20 (electric) + 10 (>=75% occupancy)
+    [InlineData("Hybrid", 4, 2, 25)]   // 50% occupancy: 10 (distance) + 10 (hybrid) + 5 (>=50% occupancy)
+    [InlineData("Petrol", 4, 1, 17)]   // 25% occupancy: 10 (distance) + 5 (petrol) + 2 (>=25% occupancy)
+    public async Task CreateCarPool_CalculatesPoints_ForDifferentScenarios(string carType, int emptySeats, int filledSeats, int expectedPoints)
+    {
+        // Arrange
+        var carPoolToCreate = new CarPool
+        {
+            Name = "Test CarPool",
+            Distance = 10,
+            CarType = carType,
+            EmptySeats = emptySeats,
+            FilledSeats = filledSeats
+        };
+
+        _mockService.Setup(s => s.CreateCarPool(It.IsAny<CarPool>()))
+            .ReturnsAsync((CarPool cp) =>
+            {
+                int basePoints = cp.Distance;
+                int typeBonus = cp.CarType switch
+                {
+                    "Electric" => 20,
+                    "Hybrid" => 10,
+                    "Petrol" => 5,
+                    _ => 0
+                };
+                double occupancyRatio = (double)cp.FilledSeats / cp.EmptySeats;
+                int occupancyBonus = occupancyRatio switch
+                {
+                    >= 0.75 => 10,
+                    >= 0.5 => 5,
+                    >= 0.25 => 2,
+                    _ => 0
+                };
+                cp.AwardedPoints = basePoints + typeBonus + occupancyBonus;
+                return cp;
+            });
+
+        // Act
+        var result = await _controller.CreateCarPool(carPoolToCreate);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var returnedCarPool = Assert.IsType<CarPool>(createdAtActionResult.Value);
+        Assert.Equal(expectedPoints, returnedCarPool.AwardedPoints);
+    }
 }
