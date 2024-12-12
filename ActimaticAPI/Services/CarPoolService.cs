@@ -19,9 +19,9 @@ public class CarPoolService(ApplicationDbContext context) : ICarPoolService{
         int basepoints =  carPool.Distance * BasePointsPerKm;
         int typeBonus = carPool.CarType switch
         {
-            "Small" => 20,
-            "Medium" => 10,
-            "Large" => 5,
+            "Electric" => 20,
+            "Hybrid" => 10,
+            "Petrol" => 5,
             _ => 0
         };
         double occupancyRatio = (double)carPool.FilledSeats/carPool.EmptySeats;
