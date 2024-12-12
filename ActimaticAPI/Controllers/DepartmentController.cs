@@ -25,7 +25,12 @@ public class DepartmentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Department>> GetDepartmentById(int id)
     {
-        return await _departmentService.GetDepartmentById(id);
+        var department = await _departmentService.GetDepartmentById(id);
+        if (department == null)
+        {
+            return NotFound();
+        }
+        return Ok(department);
     }
 
     [HttpPost]
@@ -38,13 +43,28 @@ public class DepartmentController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(int id, [FromBody] Department department)
     {
-        await _departmentService.Update(department);
+        if (id != department.Id)
+        {
+            return BadRequest("Department ID mismatch");
+        }
+
+        var updatedDepartment = await _departmentService.Update(department);
+        if (updatedDepartment == null)
+        {
+            return NotFound();
+        }
+
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<Department> RemoveDepartment(int id)
+    public async Task<ActionResult<Department>> RemoveDepartment(int id)
     {
-        return await _departmentService.Remove(id);
+        var removedDepartment = await _departmentService.Remove(id);
+        if (removedDepartment == null)
+        {
+            return NotFound();
+        }
+        return Ok(removedDepartment);
     }
 }

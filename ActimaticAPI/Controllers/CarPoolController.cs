@@ -22,9 +22,14 @@ public class CarPoolController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<CarPool> GetCarPoolById(int id)
+    public async Task<ActionResult<CarPool>> GetCarPoolById(int id)
     {
-        return await _carPoolService.GetCarPoolById(id);
+        var carPool = await _carPoolService.GetCarPoolById(id);
+        if (carPool == null)
+        {
+            return NotFound();
+        }
+        return Ok(carPool);
     }
 
     [HttpPost]
@@ -35,16 +40,26 @@ public class CarPoolController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateCarPool([FromBody] CarPool carPool)
+    public async Task<ActionResult<CarPool>> UpdateCarPool([FromBody] CarPool carPool)
     {
-        await _carPoolService.UpdateCarPool(carPool);
+        var updatedCarPool = await _carPoolService.UpdateCarPool(carPool);
+        if (updatedCarPool == null)
+        {
+            return NotFound();
+        }
+
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<CarPool> RemoveCarPool(int id)
+    public async Task<ActionResult<CarPool>> RemoveCarPool(int id)
     {
-        return await _carPoolService.RemoveCarPool(id);
+        var removedCarPool = await _carPoolService.RemoveCarPool(id);
+        if (removedCarPool == null)
+        {
+            return NotFound();
+        }
+        return Ok(removedCarPool);
     }
 
     [HttpGet("dates/{startDate}/{endDate}")]

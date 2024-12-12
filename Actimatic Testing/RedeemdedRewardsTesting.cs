@@ -7,12 +7,12 @@ using Controllers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class RedeemedRewardControllerTests
+public class RedeemedRewardsTestting
 {
     private readonly Mock<IRedeemedRewardService> _mockService;
     private readonly RedeemedRewardController _controller;
 
-    public RedeemedRewardControllerTests()
+    public RedeemedRewardsTestting()
     {
         _mockService = new Mock<IRedeemedRewardService>();
         _controller = new RedeemedRewardController(_mockService.Object);
