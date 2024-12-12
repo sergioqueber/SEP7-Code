@@ -6,6 +6,7 @@
 @inject IRewardService RewardService
 @inject IDepartmentService DepartmentService
 @inject AppInterfaces.IAuthService AuthService
+@inject IRedeemedRewardService RedeemedRewardService
 @using Microsoft.AspNetCore.Authorization
 
 <div class="container mt-5">
@@ -158,27 +159,27 @@
                     </div>
                 </div>
 
-                    <div class="col-md-6">
-                        <h5>Rewards</h5>
-                        @if (rewards != null && rewards.Any())
-                        {
-                            @foreach (var reward in rewards)
-                            {
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h6 class="card-title">@reward.Name</h6>
-                                        <p class="card-text">@reward.Description</p>
-                                        <p class="card-text"><small>Points required: <b>@reward.PointsRequired</b></small></p>
-                                        <button @onclick="() => RedeemReward(reward)" class="btn btn-primary btn-sm">Redeem</button>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <p>No rewards available.</p>
-                        }
-                    </div>
+                   <div class="col-md-6 mt-4">
+    <h5>Team Rewards</h5>
+    @if (rewards != null && rewards.Any(r => r.IsTeamReward))
+    {
+        @foreach (var reward in rewards.Where(r => r.IsTeamReward))
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">@reward.Name</h6>
+                    <p class="card-text">@reward.Description</p>
+                    <p class="card-text"><small>Points required: <b>@reward.PointsRequired</b></small></p>
+                    <button class="btn btn-primary btn-sm" @onclick="() => RedeemTeamReward(reward)">Redeem</button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No team rewards available.</p>
+    }
+</div>
                 
             }
         </div>
@@ -215,7 +216,6 @@
 
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                Console.WriteLine("User is not logged in.");
                 return;
             }
 
@@ -274,24 +274,31 @@ private async Task ContributePoints()
 
     try
     {
-        // Deduct points from the user
         currentUser.Points -= pointsToContribute;
         await UserService.UpdateUser(currentUser);
 
-        // Add points to the team's total points
         if (team != null)
         {
             team.TotalPoints += pointsToContribute;
             await TeamService.UpdateTeam(team);
-        }
 
-        // Refresh total points
-        totalTeamPoints += pointsToContribute;
+        // Refresh
+        foreach (var member in teamMembers)
+            {
+                if (member.Id == currentUser.Id)
+                {
+                    member.Points -= pointsToContribute;
+                    break;
+                }
+            }
+            totalTeamPoints = team.TotalPoints;
+        }
 
         // Reset the input
         pointsToContribute = 0;
 
         Console.WriteLine("Points successfully contributed.");
+        successMessage = "Points successfully contributed to your team!";
         StateHasChanged();
     }
     catch (Exception ex)
@@ -300,6 +307,51 @@ private async Task ContributePoints()
     }
 }
 
+ private async Task RedeemTeamReward(Reward reward)
+{
+    try
+    {
+        
+        if (team != null && team.TotalPoints >= reward.PointsRequired)
+        {
+            
+            team.TotalPoints -= reward.PointsRequired;
+            await TeamService.UpdateTeam(team);
+
+            
+            var redeemedReward = new RedeemedReward
+            {
+                RewardId = reward.Id,
+                TeamId = team.Id, 
+                Date = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            await RedeemedRewardService.CreateRedeemedReward(redeemedReward);
+
+            reward.Availability = false;
+            await RewardService.UpdateReward(reward);
+
+            rewards = rewards.Where(r => r.Id != reward.Id).ToList();
+           
+
+            // Log success and refresh UI
+            Console.WriteLine($"Reward '{reward.Name}' redeemed for the team.");
+            successMessage = $"Reward '{reward.Name}' successfully redeemed for the team!";
+            StateHasChanged();
+        }
+        else
+        {
+            // Handle insufficient points
+            //errorMessage = "Not enough team points to redeem this reward.";
+           // Console.WriteLine(errorMessage);
+        }
+    }
+    catch (Exception ex)
+    {
+        //Console.WriteLine($"Error redeeming reward: {ex.Message}");
+        //errorMessage = "An error occurred while redeeming the reward. Please try again.";
+    }
+}
     private async Task CreateTeam()
     {
         Console.WriteLine("CreateTeam method triggered.");
