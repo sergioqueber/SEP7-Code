@@ -44,6 +44,7 @@ public class DepartmentService(ApplicationDbContext context) : IDepartmentServic
             departmentToUpdate.Id = department.Id;
             departmentToUpdate.Name = department.Name;
             departmentToUpdate.Teams = department.Teams;
+            _context.Departments.Update(departmentToUpdate);
         }
         await _context.SaveChangesAsync();
         return await Task.FromResult(departmentToUpdate);

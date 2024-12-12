@@ -15,7 +15,7 @@ Content-Type: application/json
     "surname": "Bosy",
     "email": "jan@baby.com",
     "password": "password123",
-    "role": "Employee",
+    "role": "Manager",
     "points": 12345
 }
 
@@ -28,14 +28,9 @@ Content-Type: application/json
   "name": "Jan2",
   "surname": "Niezbędny2",
   "email": "dddd",
-  "password": "123456",
-  "role": "Employee",
-  "points": 0,
-  "activities": [],
-  "rewards": [],
-  "team": null,
-  "teamId": 2,
-  "reports": []
+  "password": "1234",
+  "role": "Manager",
+  "team": null
 }
 
 ### Delete staff

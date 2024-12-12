@@ -38,12 +38,20 @@ namespace AppServices
         }
 
         // Update an existing department
-        public async Task<Department?> Update(Department department)
-        {
-            var response = await _httpClient.PutAsJsonAsync($"api/department/{department.Id}", department);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<Department>();
-        }
+       public async Task<Department?> Update(Department department)
+{
+    var response = await _httpClient.PutAsJsonAsync($"api/department/{department.Id}", department);
+    response.EnsureSuccessStatusCode();
+
+    // Handle empty or null content
+    if (response.Content.Headers.ContentLength == 0)
+    {
+        return null;
+    }
+
+    return await response.Content.ReadFromJsonAsync<Department>();
+}
+
 
         // Remove a department
         public async Task<Department?> Remove(int id)

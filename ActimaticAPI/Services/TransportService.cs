@@ -30,10 +30,31 @@ public class TransportService(ApplicationDbContext context) : ITransportService
         };
         return basepoints + bonusPoints;
     }
+    private int CalculateEmissions(Transport transport)
+    {
+        int emissions = 86 * transport.Distance;
+        int km = transport.Distance;
+        switch (transport.Type)
+        {
+            case "Walk":
+                break;
+            case "Bike":
+                break;
+            case "Train":
+                emissions -= 14* km;
+                break;
+            case "Bus":
+                emissions -= 29 * km;
+                break;
+        }
+
+        return emissions;
+    }
 
     public async Task<Transport> CreateTransport(Transport transport)
     {
         transport.AwardedPoints = CalculatePoints(transport);
+        transport.EmissionsSaved = CalculateEmissions(transport);
         _context.Transports.Add(transport);
         await _context.SaveChangesAsync();
         return transport;
