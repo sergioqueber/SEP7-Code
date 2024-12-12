@@ -1,24 +1,15 @@
 using Interfaces;
 using Storage;
-using Microsoft.EntityFrameworkCore.Storage;
 using Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services;
 public class UserService(ApplicationDbContext context) : IUserService
 {
-    private readonly ApplicationDbContext _context = context ;
-
-//private static List<User> UserList = new List<User>();
-
-    static UserService()
-    {
-
-    }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<User> CreateUser(User user)
     {
-        using ApplicationDbContext _context = new();
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
         return user;

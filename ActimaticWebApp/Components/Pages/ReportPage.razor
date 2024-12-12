@@ -17,8 +17,7 @@
 @inject IStairsService StairsService
 @inject ICarPoolService CarPoolService
 @rendermode InteractiveServer
-@attribute [Authorize]
-
+@attribute [Authorize ("MustBeHr")]
 <div class="container my-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
