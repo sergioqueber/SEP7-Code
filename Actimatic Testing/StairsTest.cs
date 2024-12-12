@@ -138,4 +138,60 @@ public class StairsTest
         var returnedStairs = Assert.IsAssignableFrom<IEnumerable<Stairs>>(okResult.Value);
         Assert.Equal(2, returnedStairs.Count());
     }
+
+    [Fact]
+    public async Task CreateStairs_ReturnsCreatedAtAction_WithCorrectPoints()
+    {
+        // Arrange
+        var stairsToCreate = new Stairs
+        {
+            Name = "New Stairs",
+            Floors = 10
+        };
+
+        _mockService.Setup(s => s.CreateStairsAsync(It.IsAny<Stairs>()))
+            .ReturnsAsync((Stairs s) =>
+            {
+                s.AwardedPoints = s.Floors * 5; // 5 points per floor
+                return s;
+            });
+
+        // Act
+        var result = await _controller.CreateStairs(stairsToCreate);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        Assert.Equal(nameof(StairsController.GetStairsById), createdAtActionResult.ActionName);
+        var returnedStairs = Assert.IsType<Stairs>(createdAtActionResult.Value);
+        Assert.Equal(50, returnedStairs.AwardedPoints); // 10 floors * 5 points
+    }
+
+    [Theory]
+    [InlineData(5, 25)]   // 5 floors = 25 points
+    [InlineData(10, 50)]  // 10 floors = 50 points
+    [InlineData(20, 100)] // 20 floors = 100 points
+    public async Task CreateStairs_CalculatesPoints_ForDifferentFloors(int floors, int expectedPoints)
+    {
+        // Arrange
+        var stairsToCreate = new Stairs
+        {
+            Name = "Test Stairs",
+            Floors = floors
+        };
+
+        _mockService.Setup(s => s.CreateStairsAsync(It.IsAny<Stairs>()))
+            .ReturnsAsync((Stairs s) =>
+            {
+                s.AwardedPoints = s.Floors * 5;
+                return s;
+            });
+
+        // Act
+        var result = await _controller.CreateStairs(stairsToCreate);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var returnedStairs = Assert.IsType<Stairs>(createdAtActionResult.Value);
+        Assert.Equal(expectedPoints, returnedStairs.AwardedPoints);
+    }
 }
