@@ -253,11 +253,9 @@
         }
 
         user = await ProfileService.GetUserById(id);
+        users = await ProfileService.GetAllUsers();
         report.StartDate = DateOnly.FromDateTime(DateTime.Now);
         report.EndDate = DateOnly.FromDateTime(DateTime.Now);
-        Console.WriteLine(report.StartDate);
-
-
     }
 
     private async Task NewReport()
@@ -361,7 +359,6 @@
         }
         else if (value == 2)
         {
-            users = await ProfileService.GetAllUsers();
             var carPoolsByUser = carPools.Where(x => x.UserId == selectedUserId);
             var volunteeringsByUser = volunteerings.Where(x => x.UserId == selectedUserId);
             var savingFoodsByUser = savingFoods.Where(x => x.UserId == selectedUserId);
@@ -384,7 +381,6 @@
             tempstairs = stairs;
             temptransports = transports;
             tempvolunteerings = volunteerings;
-            users = await ProfileService.GetAllUsers();
             EmissionsSaved = CalcEmissions(transports);
             SavedFood = CalcFood(savingFoods);
             HoursVolunteered = CalcHours(volunteerings);
@@ -396,12 +392,6 @@
         kind = tempKind;
         await HandleSelect(kind);
         StateHasChanged();
-    }
-    private async Task SaveReport(){
-        report.EmissionsSaved = EmissionsSaved;
-        report.HoursVolunteered = HoursVolunteered;
-        report.FoodSaved = SavedFood;
-        report.Floors = FloorsCovered;
     }
 }
 <style>

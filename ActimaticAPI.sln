@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActimaticAPI", "ActimaticAP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActimaticWebApp", "ActimaticWebApp\ActimaticWebApp.csproj", "{0A198CFE-DA06-4180-A769-840F1E40D5A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{4A1AAF0D-A725-404C-9C7A-460B0937B8EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0A198CFE-DA06-4180-A769-840F1E40D5A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A198CFE-DA06-4180-A769-840F1E40D5A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A198CFE-DA06-4180-A769-840F1E40D5A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A1AAF0D-A725-404C-9C7A-460B0937B8EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A1AAF0D-A725-404C-9C7A-460B0937B8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A1AAF0D-A725-404C-9C7A-460B0937B8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A1AAF0D-A725-404C-9C7A-460B0937B8EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
