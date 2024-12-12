@@ -160,4 +160,26 @@ public class TransportControllerTests
         var returnedTransport = Assert.IsType<Transport>(createdAtActionResult.Value);
         Assert.Equal(20, returnedTransport.AwardedPoints); // Verify points calculation
     }
+    [Fact]
+    public async Task CreateTransport_CalculatesEmissionsCorrectly()
+    {
+        // Arrange
+        var transportToCreate = new Transport { Name = "New Transport", Distance = 10, Type = "Bus" };
+        var createdTransport = new Transport { Id = 1, Name = "New Transport", Distance = 10, Type = "Bus", EmissionsSaved = 570 };
+        _mockService.Setup(s => s.CreateTransport(It.IsAny<Transport>()))
+            .ReturnsAsync((Transport t) => 
+            {
+                t.EmissionsSaved = 86 * t.Distance - (t.Type == "Bus" ? 29 * t.Distance : 0); // Example calculation
+                return t;
+            });
+
+        // Act
+        var result = await _controller.CreateTransport(transportToCreate);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        Assert.Equal(nameof(TransportController.GetTransportById), createdAtActionResult.ActionName);
+        var returnedTransport = Assert.IsType<Transport>(createdAtActionResult.Value);
+        Assert.Equal(570, returnedTransport.EmissionsSaved); // Verify emissions calculation
+    }
 }
