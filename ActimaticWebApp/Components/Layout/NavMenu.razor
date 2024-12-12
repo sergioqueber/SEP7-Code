@@ -50,6 +50,14 @@
                         </NavLink>
                     </NotAuthorized>
                 </AuthorizeView>
+                <AuthorizeView Policy="MustBeAdminOrManager">
+                    <Authorized>
+                        <NavLink href="/departments" Match="NavLinkMatch.All" class="nav-item">
+                            <span class="nav-icon">🏢</span>
+                            Department
+                        </NavLink>
+                    </Authorized>
+                </AuthorizeView>
                 <AuthorizeView Policy="MustBeAdmin">
                     <Authorized>
                         <NavLink href="/admin-page" Match="NavLinkMatch.All" class="nav-item">

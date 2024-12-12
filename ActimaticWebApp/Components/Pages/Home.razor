@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Interfaces
 @inject IUserService userService
+@inject AppServices.ActivitiesService ActivitiesService
 @attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
@@ -15,7 +16,19 @@
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col-md-12">
+                @if (totalEmissions > 1000)
+                {
                 <h1 class="text-center">Your total points are @totalPoints</h1>
+                <h2 class="text-center">You saved @totalEmissions kg of CO2</h2>
+                }
+                else if (totalEmissions > 0)
+                {
+                <h1 class="text-center">Your total points are @totalPoints</h1>
+                <h2 class="text-center">You saved @totalEmissions g of CO2</h2>
+                    }
+                else {
+                    <h1 class="text-center">Your total points are @totalPoints</h1>
+                    }
             </div>
         </div>
         <div class="row">
@@ -40,6 +53,7 @@
     private IEnumerable<Claim>? userClaims;
     private bool isLoggedIn = false;
     private int totalPoints;
+    private int totalEmissions;
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await AuthState;
@@ -53,6 +67,12 @@
 
         var currentUser = await userService.GetUserById(currentUserId);
         totalPoints = currentUser.Points;
+        var transports = (await ActivitiesService.GetAllTransport()).Where(t => t.UserId == currentUserId);
+        totalEmissions = transports.Sum(t => t.EmissionsSaved);
+        if (totalEmissions > 1000)
+        {
+            totalEmissions = totalEmissions / 1000;
+        }
     }
 
     private async Task UpdatePoints(int points)

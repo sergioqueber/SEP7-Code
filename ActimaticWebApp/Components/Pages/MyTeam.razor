@@ -9,11 +9,11 @@
 @using Microsoft.AspNetCore.Authorization
 
 <div class="container mt-5">
-    <AuthorizeView Policy="MustBeManager">
+    <AuthorizeView Policy="MustBeAdminOrManager">
         <Authorized>
-            <div class="d-flex justify-content-between mb-4">
-                <button @onclick="ToggleCreateTeamForm" class="btn btn-primary">Create Team</button>
-                <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary">Add Employees to a Team</button>
+            <div class="d-flex justify-content-start mb-4">
+                <button @onclick="ToggleCreateTeamForm" class="btn btn-primary me-2">Create Team</button>
+                <button @onclick="ToggleAddEmployeesForm" class="btn btn-secondary me-2">Add Employees to a Team</button>
             </div>
 
             @if (showCreateTeamForm)
@@ -195,7 +195,7 @@
     private int selectedDepartmentId = 0; // Added selectedDepartmentId
     private List<int> selectedUserIds = new(); // List to hold selected user IDs
     private List<User> availableUsers = new(); // List of users to select from
-    private List<Department> availableDepartments = new(); // List of departments to select from
+    private List<Model.Department> availableDepartments = new(); // List of departments to select from
     private bool showCreateTeamForm = false;
      private string successMessage = string.Empty;
        private bool showAddEmployeesForm = false;
