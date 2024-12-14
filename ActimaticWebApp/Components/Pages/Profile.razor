@@ -121,11 +121,6 @@
     private bool isLoggedIn;
     private bool showPassword = false;
 
-
-    @* protected override async Task OnInitializedAsync()
-    {
-        user = await ProfileService.GetUserProfile(1);
-    } *@
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await AuthState;
