@@ -92,7 +92,7 @@ public class LeaderboardTests : TestContext
         Assert.Equal(21, rows.Count); // Top 17 + separator + 3 surrounding current user
 
         // Verify separator is displayed
-        //Assert.Contains("table-secondary", rows[18].ClassName);
+        Assert.Contains("table-secondary", rows[17].ClassName);
         Assert.Contains(". . .", rows[17].InnerHtml);
 
         // Verify current user and surrounding ranks are displayed
