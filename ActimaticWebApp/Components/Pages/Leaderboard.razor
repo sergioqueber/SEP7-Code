@@ -1,0 +1,172 @@
+@page "/leaderboard"
+@using Interfaces
+@using Model
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">🏆 Leaderboard</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>User</th>
+                                <th class="text-end">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (user, rank) in GetDisplayUsers())
+                            {
+                                @if (user == null)
+                                {
+                                    <tr class="table-secondary">
+                                        <td colspan="3" class="text-center">
+                                            <i>. . .</i>
+                                        </td>
+                                    </tr>
+                                    continue;
+                                }
+
+                                <tr class="@(user.Id == currentUser?.Id ? "table-primary" : "") 
+                   @(rank <= 3 ? "top-three" : "")">
+                                    <td class="text-center">
+                                        @switch (rank)
+                                        {
+                                            case 1:
+                                                <span class="fs-4">🥇</span>
+                                                break;
+                                            case 2:
+                                                <span class="fs-4">🥈</span>
+                                                break;
+                                            case 3:
+                                                <span class="fs-4">🥉</span>
+                                                break;
+                                            default:
+                                                @rank
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-2">
+                                                @(user.Name[0])@(user.Surname[0])
+                                            </div>
+                                            <span>@user.Name @user.Surname</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        @user.Points <i class="bi bi-arrow-up-circle-fill text-success"></i>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        background-color: #007bff;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .top-three {
+        animation: slideIn 0.5s ease-out;
+    }
+
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    tr {
+        transition: all 0.2s ease;
+    }
+
+    tr:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+@code {
+    private List<User> users = new();
+    private User? currentUser;
+    private const int TopUsersCount = 20;
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = (await UserService.GetAllUsers()).ToList();
+        currentUser = await GetCurrentUser();
+    }
+
+    private List<(User? User, int Rank)> GetDisplayUsers()
+    {
+        var orderedUsers = users.OrderByDescending(u => u.Points).ToList();
+        var currentUserRank = orderedUsers.FindIndex(u => u.Id == currentUser?.Id) + 1;
+
+        if (currentUserRank <= TopUsersCount)
+        {
+            return orderedUsers.Take(TopUsersCount)
+            .Select((u, i) => (u, i + 1))
+            .ToList();
+        }
+        else
+        {
+            var displayUsers = new List<(User? User, int Rank)>();
+
+            // Add top 17
+            displayUsers.AddRange(orderedUsers.Take(17)
+            .Select((u, i) => (u, i + 1)));
+
+            // Add separator
+            displayUsers.Add((null, currentUserRank - 1));
+
+            // Add current user and surrounding
+            var currentUserIndex = orderedUsers.FindIndex(u => u.Id == currentUser.Id);
+            displayUsers.AddRange(orderedUsers.Skip(currentUserIndex - 1)
+            .Take(3)
+            .Select(u => (u, orderedUsers.IndexOf(u) + 1)));
+
+            return displayUsers;
+        }
+    }
+
+    private async Task<User?> GetCurrentUser()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            var userId = int.Parse(user.FindFirst("Id").Value);
+            return users.FirstOrDefault(u => u.Id == userId);
+        }
+        return null;
+    }
+}

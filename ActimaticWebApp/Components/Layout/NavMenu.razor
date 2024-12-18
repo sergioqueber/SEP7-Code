@@ -37,6 +37,10 @@
                             <span class="nav-icon">👥</span>
                             My Team
                         </NavLink>
+                        <NavLink href="/leaderboard" Match="NavLinkMatch.All" class="nav-item">
+                            <span class="nav-icon">🏆</span>
+                            Leaderboard
+                        </NavLink>
                         <!-- Other NavLinks -->
                     </Authorized>
                     <NotAuthorized>
@@ -130,6 +134,7 @@
     .profile-bar {
         margin-left: 20px;
     }
+
     .navbar-toggler {
         border-color: white;
     }
@@ -144,9 +149,9 @@
             padding: 1rem;
         }
     }
-    
 
-   @*  @@media (max-width: 768px) {
+
+    @*  @@media (max-width: 768px) {
         .nav-links {
             display: none;
             flex-direction: column;
