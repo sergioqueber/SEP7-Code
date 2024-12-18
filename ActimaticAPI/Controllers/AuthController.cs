@@ -34,12 +34,14 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
 
         Console.WriteLine(user is User ? "User" : "Moderator");
         List<Claim> claims = GenerateClaims(user);
-    Console.WriteLine("Claims Generated");
+        Console.WriteLine("Claims Generated");
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
+            IssuedAt = DateTime.UtcNow,
             Expires = DateTime.UtcNow.AddHours(1),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+             SecurityAlgorithms.HmacSha256Signature),
             Issuer = config["Jwt:Issuer"],
             Audience = config["Jwt:Audience"]
         };
@@ -56,9 +58,9 @@ public class AuthController(IConfiguration config, IAuthService authService) : C
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim("Id", user.Id.ToString()),
-            new Claim("Name", user.Name),                                
-            new Claim("Surname", user.Surname),                         
-            new Claim("Email", user.Email),       
+            new Claim("Name", user.Name),
+            new Claim("Surname", user.Surname),
+            new Claim("Email", user.Email),
             new Claim("Role", user.Role),
             new Claim("IsApproved", user.IsApproved.ToString())
         };
